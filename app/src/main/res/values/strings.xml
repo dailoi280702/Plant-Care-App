@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Plant Care</string>
+    <string name="login_title">Login And Enjoy Your Journey!</string>
+    <string name="signup_title">Create Your Account!</string>
+    <string name="login_description">login with your email and password, or go to next tab to create one</string>
+    <string name="signup_description">create new account with email and your email\'s password</string>
+    <string name="login_another">or log in with Google, Facebook or Twitter</string>
+</resources>
