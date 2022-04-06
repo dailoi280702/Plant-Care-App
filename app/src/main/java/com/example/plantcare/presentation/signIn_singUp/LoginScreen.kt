@@ -1,5 +1,6 @@
 package com.example.plantcare.presentation.signIn_singUp
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -8,8 +9,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,6 +17,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -24,10 +25,13 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.example.plantcare.R
 import com.example.plantcare.presentation.signIn_singUp.components.LoginTab
 import com.example.plantcare.presentation.signIn_singUp.utils.LoginIconButton
 import com.example.plantcare.presentation.signIn_singUp.utils.LoginSignupTabItem
+import com.example.plantcare.presentation.utils.Screen
 import com.example.plantcare.ui.theme.Facebook_color
 import com.example.plantcare.ui.theme.Google_color
 import com.example.plantcare.ui.theme.Twitter_color
@@ -35,42 +39,48 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.pagerTabIndicatorOffset
 import com.google.accompanist.pager.rememberPagerState
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun LoginSignupScreen() {
-  val emailLogin = remember {
-    mutableStateOf("")
-  }
-  val emailSignup = remember {
-    mutableStateOf("")
-  }
-  val passwordLogin = remember {
-    mutableStateOf("")
-  }
-  val passwordSignup = remember {
-    mutableStateOf("")
-  }
+fun LoginSignupScreen(
+  navController: NavController,
+  viewModel: LoginSignupViewModel = hiltViewModel()
+) {
+
+  val loginTextState = viewModel.loginEmailPassword.value
+  val signupTextState = viewModel.signupEmailPassword.value
   val focusManager = LocalFocusManager.current
-//  val systemUiController = rememberSystemUiController()
-//  systemUiController.setSystemBarsColor(
-//    color = MaterialTheme.colors.primary,
-////    darkIcons = MaterialTheme.colors.isLight
-//  )
+  val context = LocalContext.current
+
+  LaunchedEffect(key1 = true) {
+    viewModel.eventFlow.collectLatest { event ->
+      when (event) {
+        is LoginSignupUIEvent.NavigateToMainScreen -> {
+          navController.navigate(Screen.MainScreen.route)
+        }
+        is LoginSignupUIEvent.ShowText -> {
+          Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
+        }
+      }
+    }
+  }
+
+
   val tabList = listOf(
     LoginSignupTabItem.Login {
       LoginTab(
         title = stringResource(id = R.string.login_title),
         description = stringResource(id = R.string.login_description),
         buttonText = "log in",
-        email = emailLogin.value,
-        password = passwordLogin.value,
+        email = loginTextState.email,
+        password = loginTextState.password,
         focusManager = focusManager,
-        onEmailChange = { emailLogin.value = it },
-        onPasswordChange = { passwordLogin.value = it }
+        onEmailChange = { viewModel.onEvent(LoginSignupEvent.EnterLoginEmail(it)) },
+        onPasswordChange = { viewModel.onEvent(LoginSignupEvent.EnterLoginPassword(it)) }
       ) {
-//        CODE FOR LOGIN EVENT
+        viewModel.onEvent(LoginSignupEvent.LoginWithEmailAndPassword)
       }
     },
     LoginSignupTabItem.Signup {
@@ -78,13 +88,13 @@ fun LoginSignupScreen() {
         title = stringResource(id = R.string.signup_title),
         description = stringResource(id = R.string.signup_description),
         buttonText = "sign up",
-        email = emailSignup.value,
-        password = passwordSignup.value,
+        email = signupTextState.email,
+        password = signupTextState.password,
         focusManager = focusManager,
-        onEmailChange = { emailSignup.value = it },
-        onPasswordChange = { passwordSignup.value = it }
+        onEmailChange = { viewModel.onEvent(LoginSignupEvent.EnterSignupEmail(it)) },
+        onPasswordChange = { viewModel.onEvent(LoginSignupEvent.EnterSignupPassword(it)) }
       ) {
-//        CODE FOR SIGNUP EVENT
+        viewModel.onEvent(LoginSignupEvent.SignupWithEmailAndPasswrd)
       }
     }
   )
@@ -217,21 +227,21 @@ fun LoginSignupScreen() {
                 contentDescription = "Google Icon",
                 backgroundColor = Google_color
               ) {
-//                CODE FOR LOGGING IN WITH GG
+                viewModel.onEvent(LoginSignupEvent.LoginWithGoogle)
               }
               LoginIconButton(
                 icon = painterResource(id = R.drawable.ic_logo_facebook),
                 contentDescription = "Facebook Icon",
                 backgroundColor = Facebook_color
               ) {
-//                CODE FOR LOGGING IN WITH FB
+                viewModel.onEvent(LoginSignupEvent.LoginWithFaceBook)
               }
               LoginIconButton(
                 icon = painterResource(id = R.drawable.ic_logo_twitter),
                 contentDescription = "Twitter Icon",
                 backgroundColor = Twitter_color
               ) {
-//                CODE FOR LOGGING IN WITH WT
+                viewModel.onEvent(LoginSignupEvent.LoginWithTwitter)
               }
             }
           }
