@@ -1,5 +1,7 @@
 package com.example.plantcare.di
 
+import com.example.plantcare.data.repository.LoginSignupRepositoryImpl
+import com.example.plantcare.domain.repository.LoginSignupRepository
 import com.example.plantcare.domain.use_case.logIn_signUp.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -21,14 +23,20 @@ object AppModule {
 
   @Provides
   @Singleton
-  fun provideLoginSignupUsecases(auth: FirebaseAuth): LoginSignupUsecases {
+  fun provideLoginSignupRepository(auth: FirebaseAuth) : LoginSignupRepository {
+    return LoginSignupRepositoryImpl(auth)
+  }
+
+  @Provides
+  @Singleton
+  fun provideLoginSignupUseCases(repository: LoginSignupRepository): LoginSignupUsecases {
     return LoginSignupUsecases(
-      loginWithEmailAndPassword = LoginWithEmailAndPassword(auth = auth),
-      loginWithFacebook = LoginWithFacebook(auth = auth),
-      loginWithGoogle = LoginWithGoogle(auth = auth),
-      loginWithTwitter = LoginWithTwitter(auth = auth),
-      logout = Logout(auth = auth),
-      signInWithEmailAndPassword = SignInWithEmailAndPassword(auth = auth)
+      loginWithEmailAndPassword = LoginWithEmailAndPassword(repository = repository),
+      loginWithFacebook = LoginWithFacebook(repository = repository),
+      loginWithGoogle = LoginWithGoogle(repository = repository),
+      loginWithTwitter = LoginWithTwitter(repository = repository),
+      logout = Logout(repository = repository),
+      signupWithEmailAndPassword = SignupWithEmailAndPassword(repository = repository)
     )
   }
 }

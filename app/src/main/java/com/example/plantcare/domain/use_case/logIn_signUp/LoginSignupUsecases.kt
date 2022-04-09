@@ -5,6 +5,6 @@ data class LoginSignupUsecases (
   val loginWithGoogle: LoginWithGoogle,
   val loginWithFacebook: LoginWithFacebook,
   val loginWithTwitter: LoginWithTwitter,
-  val signInWithEmailAndPassword: SignInWithEmailAndPassword,
+  val signupWithEmailAndPassword: SignupWithEmailAndPassword,
   val logout: Logout
 )

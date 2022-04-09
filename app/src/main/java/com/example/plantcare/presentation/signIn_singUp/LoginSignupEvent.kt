@@ -5,15 +5,20 @@ sealed class LoginSignupEvent {
   data class EnterLoginPassword(val value: String): LoginSignupEvent()
   data class EnterSignupEmail(val value: String): LoginSignupEvent()
   data class EnterSignupPassword(val value: String): LoginSignupEvent()
+  data class EnterSignupConfirmPassword(val value: String): LoginSignupEvent()
   object LoginWithEmailAndPassword: LoginSignupEvent()
-  object SignupWithEmailAndPasswrd: LoginSignupEvent()
+  object SignupWithEmailAndPassword: LoginSignupEvent()
   object LoginWithFaceBook: LoginSignupEvent()
   object LoginWithGoogle: LoginSignupEvent()
   object LoginWithTwitter: LoginSignupEvent()
 }
 
-
 sealed class LoginSignupUIEvent {
   data class ShowText(val message: String): LoginSignupUIEvent()
   object NavigateToMainScreen: LoginSignupUIEvent()
+}
+
+sealed class EventType {
+  object Login: EventType()
+  object Signup: EventType()
 }

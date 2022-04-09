@@ -30,6 +30,23 @@ class LoginSignupViewModel @Inject constructor(
   private val _eventFLow = MutableSharedFlow<LoginSignupUIEvent>()
   val eventFlow = _eventFLow.asSharedFlow()
 
+  private fun resetUI(type: EventType) {
+    when (type) {
+      is EventType.Login -> {
+        _loginEmailPassword.value = loginEmailPassword.value.copy(
+          email = "",
+          password = ""
+        )
+      }
+      is EventType.Signup -> {
+        _signupEmailPassword.value = signupEmailPassword.value.copy(
+          email = "",
+          password = "",
+          confirmPassword = ""
+        )
+      }
+    }
+  }
 
   fun onEvent(event: LoginSignupEvent) {
     when (event) {
@@ -53,10 +70,15 @@ class LoginSignupViewModel @Inject constructor(
           password = event.value
         )
       }
+      is LoginSignupEvent.EnterSignupConfirmPassword -> {
+        _signupEmailPassword.value = signupEmailPassword.value.copy(
+          confirmPassword = event.value
+        )
+      }
       is LoginSignupEvent.LoginWithEmailAndPassword -> {
         viewModelScope.launch {
           try {
-            loginSignupUsecases.signInWithEmailAndPassword(
+            loginSignupUsecases.loginWithEmailAndPassword(
               _loginEmailPassword.value.email,
               _loginEmailPassword.value.password
             )
@@ -67,27 +89,43 @@ class LoginSignupViewModel @Inject constructor(
                 message = e.message ?: "Couldn't log in"
               )
             )
+          } catch (e: Exception) {
+            _eventFLow.emit(
+              LoginSignupUIEvent.ShowText(
+                message = e.message ?: "Couldn't log in"
+              )
+            )
+            resetUI (EventType.Login)
           }
         }
       }
-      is LoginSignupEvent.SignupWithEmailAndPasswrd -> {
+      is LoginSignupEvent.SignupWithEmailAndPassword -> {
         viewModelScope.launch {
           try {
-            loginSignupUsecases.signInWithEmailAndPassword(
+            loginSignupUsecases.signupWithEmailAndPassword(
               _signupEmailPassword.value.email,
-              _signupEmailPassword.value.password
+              _signupEmailPassword.value.password,
+              _signupEmailPassword.value.confirmPassword
             )
-            _signupEmailPassword.value = signupEmailPassword.value.copy(
-              email = "",
-              password = ""
+            _eventFLow.emit(
+              LoginSignupUIEvent.ShowText(
+                message = "Sign up successfully"
+              )
             )
-            _eventFLow.emit(LoginSignupUIEvent.ShowText(message = "Sign up successfully"))
+            resetUI(type = EventType.Signup)
           } catch (e: LoginSignupArgumentException) {
             _eventFLow.emit(
               LoginSignupUIEvent.ShowText(
                 message = e.message ?: "Couldn't sign up"
               )
             )
+          } catch (e: Exception) {
+            _eventFLow.emit(
+              LoginSignupUIEvent.ShowText(
+                message = e.message ?: "Couldn't sign up"
+              )
+            )
+            resetUI(type = EventType.Signup)
           }
         }
       }

@@ -1,13 +1,11 @@
 package com.example.plantcare.domain.use_case.logIn_signUp
 
-import com.google.firebase.auth.FirebaseAuth
+import com.example.plantcare.domain.repository.LoginSignupRepository
 
 class LoginWithGoogle(
-  private val auth: FirebaseAuth
+  private val repository: LoginSignupRepository
 ) {
-  suspend operator fun invoke(
-//    args
-  ){
-//implement
+  suspend operator fun invoke() {
+    repository.loginWithGoogle()
   }
 }

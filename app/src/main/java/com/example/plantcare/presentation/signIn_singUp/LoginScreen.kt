@@ -29,6 +29,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.plantcare.R
 import com.example.plantcare.presentation.signIn_singUp.components.LoginTab
+import com.example.plantcare.presentation.signIn_singUp.components.SignupTab
 import com.example.plantcare.presentation.signIn_singUp.utils.LoginIconButton
 import com.example.plantcare.presentation.signIn_singUp.utils.LoginSignupTabItem
 import com.example.plantcare.presentation.utils.Screen
@@ -84,17 +85,19 @@ fun LoginSignupScreen(
       }
     },
     LoginSignupTabItem.Signup {
-      LoginTab(
+      SignupTab(
         title = stringResource(id = R.string.signup_title),
         description = stringResource(id = R.string.signup_description),
         buttonText = "sign up",
         email = signupTextState.email,
         password = signupTextState.password,
+        confirmPassword = signupTextState.confirmPassword,
         focusManager = focusManager,
         onEmailChange = { viewModel.onEvent(LoginSignupEvent.EnterSignupEmail(it)) },
-        onPasswordChange = { viewModel.onEvent(LoginSignupEvent.EnterSignupPassword(it)) }
+        onPasswordChange = { viewModel.onEvent(LoginSignupEvent.EnterSignupPassword(it)) },
+        onConfirmPasswordChange = { viewModel.onEvent(LoginSignupEvent.EnterSignupConfirmPassword(it)) }
       ) {
-        viewModel.onEvent(LoginSignupEvent.SignupWithEmailAndPasswrd)
+        viewModel.onEvent(LoginSignupEvent.SignupWithEmailAndPassword)
       }
     }
   )
@@ -202,7 +205,7 @@ fun LoginSignupScreen(
           }
           Column(
             modifier = Modifier
-              .padding(top = 16.dp)
+              .padding(top = 12.dp)
               .fillMaxWidth()
               .background(Color(0xFF4d8076).copy(alpha = 0.05f))
               .padding(24.dp),
