@@ -68,7 +68,6 @@ fun LoginSignupScreen(
     }
   }
 
-
   val tabList = listOf(
     LoginSignupTabItem.Login {
       LoginTab(
