@@ -10,12 +10,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import com.example.plantcare.presentation.main_screen.MainScreen
-import com.example.plantcare.presentation.signIn_singUp.LoginSignupScreen
-import com.example.plantcare.presentation.utils.Screen
+import com.example.plantcare.presentation.AppScaffold
 import com.example.plantcare.ui.theme.PlantCareTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -23,19 +18,36 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+
+//    val auth: FirebaseAuth = Firebase.auth
+//    val startDest: String = if (auth.currentUser != null) Screen.MainScreen.route else Screen.LoginSignupScreen.route
+
     setContent {
       PlantCareTheme {
         // A surface container using the 'background' color from the theme
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
-          val navController = rememberNavController()
-          NavHost(navController = navController, startDestination = Screen.LoginSignupScreen.route) {
-            composable(route = Screen.LoginSignupScreen.route) {
-              LoginSignupScreen(navController = navController)
-            }
-            composable(route = Screen.MainScreen.route) {
-              MainScreen(navController = navController)
-            }
-          }
+//          val navController = rememberNavController()
+//          NavHost(navController = navController, startDestination = startDest) {
+//            composable(route = Screen.LoginSignupScreen.route) {
+//              LoginSignupScreen(navController = navController)
+//            }
+//            composable(route = Screen.MainScreen.route) {
+//              MainScreen()
+//            }
+//            composable(BottomNavItems.Home.route) {
+//              HomeScreen(navController = navController)
+//            }
+//            composable(BottomNavItems.Plants.route) {
+//              PlantsScreen(navController = navController)
+//            }
+//            composable(BottomNavItems.Tasks.route) {
+//              TasksScreen(navController = navController)
+//            }
+//            composable(BottomNavItems.Settings.route) {
+//              SettingsScreen(navController = navController)
+//            }
+//          }
+          AppScaffold()
         }
       }
     }

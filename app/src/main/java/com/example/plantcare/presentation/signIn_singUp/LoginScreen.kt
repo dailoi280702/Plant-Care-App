@@ -28,11 +28,12 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.plantcare.R
+import com.example.plantcare.presentation.main.MainViewModel
 import com.example.plantcare.presentation.signIn_singUp.components.LoginTab
 import com.example.plantcare.presentation.signIn_singUp.components.SignupTab
 import com.example.plantcare.presentation.signIn_singUp.utils.LoginIconButton
 import com.example.plantcare.presentation.signIn_singUp.utils.LoginSignupTabItem
-import com.example.plantcare.presentation.utils.Screen
+import com.example.plantcare.presentation.utils.Screens
 import com.example.plantcare.ui.theme.Facebook_color
 import com.example.plantcare.ui.theme.Google_color
 import com.example.plantcare.ui.theme.Twitter_color
@@ -47,6 +48,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun LoginSignupScreen(
   navController: NavController,
+  mainViewModel: MainViewModel,
   viewModel: LoginSignupViewModel = hiltViewModel()
 ) {
 
@@ -59,7 +61,12 @@ fun LoginSignupScreen(
     viewModel.eventFlow.collectLatest { event ->
       when (event) {
         is LoginSignupUIEvent.NavigateToMainScreen -> {
-          navController.navigate(Screen.MainScreen.route)
+          navController.navigate(Screens.MainScreens.Home.route) {
+            popUpTo(Screens.LoginSignupScreen.route) {
+              inclusive = true
+            }
+            mainViewModel.setCurrentScreen(Screens.MainScreens.Home)
+          }
         }
         is LoginSignupUIEvent.ShowText -> {
           Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
