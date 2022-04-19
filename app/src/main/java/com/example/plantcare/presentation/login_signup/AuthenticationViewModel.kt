@@ -1,11 +1,13 @@
-package com.example.plantcare.presentation.signIn_singUp
+package com.example.plantcare.presentation.login_signup
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.plantcare.domain.use_case.logIn_signUp.LoginSignupUsecases
+import com.example.plantcare.domain.use_case.authentication.LoginSignupUsecases
 import com.example.plantcare.domain.utils.LoginSignupArgumentException
+import com.example.plantcare.presentation.utils.Screens
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -13,7 +15,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class LoginSignupViewModel @Inject constructor(
+class AuthenticationViewModel @Inject constructor(
   private val loginSignupUsecases: LoginSignupUsecases
 ) : ViewModel() {
 
@@ -46,6 +48,10 @@ class LoginSignupViewModel @Inject constructor(
         )
       }
     }
+  }
+
+  fun isUserLogedin(): Boolean {
+    return loginSignupUsecases.isUserLogedin()
   }
 
   fun onEvent(event: LoginSignupEvent) {
@@ -82,7 +88,7 @@ class LoginSignupViewModel @Inject constructor(
               _loginEmailPassword.value.email,
               _loginEmailPassword.value.password
             )
-            _eventFLow.emit(LoginSignupUIEvent.NavigateToMainScreen)
+            _eventFLow.emit(LoginSignupUIEvent.Navigate(Screens.MainScreens.Home))
           } catch (e: LoginSignupArgumentException) {
             _eventFLow.emit(
               LoginSignupUIEvent.ShowText(
@@ -132,8 +138,8 @@ class LoginSignupViewModel @Inject constructor(
       is LoginSignupEvent.LoginWithGoogle -> {
         viewModelScope.launch {
           try {
-            loginSignupUsecases.loginWithGoogle
-            _eventFLow.emit(LoginSignupUIEvent.NavigateToMainScreen)
+            loginSignupUsecases.loginWithGoogle()
+            _eventFLow.emit(LoginSignupUIEvent.Navigate(Screens.MainScreens.Home))
           } catch (e: Exception) {
             _eventFLow.emit(
               LoginSignupUIEvent.ShowText(
@@ -146,8 +152,8 @@ class LoginSignupViewModel @Inject constructor(
       is LoginSignupEvent.LoginWithFaceBook -> {
         viewModelScope.launch {
           try {
-            loginSignupUsecases.loginWithFacebook
-            _eventFLow.emit(LoginSignupUIEvent.NavigateToMainScreen)
+            loginSignupUsecases.loginWithFacebook()
+            _eventFLow.emit(LoginSignupUIEvent.Navigate(Screens.MainScreens.Home))
           } catch (e: Exception) {
             _eventFLow.emit(
               LoginSignupUIEvent.ShowText(
@@ -160,12 +166,29 @@ class LoginSignupViewModel @Inject constructor(
       is LoginSignupEvent.LoginWithTwitter -> {
         viewModelScope.launch {
           try {
-            loginSignupUsecases.loginWithTwitter
-            _eventFLow.emit(LoginSignupUIEvent.NavigateToMainScreen)
+            loginSignupUsecases.loginWithTwitter()
+            _eventFLow.emit(LoginSignupUIEvent.Navigate(Screens.MainScreens.Home))
           } catch (e: Exception) {
             _eventFLow.emit(
               LoginSignupUIEvent.ShowText(
                 message = e.message ?: "Couldn't login with Twitter"
+              )
+            )
+          }
+        }
+      }
+      is LoginSignupEvent.SignOut -> {
+        viewModelScope.launch {
+          try {
+            Log.d("check_logout_tag", "USER LOGGING OUT")
+            loginSignupUsecases.logout()
+            _eventFLow.emit(
+              LoginSignupUIEvent.Navigate(Screens.LoginSignupScreen)
+            )
+          } catch (e: Exception) {
+            _eventFLow.emit(
+              LoginSignupUIEvent.ShowText(
+                message = e.message ?: "Couldn't log out"
               )
             )
           }

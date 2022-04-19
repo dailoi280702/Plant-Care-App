@@ -1,4 +1,4 @@
-package com.example.plantcare.presentation.signIn_singUp
+package com.example.plantcare.presentation.login_signup
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -28,11 +28,11 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.plantcare.R
+import com.example.plantcare.presentation.login_signup.components.LoginTab
+import com.example.plantcare.presentation.login_signup.components.SignupTab
+import com.example.plantcare.presentation.login_signup.utils.LoginIconButton
+import com.example.plantcare.presentation.login_signup.utils.LoginSignupTabItem
 import com.example.plantcare.presentation.main.MainViewModel
-import com.example.plantcare.presentation.signIn_singUp.components.LoginTab
-import com.example.plantcare.presentation.signIn_singUp.components.SignupTab
-import com.example.plantcare.presentation.signIn_singUp.utils.LoginIconButton
-import com.example.plantcare.presentation.signIn_singUp.utils.LoginSignupTabItem
 import com.example.plantcare.presentation.utils.Screens
 import com.example.plantcare.ui.theme.Facebook_color
 import com.example.plantcare.ui.theme.Google_color
@@ -49,7 +49,7 @@ import kotlinx.coroutines.launch
 fun LoginSignupScreen(
   navController: NavController,
   mainViewModel: MainViewModel,
-  viewModel: LoginSignupViewModel = hiltViewModel()
+  viewModel: AuthenticationViewModel = hiltViewModel()
 ) {
 
   val loginTextState = viewModel.loginEmailPassword.value
@@ -60,16 +60,16 @@ fun LoginSignupScreen(
   LaunchedEffect(key1 = true) {
     viewModel.eventFlow.collectLatest { event ->
       when (event) {
-        is LoginSignupUIEvent.NavigateToMainScreen -> {
-          navController.navigate(Screens.MainScreens.Home.route) {
+        is LoginSignupUIEvent.ShowText -> {
+          Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
+        }
+        is LoginSignupUIEvent.Navigate -> {
+          navController.navigate(event.screen.route) {
             popUpTo(Screens.LoginSignupScreen.route) {
               inclusive = true
             }
-            mainViewModel.setCurrentScreen(Screens.MainScreens.Home)
+            mainViewModel.setCurrentScreen(event.screen)
           }
-        }
-        is LoginSignupUIEvent.ShowText -> {
-          Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
         }
       }
     }

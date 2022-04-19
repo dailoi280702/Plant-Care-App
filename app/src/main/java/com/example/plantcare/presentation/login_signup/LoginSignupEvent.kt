@@ -1,4 +1,6 @@
-package com.example.plantcare.presentation.signIn_singUp
+package com.example.plantcare.presentation.login_signup
+
+import com.example.plantcare.presentation.utils.Screens
 
 sealed class LoginSignupEvent {
   data class EnterLoginEmail(val value: String): LoginSignupEvent()
@@ -11,11 +13,12 @@ sealed class LoginSignupEvent {
   object LoginWithFaceBook: LoginSignupEvent()
   object LoginWithGoogle: LoginSignupEvent()
   object LoginWithTwitter: LoginSignupEvent()
+  object SignOut: LoginSignupEvent()
 }
 
 sealed class LoginSignupUIEvent {
   data class ShowText(val message: String): LoginSignupUIEvent()
-  object NavigateToMainScreen: LoginSignupUIEvent()
+  data class Navigate(val screen: Screens): LoginSignupUIEvent()
 }
 
 sealed class EventType {

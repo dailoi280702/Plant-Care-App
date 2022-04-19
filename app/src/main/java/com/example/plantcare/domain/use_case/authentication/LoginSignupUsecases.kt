@@ -1,4 +1,4 @@
-package com.example.plantcare.domain.use_case.logIn_signUp
+package com.example.plantcare.domain.use_case.authentication
 
 data class LoginSignupUsecases (
   val loginWithEmailAndPassword: LoginWithEmailAndPassword,
@@ -6,5 +6,6 @@ data class LoginSignupUsecases (
   val loginWithFacebook: LoginWithFacebook,
   val loginWithTwitter: LoginWithTwitter,
   val signupWithEmailAndPassword: SignupWithEmailAndPassword,
-  val logout: Logout
+  val logout: Logout,
+  val isUserLogedin: IsUserLogedin
 )

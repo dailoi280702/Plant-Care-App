@@ -1,4 +1,4 @@
-package com.example.plantcare.presentation.signIn_singUp
+package com.example.plantcare.presentation.login_signup
 
 data class EmailPasswordState(
   val email: String = "",

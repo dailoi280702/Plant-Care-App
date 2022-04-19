@@ -1,4 +1,4 @@
-package com.example.plantcare.presentation.signIn_singUp.components
+package com.example.plantcare.presentation.login_signup.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,8 +9,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.runtime.Composable
@@ -31,17 +29,15 @@ import androidx.compose.ui.unit.dp
 import com.example.plantcare.R
 
 @Composable
-fun SignupTab(
+fun LoginTab(
   title: String,
   description: String,
   buttonText: String,
   email: String,
   password: String,
-  confirmPassword: String,
   focusManager: FocusManager,
   onEmailChange: (String) -> Unit,
   onPasswordChange: (String) -> Unit,
-  onConfirmPasswordChange: (String) -> Unit,
   onButtonClick: () -> Unit,
 ) {
   val showPassword = remember {
@@ -131,52 +127,13 @@ fun SignupTab(
         },
         keyboardOptions = KeyboardOptions(
           keyboardType = KeyboardType.Password,
-          imeAction = ImeAction.Next
-        ),
-        keyboardActions = KeyboardActions(
-          onNext = {
-            focusManager.moveFocus(FocusDirection.Down)
-          }
-        )
-      )
-      OutlinedTextField(
-        value = confirmPassword,
-        onValueChange = {
-          onConfirmPasswordChange(it)
-        },
-        modifier = Modifier
-          .fillMaxWidth(),
-        shape = RoundedCornerShape(8.dp),
-        label = { Text(text = "Confirm Password") },
-        placeholder = { Text(text = "Confirm Password") },
-        singleLine = true,
-        visualTransformation = if (showPassword.value) VisualTransformation.None else PasswordVisualTransformation(),
-        leadingIcon = {
-          Icon(
-            imageVector = Icons.Default.Lock,
-            contentDescription = "Password Icon",
-            tint = if (password != confirmPassword && confirmPassword.isNotBlank()) MaterialTheme.colors.error else MaterialTheme.colors.primary
-          )
-        },
-        trailingIcon = {
-          if (confirmPassword.isNotBlank()) {
-            Icon(
-              imageVector = if (confirmPassword == password) Icons.Default.Done else Icons.Default.Close,
-              contentDescription = "Confirm Password Icon",
-              tint = if (confirmPassword != password && confirmPassword.isNotBlank()) MaterialTheme.colors.error else MaterialTheme.colors.primary
-            )
-          }
-        },
-        keyboardOptions = KeyboardOptions(
-          keyboardType = KeyboardType.Password,
           imeAction = ImeAction.Done
         ),
         keyboardActions = KeyboardActions(
           onDone = {
             focusManager.clearFocus()
           }
-        ),
-        isError = confirmPassword != password && confirmPassword.isNotBlank()
+        )
       )
       Button(
         onClick = {

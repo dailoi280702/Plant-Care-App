@@ -1,10 +1,10 @@
-package com.example.plantcare.domain.use_case.logIn_signUp
+package com.example.plantcare.domain.use_case.authentication
 
-import com.example.plantcare.domain.repository.LoginSignupRepository
+import com.example.plantcare.domain.repository.AuthenticationRepository
 import com.example.plantcare.domain.utils.LoginSignupArgumentException
 
 class SignupWithEmailAndPassword(
-  private val repository: LoginSignupRepository
+  private val repository: AuthenticationRepository
 ) {
   @Throws(LoginSignupArgumentException::class)
   suspend operator fun invoke(

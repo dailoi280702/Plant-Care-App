@@ -5,19 +5,23 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.plantcare.presentation.home.HomeScreen
+import com.example.plantcare.presentation.login_signup.LoginSignupScreen
+import com.example.plantcare.presentation.login_signup.AuthenticationViewModel
 import com.example.plantcare.presentation.main.MainViewModel
 import com.example.plantcare.presentation.plants.PlantsScreen
 import com.example.plantcare.presentation.settings.SettingsScreen
-import com.example.plantcare.presentation.signIn_singUp.LoginSignupScreen
 import com.example.plantcare.presentation.tasks.TasksScreen
 import com.example.plantcare.presentation.utils.Screens
 
 @Composable
 fun NavGraph(
   navController: NavHostController,
-  mainViewModel: MainViewModel
+  mainViewModel: MainViewModel,
+  authenticationViewModel: AuthenticationViewModel
 ) {
-  NavHost(navController = navController, startDestination = Screens.LoginSignupScreen.route) {
+  val startDest = if (authenticationViewModel.isUserLogedin()) Screens.MainScreens.Home else Screens.LoginSignupScreen
+  mainViewModel.setCurrentScreen(startDest)
+  NavHost(navController = navController, startDestination = startDest.route) {
     composable(Screens.MainScreens.Home.route) {
       HomeScreen(navController = navController, mainViewModel = mainViewModel)
     }
@@ -28,10 +32,10 @@ fun NavGraph(
       TasksScreen(navController = navController, mainViewModel = mainViewModel)
     }
     composable(Screens.MainScreens.Settings.route) {
-      SettingsScreen(navController = navController, mainViewModel = mainViewModel)
+      SettingsScreen(navController = navController, mainViewModel = mainViewModel, authenticationViewModel = authenticationViewModel)
     }
     composable(Screens.LoginSignupScreen.route) {
-      LoginSignupScreen(navController = navController, mainViewModel = mainViewModel)
+      LoginSignupScreen(navController = navController, mainViewModel = mainViewModel, viewModel = authenticationViewModel)
     }
   }
 }

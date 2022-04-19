@@ -1,15 +1,15 @@
 package com.example.plantcare.data.repository
 
-import com.example.plantcare.domain.repository.LoginSignupRepository
-import com.google.android.gms.tasks.Task
+import android.util.Log
+import com.example.plantcare.domain.repository.AuthenticationRepository
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
-import kotlin.coroutines.resumeWithException
+import kotlinx.coroutines.withContext
 
-class LoginSignupRepositoryImpl(
+class AuthenticationRepositoryImpl(
   private val auth: FirebaseAuth
-) : LoginSignupRepository {
+) : AuthenticationRepository {
 
   override suspend fun signupWithEmailAndPassword(
     email: String,
@@ -40,5 +40,10 @@ class LoginSignupRepositoryImpl(
 
   override suspend fun logout() {
     auth.signOut()
+    Log.d("check_logout_tag", "USER LOGGED OUT")
+  }
+
+  override fun isUserLogedin(): Boolean {
+    return auth.currentUser != null
   }
 }
