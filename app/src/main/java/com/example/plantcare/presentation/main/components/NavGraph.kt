@@ -5,8 +5,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.plantcare.presentation.home.HomeScreen
-import com.example.plantcare.presentation.login_signup.LoginSignupScreen
 import com.example.plantcare.presentation.login_signup.AuthenticationViewModel
+import com.example.plantcare.presentation.login_signup.LoginSignupScreen
 import com.example.plantcare.presentation.main.MainViewModel
 import com.example.plantcare.presentation.plants.PlantsScreen
 import com.example.plantcare.presentation.settings.SettingsScreen
@@ -32,10 +32,12 @@ fun NavGraph(
       TasksScreen(navController = navController, mainViewModel = mainViewModel)
     }
     composable(Screens.MainScreens.Settings.route) {
-      SettingsScreen(navController = navController, mainViewModel = mainViewModel, authenticationViewModel = authenticationViewModel)
+//      SettingsScreen(navController = navController, mainViewModel = mainViewModel, authenticationViewModel = authenticationViewModel)
+      SettingsScreen(navController = navController, mainViewModel = mainViewModel)
     }
     composable(Screens.LoginSignupScreen.route) {
-      LoginSignupScreen(navController = navController, mainViewModel = mainViewModel, viewModel = authenticationViewModel)
+//      LoginSignupScreen(navController = navController, mainViewModel = mainViewModel, viewModel = authenticationViewModel)
+      LoginSignupScreen(navController = navController, mainViewModel = mainViewModel)
     }
   }
 }

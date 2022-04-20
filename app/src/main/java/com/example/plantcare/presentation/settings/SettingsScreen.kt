@@ -10,6 +10,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.plantcare.presentation.login_signup.AuthenticationViewModel
 import com.example.plantcare.presentation.login_signup.LoginSignupEvent
@@ -24,7 +25,7 @@ import kotlinx.coroutines.flow.collectLatest
 fun SettingsScreen(
   navController: NavController,
   mainViewModel: MainViewModel,
-  authenticationViewModel: AuthenticationViewModel
+  authenticationViewModel: AuthenticationViewModel = hiltViewModel()
 ) {
   val context = LocalContext.current
 
