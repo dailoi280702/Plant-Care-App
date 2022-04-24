@@ -35,12 +35,12 @@ fun PlantsScreen(
   val state = viewModel.state.value
   val fab: @Composable () -> Unit = {
     ExtendedFloatingActionButton(
-      text = { Text(text = "Add plant") },
+      text = { Text(text = "new plant") },
       onClick = { /*TODO*/ },
       icon = {
         Icon(
           imageVector = Icons.Default.Add,
-          contentDescription = "Add Plant"
+          contentDescription = "new plant"
         )
       }
     )
@@ -59,7 +59,7 @@ fun PlantsScreen(
       verticalAlignment = Alignment.CenterVertically
     ) {
       Text(
-        modifier = Modifier.padding(horizontal = 4.dp),
+        modifier = Modifier.padding(horizontal = 8.dp),
         text = "Your plants",
         style = MaterialTheme.typography.h5
       )
@@ -91,13 +91,12 @@ fun PlantsScreen(
     }
     Spacer(modifier = Modifier.height(8.dp))
     LazyVerticalGrid(
-      cells = GridCells.Fixed(2),
-      modifier = Modifier.padding(bottom = 50.dp)
+      cells = GridCells.Fixed(2)
     ) {
       items(10) {
         PlantCard(
-          imageURL = "https://images.pexels.com/photos/8160274/pexels-photo-8160274.jpeg?auto=compress&cs=tinysrgb&dpr=3&h=750&w=1260",
-          name = "A plant",
+          imageURL = "https://images.pexels.com/photos/1974508/pexels-photo-1974508.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+          name = "my plant",
           dateAdded = 1650787172087,
           modifier = Modifier
             .fillMaxWidth()
@@ -109,6 +108,12 @@ fun PlantsScreen(
                 .show()
             }
         )
+      }
+      item() {
+        Spacer(modifier = Modifier.fillMaxWidth().height(120.dp))
+      }
+      item() {
+        Spacer(modifier = Modifier.fillMaxWidth().height(120.dp))
       }
     }
   }

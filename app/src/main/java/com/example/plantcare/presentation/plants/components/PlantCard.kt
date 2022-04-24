@@ -53,14 +53,15 @@ fun PlantCard(
       }
       Text(
         text = name,
-        modifier = Modifier.padding(horizontal = 8.dp),
+        modifier = Modifier.padding(horizontal = 16.dp),
         fontSize = MaterialTheme.typography.h6.fontSize,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis
       )
       Text(
         text = millisToDateString(dateAdded),
-        modifier = Modifier.padding(horizontal = 8.dp),
+        modifier = Modifier.padding(horizontal = 16.dp),
+        fontSize = MaterialTheme.typography.body2.fontSize,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
         color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f)

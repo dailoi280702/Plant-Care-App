@@ -1,11 +1,12 @@
 package com.example.plantcare.presentation.main.components
 
-import androidx.compose.material.BottomNavigation
-import androidx.compose.material.BottomNavigationItem
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.plantcare.presentation.utils.Screens
@@ -27,12 +28,19 @@ fun BottomNav(navController: NavController) {
     val currentRoute = backStackEntry?.destination?.route
     items.forEach { item ->
       BottomNavigationItem(
-        icon = { Icon(imageVector = item.icon, contentDescription = item.title)},
-//        label = { Text(text = item.title,
-//          fontSize = 9.sp) },
+        icon = {
+          Icon(
+            painter = painterResource(id = if (currentRoute == item.route) item.icon else item.outline_icon),
+            contentDescription = item.title,
+            modifier = Modifier.size(24.dp)
+          )
+        },
         selectedContentColor = MaterialTheme.colors.primary,
         unselectedContentColor = MaterialTheme.colors.onSurface.copy(0.5f),
-//        alwaysShowLabel = true,
+        label = {
+          Text(text = item.title)
+        },
+        alwaysShowLabel = true,
         selected = currentRoute == item.route,
         onClick = {
           navController.navigate(item.route) {
