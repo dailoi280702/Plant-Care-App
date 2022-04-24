@@ -30,8 +30,14 @@ fun AppScaffold(
     scaffoldState = scaffoldState,
     bottomBar = {
       bottomBar()
-    }
+    },
+    floatingActionButton = viewModel.floatingActionButton.value
   ) {
-    NavGraph(navController = navController, mainViewModel = viewModel, authenticationViewModel = authenticationViewModel)
+    NavGraph(
+      navController = navController,
+      scaffoldState = scaffoldState,
+      mainViewModel = viewModel,
+      authenticationViewModel = authenticationViewModel
+    )
   }
 }

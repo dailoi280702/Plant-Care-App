@@ -6,7 +6,5 @@ import com.example.plantcare.domain.repository.PlantRepository
 class UpdatePlant(
   private val repository: PlantRepository
 ) {
-  suspend operator fun invoke(plant: Plant) {
-    return repository.updatePlant(plant = plant)
-  }
+  suspend operator fun invoke(plant: Plant) = repository.updatePlant(plant = plant)
 }
