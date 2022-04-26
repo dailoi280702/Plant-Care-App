@@ -1,4 +1,4 @@
-package com.example.plantcare.presentation.signIn_singUp.utils
+package com.example.plantcare.presentation.login_signup.utils
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth

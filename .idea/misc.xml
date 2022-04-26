@@ -3,6 +3,11 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/dailo/OneDrive/Documents/git-respo/Plant-Care-App/app/src/main/res/drawable/ic_baseline_home_24.xml" value="0.1105" />
+        <entry key="..\:/Users/dailo/OneDrive/Documents/git-respo/Plant-Care-App/app/src/main/res/drawable/ic_baseline_settings_24.xml" value="0.15" />
+        <entry key="..\:/Users/dailo/OneDrive/Documents/git-respo/Plant-Care-App/app/src/main/res/drawable/ic_home.xml" value="0.15" />
+        <entry key="..\:/Users/dailo/OneDrive/Documents/git-respo/Plant-Care-App/app/src/main/res/drawable/ic_outline_home_24.xml" value="0.1105" />
+        <entry key="..\:/Users/dailo/OneDrive/Documents/git-respo/Plant-Care-App/app/src/main/res/drawable/ic_outline_settings_24.xml" value="0.1105" />
         <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/ic_baseline_remove_red_eye_24.xml" value="0.1295" />
         <entry key="app/src/main/res/drawable/ic_eye_off_outline.xml" value="0.1" />
