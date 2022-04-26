@@ -21,6 +21,7 @@ import androidx.navigation.NavController
 import com.example.plantcare.presentation.main.MainViewModel
 import com.example.plantcare.presentation.plants.components.PlantCard
 import com.example.plantcare.presentation.plants.components.SearchAndFilterSession
+import com.example.plantcare.ui.theme.utils.customColors
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -35,8 +36,15 @@ fun PlantsScreen(
   val state = viewModel.state.value
   val fab: @Composable () -> Unit = {
     ExtendedFloatingActionButton(
-      modifier = Modifier.height(56.dp),
-      text = { Text(text = "new plant") },
+      modifier = Modifier
+        .height(56.dp),
+      text = {
+        Text(
+          text = "new plant",
+          color = MaterialTheme.customColors.onPrimaryContainer,
+          fontSize = MaterialTheme.typography.body1.fontSize
+        )
+      },
       onClick = {
         /*TODO*/
         viewModel.testAddPlant()
@@ -44,10 +52,12 @@ fun PlantsScreen(
       icon = {
         Icon(
           imageVector = Icons.Default.Add,
-          contentDescription = "new plant"
+          contentDescription = "new plant",
+          tint = MaterialTheme.customColors.onPrimaryContainer
         )
       },
-      shape = RoundedCornerShape(16.dp)
+      shape = RoundedCornerShape(16.dp),
+      backgroundColor = MaterialTheme.customColors.primaryContainer
     )
   }
 
@@ -59,19 +69,22 @@ fun PlantsScreen(
 //      .padding(8.dp)
   ) {
     Row(
-      modifier = Modifier.fillMaxWidth().height(64.dp),
+      modifier = Modifier
+        .fillMaxWidth()
+        .height(64.dp),
       horizontalArrangement = Arrangement.SpaceBetween,
       verticalAlignment = Alignment.CenterVertically
     ) {
       Text(
-        modifier = Modifier.padding(horizontal = 8.dp),
+        modifier = Modifier.padding(horizontal = 16.dp),
         text = "Your plants",
         style = MaterialTheme.typography.h5
       )
       IconButton(
         onClick = {
           viewModel.onEvent(PlantsScreenEvent.ToggleOrderSection)
-        }
+        },
+        modifier = Modifier.padding(horizontal = 16.dp),
       ) {
         Icon(
           imageVector = Icons.Default.ArrowDropDown,
@@ -99,22 +112,6 @@ fun PlantsScreen(
       cells = GridCells.Fixed(2),
       modifier = Modifier.padding(horizontal = 8.dp)
     ) {
-//      items(10) {
-//        PlantCard(
-//          imageURL = "https://images.pexels.com/photos/1974508/pexels-photo-1974508.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-//          name = "my plant",
-//          dateAdded = 1650787172087,
-//          modifier = Modifier
-//            .fillMaxWidth()
-//            .padding(8.dp)
-//            .width(200.dp)
-//            .clickable {
-//              Toast
-//                .makeText(context, "card clicked", Toast.LENGTH_LONG)
-//                .show()
-//            }
-//        )
-//      }
       items(items = viewModel.state.value.plants) { item ->
         PlantCard(
           imageURL = item.imageURL,

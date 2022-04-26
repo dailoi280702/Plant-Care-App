@@ -27,6 +27,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.plantcare.R
+import com.example.plantcare.ui.theme.utils.customColors
 
 @Composable
 fun LoginTab(
@@ -55,14 +56,16 @@ fun LoginTab(
       fontSize = MaterialTheme.typography.h6.fontSize,
       fontWeight = FontWeight.Bold,
       textAlign = TextAlign.Center,
-      modifier = Modifier.padding(8.dp)
+      modifier = Modifier.padding(8.dp),
+      color = MaterialTheme.customColors.onSurface
     )
     Text(
       text = description,
       fontSize = MaterialTheme.typography.body2.fontSize,
       textAlign = TextAlign.Center,
-      color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
-      modifier = Modifier.padding(horizontal = 8.dp)
+//      color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
+      modifier = Modifier.padding(horizontal = 8.dp),
+      color = MaterialTheme.customColors.onSurfaceVariant
     )
     Column(
       modifier = Modifier
@@ -142,12 +145,13 @@ fun LoginTab(
         Modifier
           .padding(top = 8.dp)
           .fillMaxWidth(),
-        shape = RoundedCornerShape(8.dp)
+        shape = RoundedCornerShape(50)
       ) {
         Text(
           text = buttonText,
           fontSize = MaterialTheme.typography.body1.fontSize,
-          modifier = Modifier.padding(8.dp)
+          modifier = Modifier.padding(8.dp),
+          color = MaterialTheme.customColors.onPrimary
         )
       }
     }

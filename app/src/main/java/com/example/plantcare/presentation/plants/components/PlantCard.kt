@@ -15,6 +15,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
+import com.example.plantcare.ui.theme.utils.customColors
 import java.text.SimpleDateFormat
 
 @Composable
@@ -33,6 +34,7 @@ fun PlantCard(
     modifier = modifier,
     elevation = 8.dp,
     shape = RoundedCornerShape(12.dp),
+    backgroundColor = MaterialTheme.colors.surface
   ) {
     Column(
       verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -54,19 +56,21 @@ fun PlantCard(
         }
       }
       Text(
-        text = name?: "Error",
+        text = name ?: "Error",
         modifier = Modifier.padding(horizontal = 16.dp),
         fontSize = MaterialTheme.typography.h6.fontSize,
         maxLines = 1,
-        overflow = TextOverflow.Ellipsis
+        overflow = TextOverflow.Ellipsis,
+        color = MaterialTheme.customColors.onSurface
       )
       Text(
-        text = millisToDateString(dateAdded?: System.currentTimeMillis()),
+        text = millisToDateString(dateAdded ?: System.currentTimeMillis()),
         modifier = Modifier.padding(horizontal = 16.dp),
         fontSize = MaterialTheme.typography.body2.fontSize,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
-        color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f)
+//        color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f)
+        color = MaterialTheme.customColors.onSurfaceVariant
       )
       Spacer(modifier = Modifier.height(4.dp))
     }

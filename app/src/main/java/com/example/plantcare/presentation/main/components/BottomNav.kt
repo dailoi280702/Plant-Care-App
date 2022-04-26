@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.plantcare.presentation.utils.Screens
+import com.example.plantcare.ui.theme.utils.customColors
 
 
 @Composable
@@ -46,7 +47,7 @@ fun BottomNav(navController: NavController) {
               Surface(
                 modifier = Modifier.size(width = 64.dp, height = 32.dp),
                 shape = RoundedCornerShape(16.dp),
-                color = MaterialTheme.colors.secondary
+                color = MaterialTheme.customColors.secondaryContainer
               ) {
               }
             }
@@ -57,15 +58,17 @@ fun BottomNav(navController: NavController) {
             )
           }
         },
-        selectedContentColor = MaterialTheme.colors.onSurface,
-        unselectedContentColor = MaterialTheme.colors.onSurface.copy(0.5f),
+        selectedContentColor = MaterialTheme.customColors.onSecondaryContainer,
+//        unselectedContentColor = MaterialTheme.colors.onSurface.copy(0.5f),
+//        unselectedContentColor = MaterialTheme.colors.onSurface,
+        unselectedContentColor = MaterialTheme.customColors.onSurfaceVariant,
         label = {
           Text(
             text = item.title,
             fontWeight = if (currentRoute == item.route) FontWeight.Bold else FontWeight.Normal
           )
         },
-        alwaysShowLabel = true,
+        alwaysShowLabel = false,
         selected = currentRoute == item.route,
         onClick = {
           navController.navigate(item.route) {

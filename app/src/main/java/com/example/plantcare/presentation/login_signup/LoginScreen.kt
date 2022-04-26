@@ -37,6 +37,7 @@ import com.example.plantcare.presentation.utils.Screens
 import com.example.plantcare.ui.theme.Facebook_color
 import com.example.plantcare.ui.theme.Google_color
 import com.example.plantcare.ui.theme.Twitter_color
+import com.example.plantcare.ui.theme.utils.customColors
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.pagerTabIndicatorOffset
@@ -213,7 +214,8 @@ fun LoginSignupScreen(
             modifier = Modifier
               .padding(top = 12.dp)
               .fillMaxWidth()
-              .background(Color(0xFF4d8076).copy(alpha = 0.05f))
+//              .background(Color(0xFF4d8076).copy(alpha = 0.05f))
+              .background(MaterialTheme.customColors.surfaceVariant)
               .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp)
