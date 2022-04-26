@@ -1,12 +1,12 @@
 package com.example.plantcare.presentation.plants
 
-import android.widget.Toast
 import androidx.compose.animation.*
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyVerticalGrid
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -35,14 +35,19 @@ fun PlantsScreen(
   val state = viewModel.state.value
   val fab: @Composable () -> Unit = {
     ExtendedFloatingActionButton(
+      modifier = Modifier.height(56.dp),
       text = { Text(text = "new plant") },
-      onClick = { /*TODO*/ },
+      onClick = {
+        /*TODO*/
+        viewModel.testAddPlant()
+      },
       icon = {
         Icon(
           imageVector = Icons.Default.Add,
           contentDescription = "new plant"
         )
-      }
+      },
+      shape = RoundedCornerShape(16.dp)
     )
   }
 
@@ -51,10 +56,10 @@ fun PlantsScreen(
   Column(
     modifier = Modifier
       .fillMaxSize()
-      .padding(8.dp)
+//      .padding(8.dp)
   ) {
     Row(
-      modifier = Modifier.fillMaxWidth(),
+      modifier = Modifier.fillMaxWidth().height(64.dp),
       horizontalArrangement = Arrangement.SpaceBetween,
       verticalAlignment = Alignment.CenterVertically
     ) {
@@ -89,31 +94,56 @@ fun PlantsScreen(
         }
       )
     }
-    Spacer(modifier = Modifier.height(8.dp))
+//    Spacer(modifier = Modifier.height(8.dp))
     LazyVerticalGrid(
-      cells = GridCells.Fixed(2)
+      cells = GridCells.Fixed(2),
+      modifier = Modifier.padding(horizontal = 8.dp)
     ) {
-      items(10) {
+//      items(10) {
+//        PlantCard(
+//          imageURL = "https://images.pexels.com/photos/1974508/pexels-photo-1974508.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+//          name = "my plant",
+//          dateAdded = 1650787172087,
+//          modifier = Modifier
+//            .fillMaxWidth()
+//            .padding(8.dp)
+//            .width(200.dp)
+//            .clickable {
+//              Toast
+//                .makeText(context, "card clicked", Toast.LENGTH_LONG)
+//                .show()
+//            }
+//        )
+//      }
+      items(items = viewModel.state.value.plants) { item ->
         PlantCard(
-          imageURL = "https://images.pexels.com/photos/1974508/pexels-photo-1974508.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-          name = "my plant",
-          dateAdded = 1650787172087,
+          imageURL = item.imageURL,
+          name = item.name,
+          dateAdded = item.dateAdded,
           modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp)
+            .padding(4.dp)
             .width(200.dp)
-            .clickable {
-              Toast
-                .makeText(context, "card clicked", Toast.LENGTH_LONG)
-                .show()
-            }
+//            .clickable {
+//              Toast
+//                .makeText(context, "card clicked", Toast.LENGTH_LONG)
+//                .show()
+//            }
         )
       }
       item() {
-        Spacer(modifier = Modifier.fillMaxWidth().height(120.dp))
+        Spacer(
+          modifier = Modifier
+            .fillMaxWidth()
+            .height(160.dp)
+        )
       }
       item() {
-        Spacer(modifier = Modifier.fillMaxWidth().height(120.dp))
+        Spacer(
+          modifier = Modifier
+            .fillMaxWidth()
+            .height(160.dp)
+        )
       }
     }
   }

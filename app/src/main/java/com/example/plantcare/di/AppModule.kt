@@ -7,8 +7,8 @@ import com.example.plantcare.domain.repository.PlantRepository
 import com.example.plantcare.domain.use_case.authentication.*
 import com.example.plantcare.domain.use_case.plant.*
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.FirebaseFirestore
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -20,13 +20,15 @@ import javax.inject.Singleton
 object AppModule {
   @Provides
   @Singleton
-  fun provideAuth(): FirebaseAuth{
-    return Firebase.auth
-  }
+  fun provideAuth() = FirebaseAuth.getInstance()
 
   @Provides
   @Singleton
-  fun provideLoginSignupRepository(auth: FirebaseAuth) : AuthenticationRepository {
+  fun provideFireStore() = FirebaseFirestore.getInstance()
+
+  @Provides
+  @Singleton
+  fun provideLoginSignupRepository(auth: FirebaseAuth): AuthenticationRepository {
     return AuthenticationRepositoryImpl(auth)
   }
 
@@ -52,8 +54,15 @@ object AppModule {
 
   @Provides
   @Singleton
-  fun providePlantRepository(userID: String?): PlantRepository {
-    return PlantRespositoryImpl(userID = userID)
+  fun providePlantsRef(
+    db: FirebaseFirestore,
+    userID: String?
+  ) = db.collection("test_plants").document(userID ?: "no_one")
+
+  @Provides
+  @Singleton
+  fun providePlantRepository(plantRef: DocumentReference): PlantRepository {
+    return PlantRespositoryImpl(plantRef = plantRef)
   }
 
   @Provides

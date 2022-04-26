@@ -2,6 +2,7 @@ package com.example.plantcare.presentation.plants.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
@@ -18,9 +19,9 @@ import java.text.SimpleDateFormat
 
 @Composable
 fun PlantCard(
-  imageURL: String,
-  name: String,
-  dateAdded: Long,
+  imageURL: String?,
+  name: String?,
+  dateAdded: Long?,
   modifier: Modifier,
 ) {
 
@@ -31,6 +32,7 @@ fun PlantCard(
   Card(
     modifier = modifier,
     elevation = 8.dp,
+    shape = RoundedCornerShape(12.dp),
   ) {
     Column(
       verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -52,14 +54,14 @@ fun PlantCard(
         }
       }
       Text(
-        text = name,
+        text = name?: "Error",
         modifier = Modifier.padding(horizontal = 16.dp),
         fontSize = MaterialTheme.typography.h6.fontSize,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis
       )
       Text(
-        text = millisToDateString(dateAdded),
+        text = millisToDateString(dateAdded?: System.currentTimeMillis()),
         modifier = Modifier.padding(horizontal = 16.dp),
         fontSize = MaterialTheme.typography.body2.fontSize,
         maxLines = 1,
