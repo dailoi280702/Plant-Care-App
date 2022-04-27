@@ -3,8 +3,11 @@ package com.example.plantcare.presentation.main.components
 import androidx.compose.material.ScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
+import com.example.plantcare.presentation.add_edit_plant.AddEditPlantScreen
 import com.example.plantcare.presentation.home.HomeScreen
 import com.example.plantcare.presentation.login_signup.AuthenticationViewModel
 import com.example.plantcare.presentation.login_signup.LoginSignupScreen
@@ -52,6 +55,22 @@ fun NavGraph(
     }
     composable(Screens.LoginSignupScreen.route) {
       LoginSignupScreen(
+        navController = navController,
+        mainViewModel = mainViewModel
+      )
+    }
+    composable(
+      route = Screens.AddPlantScreen.route + "?plantId={plantId}",
+      arguments = listOf(
+        navArgument(
+          name = "plantId"
+        ) {
+          type = NavType.StringType
+          defaultValue = ""
+        }
+      )
+    ) {
+      AddEditPlantScreen(
         navController = navController,
         mainViewModel = mainViewModel
       )
