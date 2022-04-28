@@ -1,6 +1,6 @@
 package com.example.plantcare.presentation.login_signup
 
-import com.example.plantcare.presentation.utils.Screens
+import com.example.plantcare.presentation.main.utils.Screens
 
 sealed class LoginSignupEvent {
   data class EnterLoginEmail(val value: String): LoginSignupEvent()

@@ -15,7 +15,7 @@ import com.example.plantcare.presentation.main.MainViewModel
 import com.example.plantcare.presentation.plants.PlantsScreen
 import com.example.plantcare.presentation.settings.SettingsScreen
 import com.example.plantcare.presentation.tasks.TasksScreen
-import com.example.plantcare.presentation.utils.Screens
+import com.example.plantcare.presentation.main.utils.Screens
 
 @Composable
 fun NavGraph(

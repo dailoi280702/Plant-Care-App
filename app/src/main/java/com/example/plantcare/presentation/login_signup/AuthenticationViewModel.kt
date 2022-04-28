@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.plantcare.domain.use_case.authentication.LoginSignupUsecases
 import com.example.plantcare.domain.utils.LoginSignupArgumentException
-import com.example.plantcare.presentation.utils.Screens
+import com.example.plantcare.presentation.main.utils.Screens
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow

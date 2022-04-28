@@ -33,7 +33,7 @@ import com.example.plantcare.presentation.login_signup.components.SignupTab
 import com.example.plantcare.presentation.login_signup.utils.LoginIconButton
 import com.example.plantcare.presentation.login_signup.utils.LoginSignupTabItem
 import com.example.plantcare.presentation.main.MainViewModel
-import com.example.plantcare.presentation.utils.Screens
+import com.example.plantcare.presentation.main.utils.Screens
 import com.example.plantcare.ui.theme.Facebook_color
 import com.example.plantcare.ui.theme.Google_color
 import com.example.plantcare.ui.theme.Twitter_color

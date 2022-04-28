@@ -17,7 +17,7 @@ import com.example.plantcare.presentation.login_signup.AuthenticationViewModel
 import com.example.plantcare.presentation.main.MainViewModel
 import com.example.plantcare.presentation.main.components.BottomNav
 import com.example.plantcare.presentation.main.components.NavGraph
-import com.example.plantcare.presentation.utils.Screens
+import com.example.plantcare.presentation.main.utils.Screens
 import com.example.plantcare.ui.theme.utils.customColors
 
 @Composable

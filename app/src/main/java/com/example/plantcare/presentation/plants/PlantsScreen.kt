@@ -19,9 +19,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.plantcare.R
 import com.example.plantcare.presentation.main.MainViewModel
+import com.example.plantcare.presentation.main.utils.Screens
 import com.example.plantcare.presentation.plants.components.PlantCard
 import com.example.plantcare.presentation.plants.components.SearchAndFilterSession
-import com.example.plantcare.presentation.utils.Screens
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -83,7 +83,6 @@ fun PlantsScreen(
         }
       )
     }
-//    Spacer(modifier = Modifier.height(8.dp))
     LazyVerticalGrid(
       cells = GridCells.Fixed(2),
       modifier = Modifier.padding(horizontal = 8.dp)

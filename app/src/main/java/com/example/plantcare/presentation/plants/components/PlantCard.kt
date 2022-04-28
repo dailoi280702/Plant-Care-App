@@ -26,8 +26,7 @@ fun PlantCard(
   modifier: Modifier,
 ) {
 
-  val painter =
-    rememberAsyncImagePainter(model = imageURL)
+  val painter = rememberAsyncImagePainter(model = imageURL)
   val painterState = painter.state
 
   Card(

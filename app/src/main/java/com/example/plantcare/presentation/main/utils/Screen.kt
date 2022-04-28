@@ -1,4 +1,4 @@
-package com.example.plantcare.presentation.utils
+package com.example.plantcare.presentation.main.utils
 
 import com.example.plantcare.R
 

@@ -16,7 +16,7 @@ import com.example.plantcare.presentation.login_signup.AuthenticationViewModel
 import com.example.plantcare.presentation.login_signup.LoginSignupEvent
 import com.example.plantcare.presentation.login_signup.LoginSignupUIEvent
 import com.example.plantcare.presentation.main.MainViewModel
-import com.example.plantcare.presentation.utils.Screens
+import com.example.plantcare.presentation.main.utils.Screens
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.flow.collectLatest
