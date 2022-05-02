@@ -33,7 +33,7 @@ import com.example.plantcare.presentation.login_signup.components.SignupTab
 import com.example.plantcare.presentation.login_signup.utils.LoginIconButton
 import com.example.plantcare.presentation.login_signup.utils.LoginSignupTabItem
 import com.example.plantcare.presentation.main.MainViewModel
-import com.example.plantcare.presentation.utils.Screens
+import com.example.plantcare.presentation.main.utils.Screens
 import com.example.plantcare.ui.theme.Facebook_color
 import com.example.plantcare.ui.theme.Google_color
 import com.example.plantcare.ui.theme.Twitter_color
@@ -214,7 +214,6 @@ fun LoginSignupScreen(
             modifier = Modifier
               .padding(top = 12.dp)
               .fillMaxWidth()
-//              .background(Color(0xFF4d8076).copy(alpha = 0.05f))
               .background(MaterialTheme.customColors.surfaceVariant)
               .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,

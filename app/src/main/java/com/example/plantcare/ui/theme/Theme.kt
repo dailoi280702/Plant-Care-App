@@ -11,9 +11,6 @@ import com.example.plantcare.ui.theme.utils.darkCustomColors
 import com.example.plantcare.ui.theme.utils.lightCustomColors
 
 private val DarkColorPalette = darkColors(
-//  primary = Green_primary,
-//  primaryVariant = Green_variant,
-//  secondary = Teal200
   primary = LightGreen80,
   primaryVariant = LightGreen30,
   secondary = Lime80,
@@ -24,12 +21,11 @@ private val DarkColorPalette = darkColors(
   onSecondary = Gray20,
   onBackground = Gray90,
   onSurface = Gray90,
+  error = Red80,
+  onError = Red20
 )
 
 private val LightColorPalette = lightColors(
-//  primary = Green_primary,
-//  primaryVariant = Green_variant,
-//  secondary = Teal200
   primary = LightGreen40,
   primaryVariant = LightGreen90,
   secondary = Lime40,
@@ -40,16 +36,7 @@ private val LightColorPalette = lightColors(
   onSecondary = White,
   onBackground = Gray10,
   onSurface = Gray10,
-
-
-  /* Other default colors to override
-    background = Color.White,
-    surface = Color.White,
-    onPrimary = Color.White,
-    onSecondary = Color.Black,
-    onBackground = Color.Black,
-    onSurface = Color.Black,
-    */
+  error = Red40,
 )
 
 private val LightColorPaletteCustom = lightCustomColors()

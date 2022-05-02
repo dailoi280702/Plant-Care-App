@@ -1,5 +1,6 @@
 package com.example.plantcare.presentation.plants.components
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -15,19 +16,17 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
+import com.example.plantcare.domain.model.Plant
 import com.example.plantcare.ui.theme.utils.customColors
 import java.text.SimpleDateFormat
 
 @Composable
 fun PlantCard(
-  imageURL: String?,
-  name: String?,
-  dateAdded: Long?,
+  plant: Plant,
   modifier: Modifier,
 ) {
 
-  val painter =
-    rememberAsyncImagePainter(model = imageURL)
+  val painter = rememberAsyncImagePainter( model = plant.imageURL )
   val painterState = painter.state
 
   Card(
@@ -41,8 +40,8 @@ fun PlantCard(
     ) {
       Box(
         modifier = Modifier
-          .height(200.dp)
-          .fillMaxWidth(),
+          .aspectRatio(0.8f)
+        ,
         contentAlignment = Alignment.Center
       ) {
         Image(
@@ -51,25 +50,38 @@ fun PlantCard(
           modifier = Modifier.fillMaxSize(),
           contentScale = ContentScale.Crop
         )
-        if (painterState is AsyncImagePainter.State.Loading) {
-          CircularProgressIndicator()
+        when (painterState) {
+          is AsyncImagePainter.State.Loading -> {
+              CircularProgressIndicator()
+          }
+          is AsyncImagePainter.State.Success -> {
+          }
+          is AsyncImagePainter.State.Error -> {
+            Text(
+              text = "Error while loading image, try again later!",
+              color = MaterialTheme.customColors.error,
+              modifier = Modifier.padding(16.dp)
+            )
+          }
+          is AsyncImagePainter.State.Empty -> {
+            Text(text = "Nothing to show!")
+          }
         }
       }
       Text(
-        text = name ?: "Error",
+        text = plant.name!!,
         modifier = Modifier.padding(horizontal = 16.dp),
-        fontSize = MaterialTheme.typography.h6.fontSize,
+        fontSize = MaterialTheme.typography.h5.fontSize,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
         color = MaterialTheme.customColors.onSurface
       )
       Text(
-        text = millisToDateString(dateAdded ?: System.currentTimeMillis()),
+        text = millisToDateString(plant.dateAdded ?: System.currentTimeMillis()),
         modifier = Modifier.padding(horizontal = 16.dp),
         fontSize = MaterialTheme.typography.body2.fontSize,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
-//        color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f)
         color = MaterialTheme.customColors.onSurfaceVariant
       )
       Spacer(modifier = Modifier.height(4.dp))
@@ -77,6 +89,7 @@ fun PlantCard(
   }
 }
 
+@SuppressLint("SimpleDateFormat")
 fun millisToDateString(time: Long): String {
   val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy")
   return simpleDateFormat.format(time)

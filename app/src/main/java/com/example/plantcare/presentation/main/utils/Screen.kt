@@ -1,4 +1,4 @@
-package com.example.plantcare.presentation.utils
+package com.example.plantcare.presentation.main.utils
 
 import com.example.plantcare.R
 
@@ -17,15 +17,15 @@ sealed class Screens(val route: String) {
     object Home : MainScreens(
       route = "home",
       title = "Home",
-      icon = R.drawable.ic_baseline_home_24,
-      outline_icon = R.drawable.ic_outline_home_24
+      icon = R.drawable.ic_home_simple,
+      outline_icon = R.drawable.ic_home_outline_simple
     )
 
     object Plants : MainScreens(
       route = "plants",
       title = "Plants",
-      icon = R.drawable.ic_plant,
-      outline_icon = R.drawable.ic_plant_outline
+      icon = R.drawable.ic_leaf,
+      outline_icon = R.drawable.ic_leaf_outline
     )
 
     object Tasks : MainScreens(
@@ -35,8 +35,7 @@ sealed class Screens(val route: String) {
       outline_icon = R.drawable.ic_todo_outline
     )
 
-    object Settings :
-      MainScreens(
+    object Settings : MainScreens(
         route = "settings",
         title = "Settings",
         icon = R.drawable.ic_baseline_settings_24,
