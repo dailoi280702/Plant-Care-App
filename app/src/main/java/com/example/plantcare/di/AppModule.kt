@@ -1,7 +1,7 @@
 package com.example.plantcare.di
 
 import com.example.plantcare.data.repository.AuthenticationRepositoryImpl
-import com.example.plantcare.data.repository.PlantRespositoryImpl
+import com.example.plantcare.data.repository.PlantRepositoryImpl
 import com.example.plantcare.domain.repository.AuthenticationRepository
 import com.example.plantcare.domain.repository.PlantRepository
 import com.example.plantcare.domain.use_case.authentication.*
@@ -9,6 +9,9 @@ import com.example.plantcare.domain.use_case.plant.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.StorageReference
+import com.google.firebase.storage.ktx.storage
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -24,13 +27,20 @@ object AppModule {
 
   @Provides
   @Singleton
-  fun provideFireStore() = FirebaseFirestore.getInstance()
+  fun provideFireStore(): FirebaseFirestore = FirebaseFirestore.getInstance()
 
   @Provides
   @Singleton
-  fun provideLoginSignupRepository(auth: FirebaseAuth): AuthenticationRepository {
-    return AuthenticationRepositoryImpl(auth)
-  }
+  fun provideFirebaseStorage(): StorageReference = Firebase.storage.reference
+
+  @Provides
+  @Singleton
+  fun provideUserID(auth: FirebaseAuth): String? = auth.currentUser?.uid
+
+  @Provides
+  @Singleton
+  fun provideLoginSignupRepository(auth: FirebaseAuth): AuthenticationRepository =
+    AuthenticationRepositoryImpl(auth)
 
   @Provides
   @Singleton
@@ -48,21 +58,19 @@ object AppModule {
 
   @Provides
   @Singleton
-  fun provideUserID(auth: FirebaseAuth): String? {
-    return auth.currentUser?.uid
-  }
-
-  @Provides
-  @Singleton
   fun providePlantsRef(
     db: FirebaseFirestore,
     userID: String?
-  ) = db.collection("test_plants").document(userID ?: "no_one")
+  ): DocumentReference = db.collection("test_plants").document(userID ?: "no_one")
 
   @Provides
   @Singleton
-  fun providePlantRepository(plantRef: DocumentReference): PlantRepository {
-    return PlantRespositoryImpl(plantRef = plantRef)
+  fun providePlantRepository(
+    plantRef: DocumentReference,
+    storageRef: StorageReference,
+    userId: String?
+  ): PlantRepository {
+    return PlantRepositoryImpl(plantRef = plantRef, storageRef = storageRef, userId = userId)
   }
 
   @Provides

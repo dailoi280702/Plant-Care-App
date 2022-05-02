@@ -1,6 +1,7 @@
 package com.example.plantcare.presentation.plants
 
 import androidx.compose.animation.*
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -11,8 +12,10 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -34,15 +37,19 @@ fun PlantsScreen(
 
   val context = LocalContext.current
   val state = viewModel.state.value
-  mainViewModel.setFloatingActionButton(icon = R.drawable.ic_edit_outline, contentDescription = "add icon") {
+  mainViewModel.setFloatingActionButton(
+    icon = R.drawable.ic_edit_outline,
+    contentDescription = "add icon"
+  ) {
     navController.navigate(Screens.AddPlantScreen.route)
   }
-
+  val rotationState by animateFloatAsState(
+    targetValue = if (state.isOrderSessionVisible) 180f else 0f
+  )
 
   Column(
     modifier = Modifier
       .fillMaxSize()
-//      .padding(8.dp)
   ) {
     Row(
       modifier = Modifier
@@ -54,13 +61,15 @@ fun PlantsScreen(
       Text(
         modifier = Modifier.padding(horizontal = 16.dp),
         text = "Your plants",
-        style = MaterialTheme.typography.h5
+        style = MaterialTheme.typography.h6
       )
       IconButton(
         onClick = {
           viewModel.onEvent(PlantsScreenEvent.ToggleOrderSection)
         },
-        modifier = Modifier.padding(horizontal = 16.dp),
+        modifier = Modifier
+          .padding(horizontal = 16.dp)
+          .rotate(rotationState),
       ) {
         Icon(
           imageVector = Icons.Default.ArrowDropDown,
@@ -88,27 +97,26 @@ fun PlantsScreen(
       modifier = Modifier.padding(horizontal = 8.dp)
     ) {
       items(items = viewModel.state.value.plants) { plant ->
-        PlantCard(
-          imageURL = plant.imageURL,
-          name = plant.name,
-          dateAdded = plant.dateAdded,
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(4.dp)
-            .width(200.dp)
-            .clickable {
-              navController.navigate(Screens.AddPlantScreen.route + "?plantId=${plant.id}")
-            }
-        )
+        if (plant.id != null) {
+          PlantCard(
+            plant = plant,
+            modifier = Modifier
+              .fillMaxWidth()
+              .padding(4.dp)
+              .clickable {
+                navController.navigate(Screens.AddPlantScreen.route + "?plantId=${plant.id}")
+              },
+          )
+        }
       }
-      item() {
+      item {
         Spacer(
           modifier = Modifier
             .fillMaxWidth()
             .height(160.dp)
         )
       }
-      item() {
+      item {
         Spacer(
           modifier = Modifier
             .fillMaxWidth()

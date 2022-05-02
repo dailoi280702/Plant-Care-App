@@ -214,7 +214,6 @@ fun LoginSignupScreen(
             modifier = Modifier
               .padding(top = 12.dp)
               .fillMaxWidth()
-//              .background(Color(0xFF4d8076).copy(alpha = 0.05f))
               .background(MaterialTheme.customColors.surfaceVariant)
               .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,

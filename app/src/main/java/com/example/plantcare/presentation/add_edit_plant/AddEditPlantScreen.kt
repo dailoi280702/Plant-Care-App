@@ -1,32 +1,32 @@
 package com.example.plantcare.presentation.add_edit_plant
 
-import android.net.Uri
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.Button
-import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import coil.ImageLoader
 import coil.compose.rememberAsyncImagePainter
 import com.example.plantcare.R
+import com.example.plantcare.data.utils.DataState
+import com.example.plantcare.presentation.add_edit_plant.components.ExpandableSurface
+import com.example.plantcare.presentation.add_edit_plant.components.ImageSection
+import com.example.plantcare.presentation.add_edit_plant.components.InfoSection
 import com.example.plantcare.presentation.main.MainViewModel
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.ktx.storage
-import io.github.rosariopfernandes.firecoil.StorageReferenceFetcher
-import io.github.rosariopfernandes.firecoil.StorageReferenceKeyer
+import com.example.plantcare.ui.theme.utils.customColors
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 
 @Composable
 fun AddEditPlantScreen(
@@ -34,78 +34,133 @@ fun AddEditPlantScreen(
   viewModel: AddEditPlantViewModel = hiltViewModel(),
   mainViewModel: MainViewModel
 ) {
-  var selectedImage by remember {
-    mutableStateOf<Uri?>(null)
-  }
+
+  val addEditPlantState = viewModel.addEditPlantState.value
   val scope = rememberCoroutineScope()
+  val snackbarHostState = remember { SnackbarHostState() }
+  val urlPainter = rememberAsyncImagePainter(model = addEditPlantState.plant.imageURL)
+  val uriPainter = rememberAsyncImagePainter(model = addEditPlantState.imageUri)
+  val showLocalImage = addEditPlantState.plant.id == "" && addEditPlantState.imageUri == null
+  val painter = if (addEditPlantState.imageUri != null) uriPainter else urlPainter
+  val launcher = rememberLauncherForActivityResult(
+    contract = ActivityResultContracts.GetContent()
+  ) {
+    viewModel.onEvent(
+      AddEditPlantEvent.ChangeImageUri(it)
+    )
+  }
 
   mainViewModel.setFloatingActionButton(
     icon = R.drawable.ic_save,
     contentDescription = "save icon"
   ) {
+    viewModel.onEvent(AddEditPlantEvent.SavePlant)
   }
 
-  val launcher =
-    rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri ->
-      selectedImage = uri
-    }
-
-  val context = LocalContext.current
-  val fireCoilLoader = ImageLoader.Builder(context)
-    .components {
-      add(StorageReferenceKeyer()) // this is necessary for local caching
-      add(StorageReferenceFetcher.Factory())
-    }
-    .build()
-
-
-  Column(
-    modifier = Modifier
-      .fillMaxSize(),
-  ) {
-    Text(text = "add edit plant screen ${viewModel.id.value}")
-    Button(
-      onClick = {
-        launcher.launch("image/*")
-      }
-    ) {
-      Text(text = "select img")
-    }
-    Button(
-      onClick = {
-        scope.launch {
-          selectedImage?.let {
-            try {
-              Firebase.storage.reference.child("test_iamges/${Firebase.auth.currentUser?.uid}/${viewModel.id.value}").putFile(it).await()
-            } catch (e: Exception) {
-              Log.d("fuckit", e.message?:"errr")
-            }
+  LaunchedEffect(key1 = true) {
+    viewModel.eventFlow.collectLatest { event ->
+      when (event) {
+        is AddEditPlantUiEvent.ShowError -> {
+          scope.launch {
+            snackbarHostState.showSnackbar(
+              message = event.message,
+              duration = SnackbarDuration.Short
+            )
           }
         }
       }
-    ) {
-      Text(text = "save img")
     }
-//    Image(
-//      painter = rememberAsyncImagePainter(selectedImage),
-//      contentDescription = null,
-//      modifier = Modifier
-//        .fillMaxWidth()
-//        .clickable {
-//          launcher.launch("image/*")
-//        },
-//      contentScale = ContentScale.Crop
-//    )
-//
-    Image(
-      painter = rememberAsyncImagePainter(
-        model = Firebase.storage.reference.child("test_iamges/download.jpg"),
-        imageLoader = fireCoilLoader
-      ),
-      contentDescription = null,
-      modifier = Modifier.fillMaxWidth(),
-      contentScale = ContentScale.Crop
-    )
   }
+
+  Column(
+    modifier = Modifier
+      .fillMaxSize()
+      .verticalScroll(rememberScrollState())
+  ) {
+    ExpandableSurface(
+      title = "Plant information",
+      expanded = addEditPlantState.expandedInfo,
+      onClick = { viewModel.onEvent(AddEditPlantEvent.ToggleInfoSection) }
+    ) {
+      InfoSection(
+        name = addEditPlantState.plant.name ?: "",
+        description = addEditPlantState.plant.description ?: "",
+        onNameChange = {
+          viewModel.onEvent(AddEditPlantEvent.EnterName(it))
+        },
+        onDescriptionChange = {
+          viewModel.onEvent(AddEditPlantEvent.EnterDescription(it))
+        }
+      )
+    }
+
+    Divider()
+    ExpandableSurface(
+      title = "Image",
+      expanded = addEditPlantState.expandedImage,
+      onClick = { viewModel.onEvent(AddEditPlantEvent.ToggleImageSection) }
+    ) {
+      ImageSection(
+        showLocalImage = showLocalImage,
+        painter = painter,
+      ) {
+        launcher.launch("image/*")
+      }
+    }
+
+    if (addEditPlantState.plant.id != "") {
+      Divider()
+      ExpandableSurface(
+        title = "Todo",
+        expanded = addEditPlantState.expandedTasks,
+        onClick = { viewModel.onEvent(AddEditPlantEvent.ToggleTasksSection) }
+      ) {
+        Text(text = addEditPlantState.plant.id!!)
+      }
+    }
+
+    Spacer(modifier = Modifier.height(160.dp))
+  }
+
+  if (viewModel.dataState.value is DataState.Loading) {
+    Surface(
+      modifier = Modifier
+        .fillMaxSize(),
+      color = Color.Transparent
+    ) {
+      Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+      ) {
+        CircularProgressIndicator()
+      }
+    }
+  }
+
+  SnackbarHost(
+    hostState = snackbarHostState,
+    snackbar = { snackbarData: SnackbarData ->
+      Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Card(
+          shape = RoundedCornerShape(8.dp),
+          modifier = Modifier
+            .padding(16.dp)
+            .wrapContentSize(),
+          elevation = 8.dp
+        ) {
+          Column(
+            modifier = Modifier.padding(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+          ) {
+            Text(
+              text = snackbarData.message,
+              color = MaterialTheme.customColors.error
+            )
+          }
+        }
+      }
+    }
+  )
 }
 
