@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.plantcare.data.utils.DataState
 import com.example.plantcare.domain.use_case.plant.PlantUseCases
+import com.example.plantcare.domain.utils.PlantOrder
 import com.example.plantcare.presentation.plants.components.PlantsState
 import com.google.firebase.storage.StorageReference
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,16 +26,17 @@ class PlantsListViewModel @Inject constructor(
   val imageRef: State<StorageReference?> = _imageRef
 
   init {
-    getPlants()
+    getPlants(state.value.plantsOrder)
   }
 
-  private fun getPlants() {
+  private fun getPlants(plantOrder: PlantOrder? = null) {
     viewModelScope.launch {
       try {
-        plantUseCases.getPlants().collect {
+        plantUseCases.getPlants(plantOrder = plantOrder).collect {
           if (it is DataState.Success) {
             _state.value = state.value.copy(
-              plants = it.data
+              plants = it.data,
+              plantsOrder = plantOrder?:state.value.plantsOrder
             )
           }
         }
@@ -56,10 +58,7 @@ class PlantsListViewModel @Inject constructor(
         if (state.value.plantsOrder::class == event.plantOrder::class && state.value.plantsOrder.orderType == event.plantOrder.orderType) {
           return
         }
-        // get plant by order
-        _state.value = state.value.copy(
-          plantsOrder = event.plantOrder
-        )
+        getPlants(plantOrder = event.plantOrder)
       }
     }
   }

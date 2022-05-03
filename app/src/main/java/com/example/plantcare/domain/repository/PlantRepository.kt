@@ -3,12 +3,13 @@ package com.example.plantcare.domain.repository
 import android.net.Uri
 import com.example.plantcare.data.utils.DataState
 import com.example.plantcare.domain.model.Plant
+import com.example.plantcare.domain.utils.PlantOrder
 import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.flow.Flow
 
 interface PlantRepository {
 
-  fun getPlants(): Flow<DataState<List<Plant>>>
+  fun getPlants(plantOrder: PlantOrder?): Flow<DataState<List<Plant>>>
 
   suspend fun getPlant(id: String): Flow<DataState<Plant?>>
 

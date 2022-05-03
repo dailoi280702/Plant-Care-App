@@ -5,8 +5,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.example.plantcare.presentation.main.components.FloatingActionButtonState
 import com.example.plantcare.presentation.main.utils.Screens
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class MainViewModel : ViewModel() {
+@HiltViewModel
+class MainViewModel @Inject constructor() : ViewModel() {
   private val _currentScreen = mutableStateOf<Screens?>(null)
   val currentScreen: State<Screens?> = _currentScreen
 

@@ -4,7 +4,10 @@ import android.net.Uri
 import com.example.plantcare.data.utils.DataState.*
 import com.example.plantcare.domain.model.Plant
 import com.example.plantcare.domain.repository.PlantRepository
+import com.example.plantcare.domain.utils.OrderType
+import com.example.plantcare.domain.utils.PlantOrder
 import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.Query
 import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
@@ -18,8 +21,9 @@ class PlantRepositoryImpl(
   private val storageRef: StorageReference,
   private val userId: String?
 ) : PlantRepository {
-  override fun getPlants() = callbackFlow {
-    val mPlantsCollection = plantRef.collection("plants").orderBy("name")
+  override fun getPlants(plantOrder: PlantOrder?) = callbackFlow {
+    val direction = if (plantOrder?.orderType is OrderType.Ascending) Query.Direction.ASCENDING else Query.Direction.DESCENDING
+    val mPlantsCollection = plantRef.collection("plants").orderBy(plantOrder?.orderName?: "name", direction)
     val snapshotListener = mPlantsCollection.addSnapshotListener { snapshot, e ->
       val data = if (snapshot != null) {
         try {

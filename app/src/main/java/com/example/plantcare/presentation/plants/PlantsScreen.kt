@@ -105,6 +105,7 @@ fun PlantsScreen(
           PlantCard(
             plant = plant,
             modifier = Modifier
+              .animateItemPlacement()
               .fillMaxWidth()
               .padding(4.dp)
               .clickable {

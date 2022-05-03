@@ -16,6 +16,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.example.plantcare.ui.theme.utils.customColors
 
 @Composable
 fun ExpandableSurface(
@@ -53,7 +54,7 @@ fun ExpandableSurface(
         fontStyle = MaterialTheme.typography.h6.fontStyle,
         fontSize =  MaterialTheme.typography.h6.fontSize,
         overflow = TextOverflow.Ellipsis,
-        color = MaterialTheme.colors.onSurface
+        color = MaterialTheme.customColors.onSurface
       )
       IconButton(
         modifier = Modifier
