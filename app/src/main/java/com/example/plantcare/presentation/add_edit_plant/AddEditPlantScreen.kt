@@ -76,6 +76,9 @@ fun AddEditPlantScreen(
             )
           }
         }
+        is AddEditPlantUiEvent.NavigateBack -> {
+          navController.navigateUp()
+        }
       }
     }
   }
@@ -155,6 +158,7 @@ fun AddEditPlantScreen(
           onContainerColor = MaterialTheme.customColors.onErrorContainer,
           painter = painterResource(id = R.drawable.ic_delete)
         ) {
+          viewModel.onEvent(AddEditPlantEvent.DeletePlant)
         }
         Spacer(modifier = Modifier.height(4.dp))
         HiddenFloatingActionButton(

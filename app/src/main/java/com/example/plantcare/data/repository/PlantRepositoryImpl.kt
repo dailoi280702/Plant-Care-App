@@ -58,6 +58,7 @@ class PlantRepositoryImpl(
       emit(Error(e.message ?: e.toString()))
     }
   }
+
   override suspend fun addPlant(plant: Plant, uri: Uri?) = flow {
     if (plant.name.isNullOrEmpty() || plant.name.isNullOrBlank()) {
       emit(Error("Please enter plant's name"))
@@ -91,7 +92,9 @@ class PlantRepositoryImpl(
   override suspend fun deletePlant(id: String) = flow {
     try {
       emit(Loading)
-      //todo
+      plantRef.collection("plants").document(id).delete().await()
+      getPlantImageRef(id).delete().await()
+      emit(Success(null))
     } catch (e: Exception) {
       emit(Error(e.message ?: e.toString()))
     }

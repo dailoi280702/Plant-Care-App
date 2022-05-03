@@ -105,6 +105,11 @@ class AddEditPlantViewModel @Inject constructor(
           }
         }
       }
+      is AddEditPlantEvent.DeletePlant -> {
+        if (dataState.value != DataState.Loading) {
+          deletePlant()
+        }
+      }
     }
   }
 
@@ -142,6 +147,23 @@ class AddEditPlantViewModel @Inject constructor(
         if (it is DataState.Error) {
           _eventFLow.emit(AddEditPlantUiEvent.ShowError(it.message))
         }
+      }
+    }
+  }
+
+  private fun deletePlant() {
+    val id = addEditPlantState.value.plant.id
+    if (!id.isNullOrEmpty() || !id.isNullOrBlank()) {
+      viewModelScope.launch {
+        plantUseCases.deletePlant(id = id)
+          .collectLatest {
+            if (it is DataState.Success) {
+              _eventFLow.emit(AddEditPlantUiEvent.NavigateBack)
+            }
+            if (it is DataState.Error) {
+              _eventFLow.emit(AddEditPlantUiEvent.ShowError(it.message))
+            }
+          }
       }
     }
   }

@@ -70,7 +70,7 @@ fun ImageSection(
             painter = painter,
             contentDescription = null,
             modifier = Modifier.fillMaxWidth(),
-            contentScale = ContentScale.FillWidth
+            contentScale = ContentScale.Crop
           )
           when (painterState) {
             is AsyncImagePainter.State.Loading -> {

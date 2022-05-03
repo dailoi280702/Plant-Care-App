@@ -8,6 +8,7 @@ sealed class AddEditPlantEvent {
   object ToggleTasksSection: AddEditPlantEvent()
   object ToggleSubFab: AddEditPlantEvent()
   object SavePlant: AddEditPlantEvent()
+  object DeletePlant: AddEditPlantEvent()
   data class EnterName(val value: String): AddEditPlantEvent()
   data class EnterDescription(val value: String): AddEditPlantEvent()
   data class ChangeImageUri(val uri: Uri?): AddEditPlantEvent()

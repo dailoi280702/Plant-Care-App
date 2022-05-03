@@ -44,7 +44,7 @@ fun InfoSection(
         },
         singleLine = true,
         placeholder = {
-          Text(text = "Name")
+          Text(text = "Name", color = MaterialTheme.customColors.onSurface)
         },
         textStyle = MaterialTheme.typography.body1.copy(
           fontWeight = FontWeight.Medium
@@ -68,7 +68,7 @@ fun InfoSection(
         },
         singleLine = false,
         placeholder = {
-          Text(text = "Description")
+          Text(text = "Description", color = MaterialTheme.customColors.onSurface)
         },
         textStyle = MaterialTheme.typography.body2,
         shape = RectangleShape,
