@@ -2,32 +2,32 @@ package com.example.plantcare.presentation.add_edit_plant
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.plantcare.R
 import com.example.plantcare.data.utils.DataState
-import com.example.plantcare.presentation.add_edit_plant.components.ExpandableSurface
-import com.example.plantcare.presentation.add_edit_plant.components.ImageSection
-import com.example.plantcare.presentation.add_edit_plant.components.InfoSection
+import com.example.plantcare.presentation.add_edit_plant.components.*
 import com.example.plantcare.presentation.main.MainViewModel
 import com.example.plantcare.ui.theme.utils.customColors
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun AddEditPlantScreen(
   navController: NavController,
@@ -42,6 +42,10 @@ fun AddEditPlantScreen(
   val uriPainter = rememberAsyncImagePainter(model = addEditPlantState.imageUri)
   val showLocalImage = addEditPlantState.plant.id == "" && addEditPlantState.imageUri == null
   val painter = if (addEditPlantState.imageUri != null) uriPainter else urlPainter
+  val fabIcon = if (addEditPlantState.plant.id == "") R.drawable.ic_save else R.drawable.add
+  val rotationState by animateFloatAsState(
+    targetValue = if (addEditPlantState.subFabVisibility) 45f else 0f
+  )
   val launcher = rememberLauncherForActivityResult(
     contract = ActivityResultContracts.GetContent()
   ) {
@@ -51,10 +55,14 @@ fun AddEditPlantScreen(
   }
 
   mainViewModel.setFloatingActionButton(
-    icon = R.drawable.ic_save,
+    icon = fabIcon,
+    rotation = rotationState,
     contentDescription = "save icon"
   ) {
-    viewModel.onEvent(AddEditPlantEvent.SavePlant)
+    if (addEditPlantState.plant.id == "")
+      viewModel.onEvent(AddEditPlantEvent.SavePlant)
+    else
+      viewModel.onEvent(AddEditPlantEvent.ToggleSubFab)
   }
 
   LaunchedEffect(key1 = true) {
@@ -122,6 +130,47 @@ fun AddEditPlantScreen(
     Spacer(modifier = Modifier.height(160.dp))
   }
 
+  AnimatedVisibility(
+    visible = addEditPlantState.subFabVisibility,
+    enter = fadeIn(),
+    exit = fadeOut()
+  ) {
+    Surface(
+      modifier = Modifier
+        .fillMaxSize(),
+      color = Color.Black.copy(alpha = 0.5f),
+      onClick = {
+        viewModel.onEvent(AddEditPlantEvent.ToggleSubFab)
+      }
+    ) {
+      Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Bottom,
+        horizontalAlignment = Alignment.End
+      ) {
+        HiddenFloatingActionButton(
+          visible = addEditPlantState.subFabVisibility,
+          text = "Delete",
+          containerColor = MaterialTheme.customColors.errorContainer,
+          onContainerColor = MaterialTheme.customColors.onErrorContainer,
+          painter = painterResource(id = R.drawable.ic_delete)
+        ) {
+        }
+        Spacer(modifier = Modifier.height(4.dp))
+        HiddenFloatingActionButton(
+          visible = addEditPlantState.subFabVisibility,
+          text = "Save",
+          containerColor = MaterialTheme.customColors.tertiaryContainer,
+          onContainerColor = MaterialTheme.customColors.onTertiaryContainer,
+          painter = painterResource(id = R.drawable.ic_save)
+        ) {
+          viewModel.onEvent(AddEditPlantEvent.SavePlant)
+        }
+        Spacer(modifier = Modifier.height(88.dp))
+      }
+    }
+  }
+
   if (viewModel.dataState.value is DataState.Loading) {
     Surface(
       modifier = Modifier
@@ -137,30 +186,6 @@ fun AddEditPlantScreen(
     }
   }
 
-  SnackbarHost(
-    hostState = snackbarHostState,
-    snackbar = { snackbarData: SnackbarData ->
-      Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Card(
-          shape = RoundedCornerShape(8.dp),
-          modifier = Modifier
-            .padding(16.dp)
-            .wrapContentSize(),
-          elevation = 8.dp
-        ) {
-          Column(
-            modifier = Modifier.padding(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-          ) {
-            Text(
-              text = snackbarData.message,
-              color = MaterialTheme.customColors.error
-            )
-          }
-        }
-      }
-    }
-  )
+  ErrorSnackbarHost(snackbarHostState = snackbarHostState)
 }
 

@@ -72,6 +72,11 @@ class AddEditPlantViewModel @Inject constructor(
           expandedTasks = !addEditPlantState.value.expandedTasks
         )
       }
+      is AddEditPlantEvent.ToggleSubFab -> {
+        _addEditPlantState.value = addEditPlantState.value.copy(
+          subFabVisibility = !addEditPlantState.value.subFabVisibility
+        )
+      }
       is AddEditPlantEvent.EnterName -> {
         _addEditPlantState.value = addEditPlantState.value.copy(
           plant = addEditPlantState.value.plant.copy(

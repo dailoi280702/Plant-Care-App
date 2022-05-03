@@ -9,4 +9,5 @@ data class AddEditPlantState(
   val expandedInfo: Boolean = true,
   val expandedTasks: Boolean = false,
   val imageUri: Uri? = null,
+  val subFabVisibility: Boolean = false
 )

@@ -1,5 +1,6 @@
 package com.example.plantcare.presentation.plants
 
+import android.content.res.Configuration
 import androidx.compose.animation.*
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -16,6 +17,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -37,6 +39,8 @@ fun PlantsScreen(
 
   val context = LocalContext.current
   val state = viewModel.state.value
+  val configuration = LocalConfiguration.current
+  val gridCellsColumn = if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) 2 else 4
   mainViewModel.setFloatingActionButton(
     icon = R.drawable.ic_edit_outline,
     contentDescription = "add icon"
@@ -93,7 +97,7 @@ fun PlantsScreen(
       )
     }
     LazyVerticalGrid(
-      cells = GridCells.Fixed(2),
+      cells = GridCells.Fixed(gridCellsColumn),
       modifier = Modifier.padding(horizontal = 8.dp)
     ) {
       items(items = viewModel.state.value.plants) { plant ->

@@ -17,10 +17,16 @@ class MainViewModel : ViewModel() {
     _currentScreen.value = screen
   }
 
-  fun setFloatingActionButton(icon: Int, contentDescription: String, onClick: () -> Unit) {
+  fun setFloatingActionButton(
+    icon: Int,
+    contentDescription: String,
+    rotation: Float = 0f,
+    onClick: () -> Unit
+  ) {
     _fbaState.value = fbaState.value.copy(
       icon = icon,
       contentDescription = contentDescription,
+      rotation = rotation,
       onClick = onClick
     )
   }

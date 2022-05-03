@@ -59,8 +59,6 @@ fun BottomNav(navController: NavController) {
           }
         },
         selectedContentColor = MaterialTheme.customColors.onSecondaryContainer,
-//        unselectedContentColor = MaterialTheme.colors.onSurface.copy(0.5f),
-//        unselectedContentColor = MaterialTheme.colors.onSurface,
         unselectedContentColor = MaterialTheme.customColors.onSurfaceVariant,
         label = {
           Text(

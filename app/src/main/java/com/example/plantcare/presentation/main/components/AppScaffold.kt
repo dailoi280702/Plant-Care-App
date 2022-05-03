@@ -1,11 +1,13 @@
 package com.example.plantcare.presentation
 
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -60,13 +62,16 @@ fun AppScaffold(
         FloatingActionButton(
           onClick = viewModel.fbaState.value.onClick,
           shape = RoundedCornerShape(16.dp),
-          backgroundColor = MaterialTheme.customColors.primaryContainer
+          backgroundColor = MaterialTheme.customColors.primaryContainer,
+          modifier = Modifier.padding(4.dp)
         ) {
           Icon(
             painter = painterResource(id = if (viewModel.fbaState.value.icon != -1) viewModel.fbaState.value.icon else R.drawable.ic_edit_outline),
             contentDescription = viewModel.fbaState.value.contentDescription,
             tint = MaterialTheme.customColors.onPrimaryContainer,
-            modifier = Modifier.size(24.dp)
+            modifier = Modifier
+              .size(24.dp)
+              .rotate(viewModel.fbaState.value.rotation)
           )
         }
     }
