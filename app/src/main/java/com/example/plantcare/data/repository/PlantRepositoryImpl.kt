@@ -21,9 +21,13 @@ class PlantRepositoryImpl(
   private val storageRef: StorageReference,
   private val userId: String?
 ) : PlantRepository {
-  override fun getPlants(plantOrder: PlantOrder?) = callbackFlow {
+
+  override fun getPlants(plantOrder: PlantOrder?, limit: Long?) = callbackFlow {
     val direction = if (plantOrder?.orderType is OrderType.Ascending) Query.Direction.ASCENDING else Query.Direction.DESCENDING
-    val mPlantsCollection = plantRef.collection("plants").orderBy(plantOrder?.orderName?: "name", direction)
+    var mPlantsCollection = plantRef.collection("plants").orderBy(plantOrder?.orderName?: "name", direction)
+    limit?.let {
+      mPlantsCollection = mPlantsCollection.limit(limit)
+    }
     val snapshotListener = mPlantsCollection.addSnapshotListener { snapshot, e ->
       val data = if (snapshot != null) {
         try {
@@ -78,15 +82,14 @@ class PlantRepositoryImpl(
       val id = plantRef.collection("plants").add(plant).await().id
       getPlantImageRef(id).putFile(uri).await()
       val url = getPlantImageRef(id).downloadUrl.await().toString()
-      plantRef.collection("plants").document(id).set(
-        plant.copy(
+      val newPlant = plant.copy(
           id = id,
           imageURL = url,
           dateAdded = System.currentTimeMillis()
         )
+      plantRef.collection("plants").document(id).set(
+        newPlant
       ).await()
-      val snapshot = plantRef.collection("plants").document(id).get().await()
-      val newPlant = snapshot.toObject(Plant::class.java)
       emit(Success(newPlant))
     } catch (e: Exception) {
       emit(Error(e.message ?: e.toString()))

@@ -1,4 +1,4 @@
-package com.example.plantcare.presentation.login_signup.utils
+package com.example.plantcare.presentation.login.utils
 
 import androidx.compose.runtime.Composable
 

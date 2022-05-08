@@ -1,4 +1,4 @@
-package com.example.plantcare.presentation.login_signup.components
+package com.example.plantcare.presentation.login.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -7,12 +7,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.MailOutline
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,20 +27,17 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.plantcare.R
-import com.example.plantcare.ui.theme.utils.customColors
 
 @Composable
-fun SignupTab(
+fun LoginTab(
   title: String,
   description: String,
   buttonText: String,
   email: String,
   password: String,
-  confirmPassword: String,
   focusManager: FocusManager,
   onEmailChange: (String) -> Unit,
   onPasswordChange: (String) -> Unit,
-  onConfirmPasswordChange: (String) -> Unit,
   onButtonClick: () -> Unit,
 ) {
   val showPassword = remember {
@@ -57,19 +52,18 @@ fun SignupTab(
   ) {
     Text(
       text = title,
-      fontSize = MaterialTheme.typography.h6.fontSize,
+      fontSize = MaterialTheme.typography.titleLarge.fontSize,
       fontWeight = FontWeight.Bold,
       textAlign = TextAlign.Center,
       modifier = Modifier.padding(8.dp),
-      color = MaterialTheme.customColors.onSurface
+      color = MaterialTheme.colorScheme.onSurface
     )
     Text(
       text = description,
-      fontSize = MaterialTheme.typography.body2.fontSize,
+      fontSize = MaterialTheme.typography.titleSmall.fontSize,
       textAlign = TextAlign.Center,
-//      color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
       modifier = Modifier.padding(horizontal = 8.dp),
-      color = MaterialTheme.customColors.onSurfaceVariant
+      color = MaterialTheme.colorScheme.onSurfaceVariant
     )
     Column(
       modifier = Modifier
@@ -92,7 +86,7 @@ fun SignupTab(
           Icon(
             imageVector = Icons.Default.MailOutline,
             contentDescription = "Mail Icon",
-            tint = MaterialTheme.colors.primary
+            tint = MaterialTheme.colorScheme.primary
           )
         },
         keyboardOptions = KeyboardOptions(
@@ -121,7 +115,7 @@ fun SignupTab(
           Icon(
             imageVector = Icons.Default.Lock,
             contentDescription = "Password Icon",
-            tint = MaterialTheme.colors.primary
+            tint = MaterialTheme.colorScheme.primary
           )
         },
         trailingIcon = {
@@ -134,52 +128,13 @@ fun SignupTab(
         },
         keyboardOptions = KeyboardOptions(
           keyboardType = KeyboardType.Password,
-          imeAction = ImeAction.Next
-        ),
-        keyboardActions = KeyboardActions(
-          onNext = {
-            focusManager.moveFocus(FocusDirection.Down)
-          }
-        )
-      )
-      OutlinedTextField(
-        value = confirmPassword,
-        onValueChange = {
-          onConfirmPasswordChange(it)
-        },
-        modifier = Modifier
-          .fillMaxWidth(),
-        shape = RoundedCornerShape(8.dp),
-        label = { Text(text = "Confirm Password") },
-        placeholder = { Text(text = "Confirm Password") },
-        singleLine = true,
-        visualTransformation = if (showPassword.value) VisualTransformation.None else PasswordVisualTransformation(),
-        leadingIcon = {
-          Icon(
-            imageVector = Icons.Default.Lock,
-            contentDescription = "Password Icon",
-            tint = if (password != confirmPassword && confirmPassword.isNotBlank()) MaterialTheme.colors.error else MaterialTheme.colors.primary
-          )
-        },
-        trailingIcon = {
-          if (confirmPassword.isNotBlank()) {
-            Icon(
-              imageVector = if (confirmPassword == password) Icons.Default.Done else Icons.Default.Close,
-              contentDescription = "Confirm Password Icon",
-              tint = if (confirmPassword != password && confirmPassword.isNotBlank()) MaterialTheme.colors.error else MaterialTheme.colors.primary
-            )
-          }
-        },
-        keyboardOptions = KeyboardOptions(
-          keyboardType = KeyboardType.Password,
           imeAction = ImeAction.Done
         ),
         keyboardActions = KeyboardActions(
           onDone = {
             focusManager.clearFocus()
           }
-        ),
-        isError = confirmPassword != password && confirmPassword.isNotBlank()
+        )
       )
       Button(
         onClick = {
@@ -188,13 +143,11 @@ fun SignupTab(
         Modifier
           .padding(top = 8.dp)
           .fillMaxWidth(),
-        shape = RoundedCornerShape(50)
       ) {
         Text(
           text = buttonText,
-          fontSize = MaterialTheme.typography.body1.fontSize,
-          modifier = Modifier.padding(8.dp),
-          color = MaterialTheme.customColors.onPrimary
+          fontSize = MaterialTheme.typography.labelLarge.fontSize,
+          modifier = Modifier.padding(8.dp)
         )
       }
     }

@@ -4,16 +4,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.plantcare.ui.theme.utils.customColors
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InfoSection(
   name: String,
@@ -21,13 +19,11 @@ fun InfoSection(
   onNameChange: (String) -> Unit,
   onDescriptionChange: (String) -> Unit
 ) {
-  Surface(
+  Card(
     modifier = Modifier
       .padding(16.dp)
       .fillMaxWidth(),
-    color = MaterialTheme.customColors.surface,
-    elevation = 8.dp,
-    shape = RoundedCornerShape(12.dp)
+    elevation = CardDefaults.elevatedCardElevation()
   ) {
     Column(
       Modifier
@@ -44,16 +40,13 @@ fun InfoSection(
         },
         singleLine = true,
         placeholder = {
-          Text(text = "Name", color = MaterialTheme.customColors.onSurface)
+          Text(text = "Name", color = MaterialTheme.colorScheme.onSurface)
         },
-        textStyle = MaterialTheme.typography.body1.copy(
-          fontWeight = FontWeight.Medium
-        ),
+        textStyle = MaterialTheme.typography.headlineSmall,
         shape = RectangleShape,
         colors = TextFieldDefaults.textFieldColors(
-          backgroundColor = Color.Transparent,
-          cursorColor = MaterialTheme.colors.onSurface,
-          disabledLabelColor = MaterialTheme.customColors.secondary,
+          cursorColor = MaterialTheme.colorScheme.onSurface,
+          disabledLabelColor = MaterialTheme.colorScheme.secondary,
           focusedIndicatorColor = Color.Transparent,
           unfocusedIndicatorColor = Color.Transparent
         )
@@ -68,14 +61,14 @@ fun InfoSection(
         },
         singleLine = false,
         placeholder = {
-          Text(text = "Description", color = MaterialTheme.customColors.onSurface)
+          Text(text = "Description", color = MaterialTheme.colorScheme.onSurface)
         },
-        textStyle = MaterialTheme.typography.body2,
+        textStyle = MaterialTheme.typography.bodySmall,
         shape = RectangleShape,
         colors = TextFieldDefaults.textFieldColors(
-          backgroundColor = Color.Transparent,
-          cursorColor = MaterialTheme.colors.onSurface,
-          disabledLabelColor = MaterialTheme.customColors.secondary,
+//          backgroundColor = Color.Transparent,
+          cursorColor = MaterialTheme.colorScheme.onSurface,
+          disabledLabelColor = MaterialTheme.colorScheme.secondary,
           focusedIndicatorColor = Color.Transparent,
           unfocusedIndicatorColor = Color.Transparent
         )

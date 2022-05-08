@@ -1,4 +1,4 @@
-package com.example.plantcare.presentation.tasks
+package com.example.plantcare.presentation.Tasks
 
 
 import androidx.compose.foundation.layout.Box

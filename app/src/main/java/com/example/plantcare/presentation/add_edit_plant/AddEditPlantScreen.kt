@@ -9,7 +9,8 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,13 +22,14 @@ import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.plantcare.R
 import com.example.plantcare.data.utils.DataState
+import com.example.plantcare.domain.model.PlantTask
 import com.example.plantcare.presentation.add_edit_plant.components.*
+import com.example.plantcare.presentation.add_edit_task.AddEditTaskDialog
 import com.example.plantcare.presentation.main.MainViewModel
-import com.example.plantcare.ui.theme.utils.customColors
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditPlantScreen(
   navController: NavController,
@@ -105,6 +107,29 @@ fun AddEditPlantScreen(
       )
     }
 
+    if (addEditPlantState.plant.id != "") {
+      Divider()
+      ExpandableSurface(
+        title = "Todo",
+        expanded = addEditPlantState.expandedTasks,
+        onClick = { viewModel.onEvent(AddEditPlantEvent.ToggleTasksSection) }
+      ) {
+        Row(
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp, horizontal = 16.dp),
+          verticalAlignment = Alignment.CenterVertically,
+          horizontalArrangement = Arrangement.End
+        ) {
+          TextButton(onClick = {
+            viewModel.onEvent(AddEditPlantEvent.ToggleTaskDialog)
+          }) {
+            Text(text = "Add todo")
+          }
+        }
+      }
+    }
+
     Divider()
     ExpandableSurface(
       title = "Image",
@@ -116,17 +141,6 @@ fun AddEditPlantScreen(
         painter = painter,
       ) {
         launcher.launch("image/*")
-      }
-    }
-
-    if (addEditPlantState.plant.id != "") {
-      Divider()
-      ExpandableSurface(
-        title = "Todo",
-        expanded = addEditPlantState.expandedTasks,
-        onClick = { viewModel.onEvent(AddEditPlantEvent.ToggleTasksSection) }
-      ) {
-        Text(text = addEditPlantState.plant.id!!)
       }
     }
 
@@ -154,8 +168,8 @@ fun AddEditPlantScreen(
         HiddenFloatingActionButton(
           visible = addEditPlantState.subFabVisibility,
           text = "Delete",
-          containerColor = MaterialTheme.customColors.errorContainer,
-          onContainerColor = MaterialTheme.customColors.onErrorContainer,
+          containerColor = MaterialTheme.colorScheme.errorContainer,
+          onContainerColor = MaterialTheme.colorScheme.onErrorContainer,
           painter = painterResource(id = R.drawable.ic_delete)
         ) {
           viewModel.onEvent(AddEditPlantEvent.DeletePlant)
@@ -164,8 +178,8 @@ fun AddEditPlantScreen(
         HiddenFloatingActionButton(
           visible = addEditPlantState.subFabVisibility,
           text = "Save",
-          containerColor = MaterialTheme.customColors.tertiaryContainer,
-          onContainerColor = MaterialTheme.customColors.onTertiaryContainer,
+          containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+          onContainerColor = MaterialTheme.colorScheme.onTertiaryContainer,
           painter = painterResource(id = R.drawable.ic_save)
         ) {
           viewModel.onEvent(AddEditPlantEvent.SavePlant)
@@ -191,5 +205,15 @@ fun AddEditPlantScreen(
   }
 
   ErrorSnackbarHost(snackbarHostState = snackbarHostState)
+  val idx = remember {
+    mutableStateOf(0)
+  }
+
+  AddEditTaskDialog(
+    openDiaLog = addEditPlantState.taskDialogVisibiliy,
+    plantTask = PlantTask(plantId = addEditPlantState.plant.id)
+  ) {
+    viewModel.onEvent(AddEditPlantEvent.ToggleTaskDialog)
+  }
 }
 

@@ -1,4 +1,4 @@
-package com.example.plantcare.presentation.login_signup
+package com.example.plantcare.presentation.login
 
 import android.util.Log
 import androidx.compose.runtime.State

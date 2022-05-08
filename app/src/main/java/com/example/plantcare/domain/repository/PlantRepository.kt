@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface PlantRepository {
 
-  fun getPlants(plantOrder: PlantOrder?): Flow<DataState<List<Plant>>>
+  fun getPlants(plantOrder: PlantOrder?, limit: Long?): Flow<DataState<List<Plant>>>
 
   suspend fun getPlant(id: String): Flow<DataState<Plant?>>
 

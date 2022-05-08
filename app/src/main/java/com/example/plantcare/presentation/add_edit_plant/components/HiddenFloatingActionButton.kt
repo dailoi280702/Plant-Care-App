@@ -8,9 +8,10 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Icon
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -18,7 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun HiddenFloatingActionButton(
   visible: Boolean,
@@ -45,7 +46,6 @@ fun HiddenFloatingActionButton(
       Surface(
         shape = RoundedCornerShape(8.dp),
         color = containerColor,
-        elevation = 8.dp
       ) {
         Text(
           text = text,
@@ -56,13 +56,13 @@ fun HiddenFloatingActionButton(
       }
 
       Surface(
+        color = containerColor,
+        shape = RoundedCornerShape(12.dp),
+        modifier = Modifier.padding(horizontal = 20.dp),
         onClick = {
           onClick()
         },
-        color = containerColor,
-        shape = RoundedCornerShape(12.dp),
-        elevation = 8.dp,
-        modifier = Modifier.padding(horizontal = 24.dp)
+        tonalElevation = 8.dp
       ) {
         Icon(
           painter = painter,

@@ -1,34 +1,35 @@
 package com.example.plantcare.presentation.plants
 
 import android.content.res.Configuration
-import androidx.compose.animation.*
-import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.GridCells
-import androidx.compose.foundation.lazy.LazyVerticalGrid
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material.*
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.material.ScaffoldState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.plantcare.R
+import com.example.plantcare.domain.utils.OrderType
+import com.example.plantcare.domain.utils.PlantOrder
 import com.example.plantcare.presentation.main.MainViewModel
 import com.example.plantcare.presentation.main.utils.Screens
 import com.example.plantcare.presentation.plants.components.PlantCard
-import com.example.plantcare.presentation.plants.components.SearchAndFilterSession
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun PlantsScreen(
   navController: NavController,
@@ -37,70 +38,142 @@ fun PlantsScreen(
   viewModel: PlantsListViewModel = hiltViewModel()
 ) {
 
-  val context = LocalContext.current
   val state = viewModel.state.value
   val configuration = LocalConfiguration.current
-  val gridCellsColumn = if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) 2 else 4
+  val gridCellsColumn =
+    if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) 2 else 4
+  val scrollState = rememberLazyGridState()
+  val position by animateDpAsState(if (viewModel.scrollUp.value) (-64).dp else 0.dp)
+
   mainViewModel.setFloatingActionButton(
     icon = R.drawable.ic_edit_outline,
     contentDescription = "add icon"
   ) {
     navController.navigate(Screens.AddPlantScreen.route)
   }
-  val rotationState by animateFloatAsState(
-    targetValue = if (state.isOrderSessionVisible) 180f else 0f
-  )
 
-  Column(
-    modifier = Modifier
-      .fillMaxSize()
-  ) {
-    Row(
-      modifier = Modifier
-        .fillMaxWidth()
-        .height(64.dp),
-      horizontalArrangement = Arrangement.SpaceBetween,
-      verticalAlignment = Alignment.CenterVertically
-    ) {
-      Text(
-        modifier = Modifier.padding(horizontal = 16.dp),
-        text = "Your plants",
-        style = MaterialTheme.typography.h6
-      )
-      IconButton(
-        onClick = {
-          viewModel.onEvent(PlantsScreenEvent.ToggleOrderSection)
+  viewModel.updateScrollPosition(scrollState.firstVisibleItemIndex)
+
+  Scaffold(
+    topBar = {
+      SmallTopAppBar(
+        colors = TopAppBarDefaults.smallTopAppBarColors(
+          containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.96f)
+        ),
+        modifier = Modifier
+          .graphicsLayer { translationY = position.toPx() },
+        title = {
+          Text(
+            modifier = Modifier.padding(horizontal = 16.dp),
+            text = "Your plants",
+            style = MaterialTheme.typography.titleLarge,
+            fontSize = MaterialTheme.typography.titleLarge.fontSize,
+            fontWeight = MaterialTheme.typography.titleLarge.fontWeight
+          )
         },
-        modifier = Modifier
-          .padding(horizontal = 16.dp)
-          .rotate(rotationState),
-      ) {
-        Icon(
-          imageVector = Icons.Default.ArrowDropDown,
-          contentDescription = "Sort"
-        )
-      }
-    }
-    AnimatedVisibility(
-      visible = state.isOrderSessionVisible,
-      enter = fadeIn() + slideInVertically(),
-      exit = fadeOut() + slideOutVertically()
-    ) {
-      SearchAndFilterSession(
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(vertical = 8.dp),
-        plantOrder = state.plantsOrder,
-        onOrderChange = {
-          viewModel.onEvent(PlantsScreenEvent.Order(it))
+        actions = {
+          Box(
+            modifier = Modifier
+              .padding(horizontal = 16.dp)
+          ) {
+            IconButton(
+              onClick = {
+                viewModel.onEvent(PlantsScreenEvent.ToggleOrderSection)
+              }
+            ) {
+              Icon(
+                painter = painterResource(id = R.drawable.ic_sort),
+                contentDescription = null,
+                Modifier.size(24.dp)
+              )
+            }
+            DropdownMenu(
+              expanded = state.isOrderSessionVisible,
+              onDismissRequest = {
+                viewModel.onEvent(
+                  PlantsScreenEvent.ToggleOrderSection
+                )
+              },
+              modifier = Modifier.defaultMinSize(minWidth = 122.dp)
+            ) {
+              DropdownMenuItem(
+                text = {
+                  Text(
+                    text = "Name A-Z",
+                  )
+                },
+                onClick = {
+                  viewModel.onEvent(PlantsScreenEvent.Order(PlantOrder.Name(OrderType.Ascending)))
+                },
+                trailingIcon = {
+                  val selected =
+                    state.plantsOrder is PlantOrder.Name && state.plantsOrder.orderType is OrderType.Ascending
+                  if (selected) {
+                    Icon(imageVector = Icons.Default.Check, contentDescription = null)
+                  }
+                }
+              )
+              DropdownMenuItem(
+                onClick = {
+                  viewModel.onEvent(PlantsScreenEvent.Order(PlantOrder.Name(OrderType.Descending)))
+                },
+                text = {
+                  Text(
+                    text = "Name Z-A"
+                  )
+                },
+                trailingIcon = {
+                  val selected =
+                    state.plantsOrder is PlantOrder.Name && state.plantsOrder.orderType is OrderType.Descending
+                  if (selected) {
+                    Icon(imageVector = Icons.Default.Check, contentDescription = null)
+                  }
+                }
+              )
+              DropdownMenuItem(onClick = {
+                viewModel.onEvent(PlantsScreenEvent.Order(PlantOrder.DateAdded(OrderType.Descending)))
+              },
+                text = {
+                  Text(
+                    text = "Date latest"
+                  )
+                },
+                trailingIcon = {
+                  val selected =
+                    state.plantsOrder is PlantOrder.DateAdded && state.plantsOrder.orderType is OrderType.Descending
+                  if (selected) {
+                    Icon(imageVector = Icons.Default.Check, contentDescription = null)
+                  }
+                }
+              )
+              DropdownMenuItem(onClick = {
+                viewModel.onEvent(PlantsScreenEvent.Order(PlantOrder.DateAdded(OrderType.Ascending)))
+              }, text = {
+                Text(
+                  text = "Date oldest"
+                )
+              },
+                trailingIcon = {
+                  val selected =
+                    state.plantsOrder is PlantOrder.DateAdded && state.plantsOrder.orderType is OrderType.Ascending
+                  if (selected) {
+                    Icon(imageVector = Icons.Default.Check, contentDescription = null)
+                  }
+                }
+              )
+            }
+          }
         }
       )
     }
+  ) {
     LazyVerticalGrid(
-      cells = GridCells.Fixed(gridCellsColumn),
-      modifier = Modifier.padding(horizontal = 8.dp)
+      columns = GridCells.Fixed(gridCellsColumn),
+      modifier = Modifier.padding(horizontal = 8.dp),
+      state = scrollState,
+      contentPadding = PaddingValues(top = 72.dp, bottom = 160.dp)
     ) {
-      items(items = viewModel.state.value.plants) { plant ->
+      items(viewModel.state.value.plants) { plant ->
         if (plant.id != null) {
           PlantCard(
             plant = plant,
@@ -113,20 +186,6 @@ fun PlantsScreen(
               },
           )
         }
-      }
-      item {
-        Spacer(
-          modifier = Modifier
-            .fillMaxWidth()
-            .height(160.dp)
-        )
-      }
-      item {
-        Spacer(
-          modifier = Modifier
-            .fillMaxWidth()
-            .height(160.dp)
-        )
       }
     }
   }

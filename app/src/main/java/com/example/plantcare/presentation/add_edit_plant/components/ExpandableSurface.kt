@@ -5,9 +5,13 @@ import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.material.ContentAlpha
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -16,7 +20,6 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.example.plantcare.ui.theme.utils.customColors
 
 @Composable
 fun ExpandableSurface(
@@ -51,10 +54,9 @@ fun ExpandableSurface(
       Text(
         text = title,
         maxLines = 1,
-        fontStyle = MaterialTheme.typography.h6.fontStyle,
-        fontSize =  MaterialTheme.typography.h6.fontSize,
+        fontStyle = MaterialTheme.typography.headlineMedium.fontStyle,
         overflow = TextOverflow.Ellipsis,
-        color = MaterialTheme.customColors.onSurface
+        color = MaterialTheme.colorScheme.onSurface
       )
       IconButton(
         modifier = Modifier

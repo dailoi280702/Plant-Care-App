@@ -25,8 +25,20 @@ class PlantsListViewModel @Inject constructor(
   private val _imageRef = mutableStateOf<StorageReference?>(null)
   val imageRef: State<StorageReference?> = _imageRef
 
+  private var lastScrollIndex = 0
+
+  private val _scrollUp = mutableStateOf(false)
+  val scrollUp: State<Boolean> = _scrollUp
+
   init {
     getPlants(state.value.plantsOrder)
+  }
+
+  fun updateScrollPosition(newScrollIndex: Int) {
+    if (newScrollIndex == lastScrollIndex) return
+
+    _scrollUp.value = newScrollIndex > lastScrollIndex
+    lastScrollIndex = newScrollIndex
   }
 
   private fun getPlants(plantOrder: PlantOrder? = null) {
@@ -46,7 +58,6 @@ class PlantsListViewModel @Inject constructor(
     }
   }
 
-
   fun onEvent(event: PlantsScreenEvent) {
     when (event) {
       is PlantsScreenEvent.ToggleOrderSection -> {
@@ -59,6 +70,7 @@ class PlantsListViewModel @Inject constructor(
           return
         }
         getPlants(plantOrder = event.plantOrder)
+        this.onEvent(PlantsScreenEvent.ToggleOrderSection)
       }
     }
   }

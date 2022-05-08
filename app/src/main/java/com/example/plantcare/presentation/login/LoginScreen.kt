@@ -1,13 +1,12 @@
-package com.example.plantcare.presentation.login_signup
+package com.example.plantcare.presentation.login
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
@@ -28,24 +27,22 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.plantcare.R
-import com.example.plantcare.presentation.login_signup.components.LoginTab
-import com.example.plantcare.presentation.login_signup.components.SignupTab
-import com.example.plantcare.presentation.login_signup.utils.LoginIconButton
-import com.example.plantcare.presentation.login_signup.utils.LoginSignupTabItem
+import com.example.plantcare.presentation.login.components.LoginTab
+import com.example.plantcare.presentation.login.components.SignupTab
+import com.example.plantcare.presentation.login.utils.LoginIconButton
+import com.example.plantcare.presentation.login.utils.LoginSignupTabItem
 import com.example.plantcare.presentation.main.MainViewModel
 import com.example.plantcare.presentation.main.utils.Screens
 import com.example.plantcare.ui.theme.Facebook_color
 import com.example.plantcare.ui.theme.Google_color
 import com.example.plantcare.ui.theme.Twitter_color
-import com.example.plantcare.ui.theme.utils.customColors
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.pagerTabIndicatorOffset
 import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalPagerApi::class)
+@OptIn(ExperimentalPagerApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun LoginSignupScreen(
   navController: NavController,
@@ -159,31 +156,26 @@ fun LoginSignupScreen(
       Text(
         text = "PlantCare",
         fontWeight = FontWeight.Bold,
-        fontSize = MaterialTheme.typography.h3.fontSize,
+        fontSize = MaterialTheme.typography.headlineMedium.fontSize,
         color = Color.White,
         modifier = Modifier.padding(bottom = 24.dp),
         fontFamily = FontFamily.Cursive
       )
-      Surface(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(20.dp), elevation = 12.dp
+      Card(
+        modifier = Modifier.fillMaxWidth()
       ) {
         Column(modifier = Modifier.fillMaxWidth()) {
-          TabRow(selectedTabIndex = pagerState.currentPage,
-            backgroundColor = MaterialTheme.colors.surface,
+          TabRow(
+            selectedTabIndex = pagerState.currentPage,
             modifier = Modifier
-              .padding(vertical = 12.dp, horizontal = 8.dp)
+              .padding(8.dp)
               .clip(
-                RoundedCornerShape(
-                  topEnd = 20.dp,
-                  topStart = 20.dp,
-                  bottomStart = 0.dp,
-                  bottomEnd = 0.dp
-                )
+                MaterialTheme.shapes.medium
               ),
             indicator = {
-              Modifier.pagerTabIndicatorOffset(pagerState = pagerState, tabPositions = it)
-            }
+//              Modifier.pagerTabIndicatorOffset(pagerState = pagerState, tabPositions = it)
+            },
+            containerColor = Color.Transparent
           ) {
             tabList.forEachIndexed { index, tabItem ->
               val selected = pagerState.currentPage == index
@@ -198,15 +190,16 @@ fun LoginSignupScreen(
                 text = {
                   Text(
                     text = tabItem.tabTitle,
-                    color = if (selected) MaterialTheme.colors.primary else MaterialTheme.colors.onBackground.copy(
+                    color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground.copy(
                       alpha = 0.5f
                     ),
-                    fontSize = MaterialTheme.typography.h6.fontSize
+                    fontSize = MaterialTheme.typography.bodyLarge.fontSize
                   )
                 }
               )
             }
           }
+          Divider(modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp))
           HorizontalPager(count = tabList.count(), state = pagerState) {
             tabList[it].screen()
           }
@@ -214,16 +207,17 @@ fun LoginSignupScreen(
             modifier = Modifier
               .padding(top = 12.dp)
               .fillMaxWidth()
-              .background(MaterialTheme.customColors.surfaceVariant)
-              .padding(24.dp),
+              .background(MaterialTheme.colorScheme.surfaceVariant)
+              .padding(horizontal = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp)
           ) {
+            Divider()
             Text(
               text = stringResource(id = R.string.login_another),
-              fontSize = MaterialTheme.typography.body2.fontSize,
+              fontSize = MaterialTheme.typography.titleMedium.fontSize,
               textAlign = TextAlign.Center,
-              color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
+              color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
               modifier = Modifier.padding(horizontal = 12.dp)
             )
             Row(
@@ -254,6 +248,7 @@ fun LoginSignupScreen(
                 viewModel.onEvent(LoginSignupEvent.LoginWithTwitter)
               }
             }
+            Spacer(modifier = Modifier.height(24.dp))
           }
         }
       }

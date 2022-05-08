@@ -1,9 +1,8 @@
 package com.example.plantcare.presentation
 
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.rememberScaffoldState
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -15,13 +14,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.plantcare.R
-import com.example.plantcare.presentation.login_signup.AuthenticationViewModel
+import com.example.plantcare.presentation.login.AuthenticationViewModel
 import com.example.plantcare.presentation.main.MainViewModel
 import com.example.plantcare.presentation.main.components.BottomNav
 import com.example.plantcare.presentation.main.components.NavGraph
 import com.example.plantcare.presentation.main.utils.Screens
-import com.example.plantcare.ui.theme.utils.customColors
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppScaffold(
   viewModel: MainViewModel = viewModel(),
@@ -51,29 +50,25 @@ fun AppScaffold(
   )
 
   Scaffold(
-    scaffoldState = scaffoldState,
     bottomBar = {
       if (bottomNavRoutes.contains(navBackStackEntry?.destination?.route))
         BottomNav(navController = navController)
     },
-//    floatingActionButton = viewModel.floatingActionButton.value
     floatingActionButton = {
-      if (!floatingActionButtonRoutes.contains(navBackStackEntry?.destination?.route))
+      if (!floatingActionButtonRoutes.contains(navBackStackEntry?.destination?.route)) {
         FloatingActionButton(
           onClick = viewModel.fbaState.value.onClick,
-          shape = RoundedCornerShape(16.dp),
-          backgroundColor = MaterialTheme.customColors.primaryContainer,
-          modifier = Modifier.padding(4.dp)
+          elevation = FloatingActionButtonDefaults.elevation()
         ) {
           Icon(
             painter = painterResource(id = if (viewModel.fbaState.value.icon != -1) viewModel.fbaState.value.icon else R.drawable.ic_edit_outline),
             contentDescription = viewModel.fbaState.value.contentDescription,
-            tint = MaterialTheme.customColors.onPrimaryContainer,
             modifier = Modifier
               .size(24.dp)
               .rotate(viewModel.fbaState.value.rotation)
           )
         }
+      }
     }
   ) {
     NavGraph(

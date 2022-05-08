@@ -1,4 +1,4 @@
-package com.example.plantcare.presentation.login_signup
+package com.example.plantcare.presentation.login
 
 import com.example.plantcare.presentation.main.utils.Screens
 

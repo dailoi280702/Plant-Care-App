@@ -7,15 +7,15 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.plantcare.presentation.Tasks.TasksScreen
 import com.example.plantcare.presentation.add_edit_plant.AddEditPlantScreen
 import com.example.plantcare.presentation.home.HomeScreen
-import com.example.plantcare.presentation.login_signup.AuthenticationViewModel
-import com.example.plantcare.presentation.login_signup.LoginSignupScreen
+import com.example.plantcare.presentation.login.AuthenticationViewModel
+import com.example.plantcare.presentation.login.LoginSignupScreen
 import com.example.plantcare.presentation.main.MainViewModel
+import com.example.plantcare.presentation.main.utils.Screens
 import com.example.plantcare.presentation.plants.PlantsScreen
 import com.example.plantcare.presentation.settings.SettingsScreen
-import com.example.plantcare.presentation.tasks.TasksScreen
-import com.example.plantcare.presentation.main.utils.Screens
 
 @Composable
 fun NavGraph(
