@@ -23,8 +23,10 @@ class PlantRepositoryImpl(
 ) : PlantRepository {
 
   override fun getPlants(plantOrder: PlantOrder?, limit: Long?) = callbackFlow {
-    val direction = if (plantOrder?.orderType is OrderType.Ascending) Query.Direction.ASCENDING else Query.Direction.DESCENDING
-    var mPlantsCollection = plantRef.collection("plants").orderBy(plantOrder?.orderName?: "name", direction)
+    val direction =
+      if (plantOrder?.orderType is OrderType.Ascending) Query.Direction.ASCENDING else Query.Direction.DESCENDING
+    var mPlantsCollection =
+      plantRef.collection("plants").orderBy(plantOrder?.orderName ?: "name", direction)
     limit?.let {
       mPlantsCollection = mPlantsCollection.limit(limit)
     }
@@ -83,10 +85,10 @@ class PlantRepositoryImpl(
       getPlantImageRef(id).putFile(uri).await()
       val url = getPlantImageRef(id).downloadUrl.await().toString()
       val newPlant = plant.copy(
-          id = id,
-          imageURL = url,
-          dateAdded = System.currentTimeMillis()
-        )
+        id = id,
+        imageURL = url,
+        dateAdded = System.currentTimeMillis()
+      )
       plantRef.collection("plants").document(id).set(
         newPlant
       ).await()
@@ -136,4 +138,21 @@ class PlantRepositoryImpl(
 
   override fun getPlantImageRef(id: String) = storageRef.child("test_iamges/$userId/$id")
 
+  override suspend fun getPlantName(id: String) = callbackFlow {
+    val snapshotListener =
+    plantRef.collection("plants").document(id).addSnapshotListener { snapshot, e ->
+      if (e != null) {
+        trySend(e.message).isSuccess
+      }
+
+      if (snapshot != null && snapshot.exists()) {
+        val name = snapshot.getString("name")
+        trySend(name!!).isSuccess
+      }
+    }
+
+    awaitClose {
+      snapshotListener.remove()
+    }
+  }
 }

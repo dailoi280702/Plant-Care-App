@@ -41,7 +41,8 @@ object PlantModule {
       getPlant = GetPlant(repository = repository),
       addPlant = AddPlant(repository = repository),
       updatePlant = UpdatePlant(repository = repository),
-      deletePlant = DeletePlant(repository = repository)
+      deletePlant = DeletePlant(repository = repository),
+      getPlantName = GetPlantName(repository = repository)
     )
   }
 }

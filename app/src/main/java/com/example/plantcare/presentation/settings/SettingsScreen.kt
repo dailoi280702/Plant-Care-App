@@ -37,7 +37,7 @@ fun SettingsScreen(
         }
         is LoginSignupUIEvent.Navigate -> {
           navController.navigate(event.screen.route) {
-            popUpTo(Screens.LoginSignupScreen.route) {
+            popUpTo(Screens.MainScreens.Settings.route) {
               inclusive = true
             }
             mainViewModel.setCurrentScreen(event.screen)

@@ -9,7 +9,6 @@ import com.example.plantcare.data.utils.DataState
 import com.example.plantcare.domain.model.Plant
 import com.example.plantcare.domain.use_case.plant.PlantUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -22,16 +21,15 @@ class AddEditPlantViewModel @Inject constructor(
   private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-  private val _addEditPlantState = mutableStateOf<AddEditPlantState>(AddEditPlantState())
+  private val _addEditPlantState = mutableStateOf(AddEditPlantState())
   val addEditPlantState: State<AddEditPlantState> = _addEditPlantState
 
   private val _dataState = mutableStateOf<DataState<Plant?>>(DataState.Success(null))
   val dataState: State<DataState<Plant?>> = _dataState
 
+
   private val _eventFLow = MutableSharedFlow<AddEditPlantUiEvent>()
   val eventFlow = _eventFLow.asSharedFlow()
-
-  private var savePlantJob: Job? = null
 
   init {
     viewModelScope.launch {
@@ -79,7 +77,7 @@ class AddEditPlantViewModel @Inject constructor(
       }
       is AddEditPlantEvent.ToggleTaskDialog -> {
         _addEditPlantState.value = addEditPlantState.value.copy(
-          taskDialogVisibiliy = !addEditPlantState.value.taskDialogVisibiliy
+          taskDialogVisibility = !addEditPlantState.value.taskDialogVisibility
         )
       }
       is AddEditPlantEvent.EnterName -> {

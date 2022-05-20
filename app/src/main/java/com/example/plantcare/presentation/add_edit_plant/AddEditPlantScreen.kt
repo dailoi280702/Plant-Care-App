@@ -7,8 +7,6 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -16,16 +14,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.plantcare.R
 import com.example.plantcare.data.utils.DataState
-import com.example.plantcare.domain.model.PlantTask
 import com.example.plantcare.presentation.add_edit_plant.components.*
 import com.example.plantcare.presentation.add_edit_task.AddEditTaskDialog
 import com.example.plantcare.presentation.main.MainViewModel
+import com.example.plantcare.presentation.plantTaskList.components.PlantTaskList
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -88,63 +87,96 @@ fun AddEditPlantScreen(
   Column(
     modifier = Modifier
       .fillMaxSize()
-      .verticalScroll(rememberScrollState())
+//      .verticalScroll(rememberScrollState())
   ) {
     ExpandableSurface(
       title = "Plant information",
       expanded = addEditPlantState.expandedInfo,
       onClick = { viewModel.onEvent(AddEditPlantEvent.ToggleInfoSection) }
     ) {
-      InfoSection(
-        name = addEditPlantState.plant.name ?: "",
-        description = addEditPlantState.plant.description ?: "",
-        onNameChange = {
-          viewModel.onEvent(AddEditPlantEvent.EnterName(it))
-        },
-        onDescriptionChange = {
-          viewModel.onEvent(AddEditPlantEvent.EnterDescription(it))
-        }
-      )
-    }
-
-    if (addEditPlantState.plant.id != "") {
-      Divider()
-      ExpandableSurface(
-        title = "Todo",
-        expanded = addEditPlantState.expandedTasks,
-        onClick = { viewModel.onEvent(AddEditPlantEvent.ToggleTasksSection) }
+      Row(
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(start = 16.dp, top = 8.dp, bottom = 16.dp)
       ) {
-        Row(
+        Box(
           modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp, horizontal = 16.dp),
-          verticalAlignment = Alignment.CenterVertically,
-          horizontalArrangement = Arrangement.End
+            .weight(1f),
+          contentAlignment = Alignment.Center
         ) {
-          TextButton(onClick = {
-            viewModel.onEvent(AddEditPlantEvent.ToggleTaskDialog)
-          }) {
-            Text(text = "Add todo")
+          ImageSection(
+            showLocalImage = showLocalImage,
+            painter = painter,
+          ) {
+            launcher.launch("image/*")
           }
+        }
+        Box(modifier = Modifier.weight(1f)) {
+          InfoSection(
+            name = addEditPlantState.plant.name ?: "",
+            description = addEditPlantState.plant.description ?: "",
+            onNameChange = {
+              viewModel.onEvent(AddEditPlantEvent.EnterName(it))
+            },
+            onDescriptionChange = {
+              viewModel.onEvent(AddEditPlantEvent.EnterDescription(it))
+            }
+          )
         }
       }
     }
 
     Divider()
-    ExpandableSurface(
-      title = "Image",
-      expanded = addEditPlantState.expandedImage,
-      onClick = { viewModel.onEvent(AddEditPlantEvent.ToggleImageSection) }
+    Row(
+      verticalAlignment = Alignment.CenterVertically,
+      horizontalArrangement = Arrangement.SpaceBetween,
+      modifier = Modifier
+        .padding(horizontal = 16.dp)
+        .fillMaxWidth()
     ) {
-      ImageSection(
-        showLocalImage = showLocalImage,
-        painter = painter,
-      ) {
-        launcher.launch("image/*")
+      Text(
+        text = "Todo",
+        maxLines = 1,
+        fontStyle = MaterialTheme.typography.headlineMedium.fontStyle,
+        overflow = TextOverflow.Ellipsis,
+        color = MaterialTheme.colorScheme.onSurface
+      )
+      TextButton(onClick = {
+        viewModel.onEvent(AddEditPlantEvent.ToggleTaskDialog)
+      }) {
+        Text(text = "add todo")
       }
     }
+    
+    PlantTaskList(navController = navController, plantId = addEditPlantState.plant.id!!)
 
-    Spacer(modifier = Modifier.height(160.dp))
+//    if (addEditPlantState.plant.id != "") {
+//      Divider()
+//      ExpandableSurface(
+//        title = "Todo",
+//        expanded = addEditPlantState.expandedTasks,
+//        onClick = { viewModel.onEvent(AddEditPlantEvent.ToggleTasksSection) }
+//      ) {
+//        Column(modifier = Modifier.fillMaxWidth()) {
+//          PlantTaskList(navController = navController, plantId = addEditPlantState.plant.id!!)
+//          Row(
+//            modifier = Modifier
+//              .fillMaxWidth()
+//              .padding(vertical = 8.dp, horizontal = 16.dp),
+//            verticalAlignment = Alignment.CenterVertically,
+//            horizontalArrangement = Arrangement.End
+//          ) {
+//            textbutton(onclick = {
+//              viewmodel.onevent(addeditplantevent.toggletaskdialog)
+//            }) {
+//              text(text = "add todo")
+//            }
+//          }
+//        }
+//      }
+//    }
+//
+//    Spacer(modifier = Modifier.height(160.dp))
   }
 
   AnimatedVisibility(
@@ -210,8 +242,8 @@ fun AddEditPlantScreen(
   }
 
   AddEditTaskDialog(
-    openDiaLog = addEditPlantState.taskDialogVisibiliy,
-    plantTask = PlantTask(plantId = addEditPlantState.plant.id)
+    openDiaLog = addEditPlantState.taskDialogVisibility,
+    plantId = addEditPlantState.plant.id
   ) {
     viewModel.onEvent(AddEditPlantEvent.ToggleTaskDialog)
   }

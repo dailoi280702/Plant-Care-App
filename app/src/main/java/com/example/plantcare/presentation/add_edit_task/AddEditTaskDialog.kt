@@ -1,33 +1,41 @@
 package com.example.plantcare.presentation.add_edit_task;
 
-import android.util.Log
+import android.app.DatePickerDialog
+import android.widget.DatePicker
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.chargemap.compose.numberpicker.ListItemPicker
+import com.chargemap.compose.numberpicker.NumberPicker
 import com.example.plantcare.R
 import com.example.plantcare.domain.model.PlantTask
 import com.example.plantcare.ui.theme.fire
 import com.example.plantcare.ui.theme.gold
 import kotlinx.coroutines.flow.collectLatest
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditTaskDialog(
   openDiaLog: Boolean,
-  plantTask: PlantTask?,
+  plantTask: PlantTask? = null,
+  plantId: String?,
   viewModel: AddEditTaskDialogViewModel = hiltViewModel(),
   onDismiss: () -> Unit
 ) {
 
   LaunchedEffect(Unit) {
-    plantTask?.let {
-      viewModel.initTask(it)
+//    plantTask?.let {
+//      viewModel.initTask(it)
+//    }
+    plantId?.let {
+      viewModel.init(plantId)
     }
   }
 
@@ -35,43 +43,63 @@ fun AddEditTaskDialog(
     viewModel.eventFlow.collectLatest {
       if (it) {
         onDismiss()
+        plantId?.let {
+          viewModel.init(plantId)
+        }
       }
     }
   }
 
-  val taskValue = viewModel.plantTask.value
-  val importantText = when (taskValue.important) {
-    1 -> "not important"
-    2 -> "important"
-    else -> "very important"
+  val stateValue = viewModel.addEditTaskDialogState.value
+
+  var showNumberPicker by remember { mutableStateOf(false) }
+  val possibleValues = listOf(Duration.DAY, Duration.WEEK, Duration.MONTH)
+  var state by remember { mutableStateOf(possibleValues[0]) }
+  val datePickerDialog = DatePickerDialog(
+    LocalContext.current,
+    { _: DatePicker, year: Int, month: Int, dayOfMonth: Int ->
+      viewModel.onEvent(
+        AddEditTaskDialogEvent.UpdateDueDate(
+          day = dayOfMonth,
+          month = month,
+          year = year
+        )
+      )
+    },
+    stateValue.year,
+    stateValue.month,
+    stateValue.day
+  )
+
+
+  val importantText = when (stateValue.important) {
+    1 -> "important"
+    2 -> "very important"
+    else -> "not important"
   }
-  val iconId = when (taskValue.important) {
+  val iconId = when (stateValue.important) {
     1 -> R.drawable.ic_star_half
     2 -> R.drawable.ic_star
     else -> R.drawable.ic_star_outline
   }
-  val textColor = when (taskValue.important) {
+  val textColor = when (stateValue.important) {
     1 -> gold
     2 -> fire
     else -> MaterialTheme.colorScheme.onSurface
   }
-  val iconColor = when (taskValue.important) {
+  val iconColor = when (stateValue.important) {
     1 -> gold
     2 -> fire
-    else -> MaterialTheme.colorScheme.surfaceTint
+    else -> MaterialTheme.colorScheme.onSurface
   }
-  val showError = viewModel.errorMessage.value != null
 
   if (openDiaLog) {
     AlertDialog(
       onDismissRequest = onDismiss,
-      title = {
-        Text(text = if (taskValue.taskId == "") "New todo" else "Update todo")
-      },
       text = {
         Column {
           OutlinedTextField(
-            value = taskValue.title!!,
+            value = stateValue.title,
             onValueChange = {
               viewModel.onEvent(AddEditTaskDialogEvent.UpdateTitle(it))
             },
@@ -81,46 +109,119 @@ fun AddEditTaskDialog(
             ),
             placeholder = {
               Text(text = "Enter title")
-            }
-          )
-          OutlinedTextField(
-            value = taskValue.description!!,
-            onValueChange = {
-              viewModel.onEvent(AddEditTaskDialogEvent.UpdateDescription(it))
             },
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-              unfocusedBorderColor = Color.Transparent,
-              focusedBorderColor = Color.Transparent
-            ),
-            placeholder = {
-              Text(text = "Enter description")
-            }
+            textStyle = MaterialTheme.typography.titleMedium
           )
-          Spacer(modifier = Modifier.height(16.dp))
-          Row(verticalAlignment = Alignment.CenterVertically) {
-            OutlinedButton(
-              onClick = {
-                Log.d("asd123xxx", "ahdsflk")
-                viewModel.onEvent(AddEditTaskDialogEvent.UpdateTaskImportant)
-              },
-              modifier = Modifier.padding(horizontal = 8.dp)
-            ) {
+
+          Divider()
+
+          ContentContainer(icon = {
+            Icon(
+              painter = painterResource(id = iconId),
+              contentDescription = null,
+              tint = iconColor,
+              modifier = Modifier.size(24.dp)
+            )
+          }) {
+            TextButton(onClick = {
+              viewModel.onEvent(AddEditTaskDialogEvent.UpdateTaskImportant)
+            }) {
+              Text(
+                text = importantText,
+                color = textColor,
+              )
+            }
+          }
+
+          ContentContainer(icon = {
+            Icon(
+              painter = painterResource(id = R.drawable.ic_event_today),
+              contentDescription = null,
+              modifier = Modifier.size(24.dp)
+            )
+          }) {
+            TextButton(onClick = {
+              datePickerDialog.show()
+            }) {
+              Text(text = "Due at: ${stateValue.day}/${stateValue.month + 1}/${stateValue.year}")
+            }
+          }
+
+          ContentContainer(
+            icon = {
+              Icon(
+                painter = painterResource(id = R.drawable.ic_repeat),
+                contentDescription = null,
+                modifier = Modifier.size(24.dp)
+              )
+            }, showBottomLine = false
+          ) {
+            Box {
               Row(
-                verticalAlignment = Alignment.CenterVertically
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
               ) {
-                Icon(
-                  painter = painterResource(id = iconId),
-                  contentDescription = null,
-                  tint = iconColor,
-                  modifier = Modifier.size(24.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                  text = importantText,
-                  color = textColor,
+                TextButton(
+                  onClick = {
+                    showNumberPicker = !showNumberPicker
+                  },
+                  enabled = stateValue.repeatable,
+                  colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Transparent,
+                    disabledContainerColor = Color.Transparent,
+                    contentColor = MaterialTheme.colorScheme.primary
+                  )
+                ) {
+                  Text(text = "repeat after: ${stateValue.duration.time} ${stateValue.duration.type}")
+                }
+                Checkbox(
+                  checked = stateValue.repeatable,
+                  onCheckedChange = { viewModel.onEvent(AddEditTaskDialogEvent.UpdateRepeatable) }
                 )
               }
+              DropdownMenu(
+                expanded = showNumberPicker && stateValue.repeatable,
+                onDismissRequest = { showNumberPicker = !showNumberPicker }) {
+                Row {
+                  NumberPicker(
+                    value = stateValue.duration.time,
+                    range = 1..100,
+                    onValueChange = {
+                      viewModel.onEvent(
+                        AddEditTaskDialogEvent.UpdateDuration(
+                          stateValue.duration.copy(
+                            it
+                          )
+                        )
+                      )
+                    },
+                    dividersColor = Color.Transparent,
+                    textStyle = MaterialTheme.typography.labelLarge.copy(color = MaterialTheme.colorScheme.onSurface),
+                  )
+                  ListItemPicker(
+                    label = { it },
+                    value = state,
+                    onValueChange = {
+                      state = it
+                      viewModel.onEvent(
+                        AddEditTaskDialogEvent.UpdateDuration(
+                          stateValue.duration.copy(
+                            it
+                          )
+                        )
+                      )
+                    },
+                    list = possibleValues,
+                    dividersColor = Color.Transparent,
+                    textStyle = MaterialTheme.typography.labelLarge.copy(color = MaterialTheme.colorScheme.onSurface),
+                  )
+                }
+              }
             }
+          }
+          Row(
+            verticalAlignment = Alignment.CenterVertically
+          ) {
           }
           Row(
             modifier = Modifier
@@ -147,9 +248,35 @@ fun AddEditTaskDialog(
         TextButton(
           onClick = onDismiss
         ) {
-          Text("Dismiss")
+          Text("Cancel")
         }
       },
     )
+  }
+}
+
+@Composable
+fun ContentContainer(
+  showBottomLine: Boolean = true,
+  icon: @Composable () -> Unit,
+  content: @Composable () -> Unit,
+) {
+  Row(
+    modifier = Modifier
+      .fillMaxWidth(),
+    verticalAlignment = Alignment.CenterVertically
+  ) {
+    Box(modifier = Modifier.size(40.dp), contentAlignment = Alignment.Center) {
+      icon()
+    }
+    content()
+  }
+  if (showBottomLine) {
+    Row(
+      modifier = Modifier.fillMaxWidth()
+    ) {
+      Spacer(modifier = Modifier.width(40.dp))
+      Divider()
+    }
   }
 }

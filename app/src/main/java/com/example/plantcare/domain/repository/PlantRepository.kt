@@ -22,4 +22,6 @@ interface PlantRepository {
   fun getPlantImageRef(id: String): StorageReference
 
   suspend fun addPlant(plant: Plant, uri: Uri?): Flow<DataState<Plant?>>
+
+  suspend fun getPlantName(id: String): Flow<String?>
 }

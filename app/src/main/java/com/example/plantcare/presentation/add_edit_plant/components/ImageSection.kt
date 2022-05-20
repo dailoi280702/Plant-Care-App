@@ -9,6 +9,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImagePainter
 import com.example.plantcare.R
@@ -26,7 +27,7 @@ fun ImageSection(
   Column(modifier = Modifier.fillMaxWidth()) {
     Card(
       modifier = Modifier
-        .padding(16.dp)
+//        .padding(16.dp)
         .aspectRatio(0.8f)
         .clickable {
           onClick()
@@ -60,7 +61,8 @@ fun ImageSection(
             }
             Text(
               text = "Click to choose picture",
-              color = MaterialTheme.colorScheme.onSurface
+              color = MaterialTheme.colorScheme.onSurface,
+              textAlign = TextAlign.Center
             )
           }
         } else {
@@ -72,13 +74,7 @@ fun ImageSection(
           )
           when (painterState) {
             is AsyncImagePainter.State.Loading -> {
-              Row(
-                verticalAlignment = Alignment.CenterVertically
-              ) {
-                Text(text = "Loading")
-                Spacer(modifier = Modifier.width(16.dp))
-                CircularProgressIndicator()
-              }
+              CircularProgressIndicator()
             }
             is AsyncImagePainter.State.Success -> {
             }

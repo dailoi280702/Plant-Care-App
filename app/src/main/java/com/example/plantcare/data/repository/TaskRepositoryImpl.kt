@@ -10,6 +10,7 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
+import java.util.*
 import javax.inject.Singleton
 
 @Singleton
@@ -34,25 +35,51 @@ class TaskRepositoryImpl(
 
     awaitClose {
       snapshotListener.remove()
+      channel.close()
     }
   }
 
   override fun getTasksByPlantID(plantId: String) = callbackFlow {
 
-    val snapshotListener = documentRef.collection("tasks").whereEqualTo("plantId", plantId)
-      .addSnapshotListener { snapshot, e ->
-        val data = if (snapshot != null) {
-          try {
-            val plants = snapshot.toObjects(PlantTask::class.java)
-            Success(plants)
-          } catch (e: Exception) {
-            Error(e.message.toString())
-          }
-        } else {
-          Error(e?.message.toString())
-        }
-        trySend(data).isSuccess
+    val taskCollection = documentRef.collection("tasks").orderBy("done")
+//    val taskCollection = documentRef.collection("tasks").whereEqualTo("plantId", plantId)
+    val snapshotListener = taskCollection.addSnapshotListener { snapshot, e ->
+      if (e != null) {
+        trySend(Error(e.message.toString()))
       }
+
+      val data = if (snapshot != null && e == null) {
+        try {
+          val now = Calendar.getInstance().time
+          val tasks = mutableListOf<PlantTask>()
+          snapshot.onEach {
+            val task = it.toObject(PlantTask::class.java)
+            if (task.plantId == plantId) {
+              val dueDate = task.dueDay!!.toDate()
+              if (com.example.plantcare.core.Utils.compareTwoDates(dueDate, now) < 0) {
+                task.overDue = true
+                if (!task.repeatable && task.done) {
+                  documentRef.collection("tasks").document(task.taskId!!).delete()
+                }
+                else {
+                  tasks.add(task)
+                }
+              } else {
+                task.overDue = false
+                tasks.add(task)
+              }
+            }
+          }
+//          val plants = snapshot.toObjects(PlantTask::class.java)
+          Success(tasks)
+        } catch (e: Exception) {
+          Error(e.message.toString())
+        }
+      } else {
+        Error(e?.message.toString())
+      }
+      trySend(data).isSuccess
+    }
 
     awaitClose {
       snapshotListener.remove()
@@ -78,18 +105,13 @@ class TaskRepositoryImpl(
       emit(Error("Please enter title"))
       return@flow
     }
-    if (task.description.isNullOrEmpty() || task.description.isNullOrBlank()) {
-      emit(Error("Please enter description"))
-      return@flow
-    }
 
     try {
       emit(Loading)
       val id = documentRef.collection("tasks").add(task).await().id
       val newTask = task.copy(
-          taskId = id,
-          timestamp = System.currentTimeMillis()
-        )
+        taskId = id
+      )
       documentRef.collection("tasks").document(id).set(
         newTask
       ).await()
