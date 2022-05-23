@@ -31,15 +31,15 @@ sealed class Screens(val route: String) {
     object Tasks : MainScreens(
       route = "tasks",
       title = "Todo",
-      icon = R.drawable.ic_todo,
-      outline_icon = R.drawable.ic_todo_outline
+      icon = R.drawable.ic_event_note,
+      outline_icon = R.drawable.ic_event_note_outline
     )
 
     object Settings : MainScreens(
         route = "settings",
         title = "Settings",
-        icon = R.drawable.ic_baseline_settings_24,
-        outline_icon = R.drawable.ic_outline_settings_24
+        icon = R.drawable.ic_settings,
+        outline_icon = R.drawable.ic_settings_outline
       )
   }
 }

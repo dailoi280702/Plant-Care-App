@@ -4,16 +4,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.plantcare.ui.theme.utils.customColors
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InfoSection(
   name: String,
@@ -21,65 +19,72 @@ fun InfoSection(
   onNameChange: (String) -> Unit,
   onDescriptionChange: (String) -> Unit
 ) {
-  Surface(
-    modifier = Modifier
-      .padding(16.dp)
-      .fillMaxWidth(),
-    color = MaterialTheme.customColors.surface,
-    elevation = 8.dp,
-    shape = RoundedCornerShape(12.dp)
+//  Card(
+//    modifier = Modifier
+//      .padding(16.dp)
+//      .fillMaxWidth(),
+//    elevation = CardDefaults.elevatedCardElevation()
+//  ) {
+  Column(
+    Modifier
+      .fillMaxWidth()
+      .padding(horizontal = 8.dp)
   ) {
-    Column(
-      Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 8.dp)
-    ) {
-      TextField(
-        modifier = Modifier
-          .offset(y = 8.dp)
-          .fillMaxWidth(),
-        value = name,
-        onValueChange = {
-          onNameChange(it)
-        },
-        singleLine = true,
-        placeholder = {
-          Text(text = "Name")
-        },
-        textStyle = MaterialTheme.typography.body1.copy(
-          fontWeight = FontWeight.Medium
-        ),
-        shape = RectangleShape,
-        colors = TextFieldDefaults.textFieldColors(
-          backgroundColor = Color.Transparent,
-          cursorColor = MaterialTheme.colors.onSurface,
-          disabledLabelColor = MaterialTheme.customColors.secondary,
-          focusedIndicatorColor = Color.Transparent,
-          unfocusedIndicatorColor = Color.Transparent
+    TextField(
+      modifier = Modifier
+        .offset(y = (-16).dp)
+        .fillMaxWidth(),
+      value = name,
+      onValueChange = {
+        onNameChange(it)
+      },
+      singleLine = false,
+      placeholder = {
+        Text(
+          text = "Name",
+          color = MaterialTheme.colorScheme.onSurface,
+          style = MaterialTheme.typography.titleMedium
         )
-      )
-      TextField(
-        modifier = Modifier
-          .offset(y = (-8).dp)
-          .fillMaxWidth(),
-        value = description,
-        onValueChange = {
-          onDescriptionChange(it)
-        },
-        singleLine = false,
-        placeholder = {
-          Text(text = "Description")
-        },
-        textStyle = MaterialTheme.typography.body2,
-        shape = RectangleShape,
-        colors = TextFieldDefaults.textFieldColors(
-          backgroundColor = Color.Transparent,
-          cursorColor = MaterialTheme.colors.onSurface,
-          disabledLabelColor = MaterialTheme.customColors.secondary,
-          focusedIndicatorColor = Color.Transparent,
-          unfocusedIndicatorColor = Color.Transparent
+      },
+      textStyle = MaterialTheme.typography.titleMedium,
+      shape = RectangleShape,
+      colors = TextFieldDefaults.textFieldColors(
+        cursorColor = MaterialTheme.colorScheme.onSurface,
+        disabledLabelColor = MaterialTheme.colorScheme.secondary,
+        focusedIndicatorColor = Color.Transparent,
+        unfocusedIndicatorColor = Color.Transparent,
+        containerColor = MaterialTheme.colorScheme.background
+      ),
+    )
+    Divider(thickness = 1.dp, modifier = Modifier
+      .offset(y = (-24).dp)
+      .padding(horizontal = 16.dp))
+    TextField(
+      modifier = Modifier
+        .offset(y = (-24).dp)
+        .fillMaxWidth(),
+      value = description,
+      onValueChange = {
+        onDescriptionChange(it)
+      },
+      singleLine = false,
+      placeholder = {
+        Text(
+          text = "Description",
+          color = MaterialTheme.colorScheme.onSurface,
+          style = MaterialTheme.typography.bodyMedium
         )
+      },
+      textStyle = MaterialTheme.typography.bodyMedium,
+      shape = RectangleShape,
+      colors = TextFieldDefaults.textFieldColors(
+        cursorColor = MaterialTheme.colorScheme.onSurface,
+        disabledLabelColor = MaterialTheme.colorScheme.secondary,
+        focusedIndicatorColor = Color.Transparent,
+        unfocusedIndicatorColor = Color.Transparent,
+        containerColor = MaterialTheme.colorScheme.background
       )
-    }
+    )
   }
+//  }
 }

@@ -101,6 +101,13 @@ dependencies {
 
     //FireStorage
     implementation 'com.google.firebase:firebase-storage-ktx'
+
+    //compose material 3
+    implementation("androidx.compose.material3:material3:1.0.0-alpha10")
+    implementation("androidx.compose.material3:material3-window-size-class:1.0.0-alpha10")
+
+    //number picker
+    implementation "com.chargemap.compose:numberpicker:1.0.3"
 }
 
 kapt {

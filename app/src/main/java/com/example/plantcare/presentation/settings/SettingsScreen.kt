@@ -12,9 +12,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.plantcare.presentation.login_signup.AuthenticationViewModel
-import com.example.plantcare.presentation.login_signup.LoginSignupEvent
-import com.example.plantcare.presentation.login_signup.LoginSignupUIEvent
+import com.example.plantcare.presentation.login.AuthenticationViewModel
+import com.example.plantcare.presentation.login.LoginSignupEvent
+import com.example.plantcare.presentation.login.LoginSignupUIEvent
 import com.example.plantcare.presentation.main.MainViewModel
 import com.example.plantcare.presentation.main.utils.Screens
 import com.google.firebase.auth.ktx.auth
@@ -37,7 +37,7 @@ fun SettingsScreen(
         }
         is LoginSignupUIEvent.Navigate -> {
           navController.navigate(event.screen.route) {
-            popUpTo(Screens.LoginSignupScreen.route) {
+            popUpTo(Screens.MainScreens.Settings.route) {
               inclusive = true
             }
             mainViewModel.setCurrentScreen(event.screen)

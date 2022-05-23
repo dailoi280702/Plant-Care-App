@@ -3,11 +3,7 @@ package com.example.plantcare.presentation.plants.components
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,9 +13,9 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import com.example.plantcare.domain.model.Plant
-import com.example.plantcare.ui.theme.utils.customColors
 import java.text.SimpleDateFormat
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlantCard(
   plant: Plant,
@@ -31,9 +27,7 @@ fun PlantCard(
 
   Card(
     modifier = modifier,
-    elevation = 8.dp,
-    shape = RoundedCornerShape(12.dp),
-    backgroundColor = MaterialTheme.colors.surface
+    elevation = CardDefaults.elevatedCardElevation()
   ) {
     Column(
       verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -59,7 +53,7 @@ fun PlantCard(
           is AsyncImagePainter.State.Error -> {
             Text(
               text = "Error while loading image, try again later!",
-              color = MaterialTheme.customColors.error,
+              color = MaterialTheme.colorScheme.error,
               modifier = Modifier.padding(16.dp)
             )
           }
@@ -71,18 +65,18 @@ fun PlantCard(
       Text(
         text = plant.name!!,
         modifier = Modifier.padding(horizontal = 16.dp),
-        fontSize = MaterialTheme.typography.h5.fontSize,
+        fontSize = MaterialTheme.typography.titleLarge.fontSize,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
-        color = MaterialTheme.customColors.onSurface
+        color = MaterialTheme.colorScheme.onSurface,
       )
       Text(
         text = millisToDateString(plant.dateAdded ?: System.currentTimeMillis()),
         modifier = Modifier.padding(horizontal = 16.dp),
-        fontSize = MaterialTheme.typography.body2.fontSize,
+        fontSize = MaterialTheme.typography.titleSmall.fontSize,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
-        color = MaterialTheme.customColors.onSurfaceVariant
+        color = MaterialTheme.colorScheme.onSurfaceVariant
       )
       Spacer(modifier = Modifier.height(4.dp))
     }

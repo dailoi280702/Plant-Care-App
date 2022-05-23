@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.plantcare.data.utils.DataState
 import com.example.plantcare.domain.use_case.plant.PlantUseCases
+import com.example.plantcare.domain.utils.PlantOrder
 import com.example.plantcare.presentation.plants.components.PlantsState
 import com.google.firebase.storage.StorageReference
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,17 +25,30 @@ class PlantsListViewModel @Inject constructor(
   private val _imageRef = mutableStateOf<StorageReference?>(null)
   val imageRef: State<StorageReference?> = _imageRef
 
+  private var lastScrollIndex = 0
+
+  private val _scrollUp = mutableStateOf(false)
+  val scrollUp: State<Boolean> = _scrollUp
+
   init {
-    getPlants()
+    getPlants(state.value.plantsOrder)
   }
 
-  private fun getPlants() {
+  fun updateScrollPosition(newScrollIndex: Int) {
+    if (newScrollIndex == lastScrollIndex) return
+
+    _scrollUp.value = newScrollIndex > lastScrollIndex
+    lastScrollIndex = newScrollIndex
+  }
+
+  private fun getPlants(plantOrder: PlantOrder? = null) {
     viewModelScope.launch {
       try {
-        plantUseCases.getPlants().collect {
+        plantUseCases.getPlants(plantOrder = plantOrder).collect {
           if (it is DataState.Success) {
             _state.value = state.value.copy(
-              plants = it.data
+              plants = it.data,
+              plantsOrder = plantOrder?:state.value.plantsOrder
             )
           }
         }
@@ -43,7 +57,6 @@ class PlantsListViewModel @Inject constructor(
       }
     }
   }
-
 
   fun onEvent(event: PlantsScreenEvent) {
     when (event) {
@@ -56,10 +69,8 @@ class PlantsListViewModel @Inject constructor(
         if (state.value.plantsOrder::class == event.plantOrder::class && state.value.plantsOrder.orderType == event.plantOrder.orderType) {
           return
         }
-        // get plant by order
-        _state.value = state.value.copy(
-          plantsOrder = event.plantOrder
-        )
+        getPlants(plantOrder = event.plantOrder)
+        this.onEvent(PlantsScreenEvent.ToggleOrderSection)
       }
     }
   }

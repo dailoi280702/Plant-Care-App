@@ -7,9 +7,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.plantcare.data.utils.DataState
 import com.example.plantcare.domain.model.Plant
+import com.example.plantcare.domain.model.PlantTask
 import com.example.plantcare.domain.use_case.plant.PlantUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -22,7 +22,7 @@ class AddEditPlantViewModel @Inject constructor(
   private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-  private val _addEditPlantState = mutableStateOf<AddEditPlantState>(AddEditPlantState())
+  private val _addEditPlantState = mutableStateOf(AddEditPlantState())
   val addEditPlantState: State<AddEditPlantState> = _addEditPlantState
 
   private val _dataState = mutableStateOf<DataState<Plant?>>(DataState.Success(null))
@@ -31,7 +31,8 @@ class AddEditPlantViewModel @Inject constructor(
   private val _eventFLow = MutableSharedFlow<AddEditPlantUiEvent>()
   val eventFlow = _eventFLow.asSharedFlow()
 
-  private var savePlantJob: Job? = null
+  private val _currentPlantTask = mutableStateOf<PlantTask?>(null)
+  val currentPlantTask: State<PlantTask?> = _currentPlantTask
 
   init {
     viewModelScope.launch {
@@ -72,6 +73,16 @@ class AddEditPlantViewModel @Inject constructor(
           expandedTasks = !addEditPlantState.value.expandedTasks
         )
       }
+      is AddEditPlantEvent.ToggleSubFab -> {
+        _addEditPlantState.value = addEditPlantState.value.copy(
+          subFabVisibility = !addEditPlantState.value.subFabVisibility
+        )
+      }
+      is AddEditPlantEvent.ToggleTaskDialog -> {
+        _addEditPlantState.value = addEditPlantState.value.copy(
+          taskDialogVisibility = !addEditPlantState.value.taskDialogVisibility
+        )
+      }
       is AddEditPlantEvent.EnterName -> {
         _addEditPlantState.value = addEditPlantState.value.copy(
           plant = addEditPlantState.value.plant.copy(
@@ -99,6 +110,14 @@ class AddEditPlantViewModel @Inject constructor(
             updatePlant()
           }
         }
+      }
+      is AddEditPlantEvent.DeletePlant -> {
+        if (dataState.value != DataState.Loading) {
+          deletePlant()
+        }
+      }
+      is AddEditPlantEvent.UpdateCurrentPlantTask -> {
+        _currentPlantTask.value = event.value
       }
     }
   }
@@ -137,6 +156,23 @@ class AddEditPlantViewModel @Inject constructor(
         if (it is DataState.Error) {
           _eventFLow.emit(AddEditPlantUiEvent.ShowError(it.message))
         }
+      }
+    }
+  }
+
+  private fun deletePlant() {
+    val id = addEditPlantState.value.plant.id
+    if (!id.isNullOrEmpty() || !id.isNullOrBlank()) {
+      viewModelScope.launch {
+        plantUseCases.deletePlant(id = id)
+          .collectLatest {
+            if (it is DataState.Success) {
+              _eventFLow.emit(AddEditPlantUiEvent.NavigateBack)
+            }
+            if (it is DataState.Error) {
+              _eventFLow.emit(AddEditPlantUiEvent.ShowError(it.message))
+            }
+          }
       }
     }
   }
