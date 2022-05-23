@@ -1,5 +1,6 @@
 package com.example.plantcare.presentation.add_edit_task
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -23,9 +24,6 @@ class AddEditTaskDialogViewModel @Inject constructor(
   private val _addEditTaskDialogState = mutableStateOf(AddEditTaskDialogState())
   val addEditTaskDialogState: State<AddEditTaskDialogState> = _addEditTaskDialogState
 
-//  private val _plantTask = mutableStateOf<PlantTask>(PlantTask())
-//  val plantTask: State<PlantTask> = _plantTask
-
   private val _dataState = mutableStateOf<DataState<PlantTask?>>(DataState.Success(null))
   val dataState: State<DataState<PlantTask?>> = _dataState
 
@@ -35,14 +33,36 @@ class AddEditTaskDialogViewModel @Inject constructor(
   private val _eventFLow = MutableSharedFlow<Boolean>()
   val eventFlow = _eventFLow.asSharedFlow()
 
-  fun init(plantId: String) {
+  private val _currentPlantTask = mutableStateOf<PlantTask?>(null)
+   val currentPlantTask: State<PlantTask?> = _currentPlantTask
+
+  fun init(plantId: String?, task: PlantTask? = null) {
     val now = Calendar.getInstance()
-    _addEditTaskDialogState.value = addEditTaskDialogState.value.copy(
-      plantId = plantId,
-      year = now.get(Calendar.YEAR),
-      month = now.get(Calendar.MONTH),
-      day = now.get(Calendar.DAY_OF_MONTH)
-    )
+    _currentPlantTask.value = task
+    if (task != null) {
+      now.time = task.dueDay!!.toDate()
+      _addEditTaskDialogState.value = addEditTaskDialogState.value.copy(
+        plantId = task.plantId,
+        year = now.get(Calendar.YEAR),
+        month = now.get(Calendar.MONTH),
+        day = now.get(Calendar.DAY_OF_MONTH),
+        title = task.title!!,
+        important = task.important!!,
+        duration = Duration.Day(task.duration!!),
+        repeatable = task.repeatable
+      )
+    } else {
+      _addEditTaskDialogState.value = addEditTaskDialogState.value.copy(
+        plantId = plantId,
+        year = now.get(Calendar.YEAR),
+        month = now.get(Calendar.MONTH),
+        day = now.get(Calendar.DAY_OF_MONTH),
+        title = "",
+        important = 0,
+        duration = Duration.Day(1),
+        repeatable = false
+      )
+    }
   }
 
   private fun checkValidDueDate(day: Int, month: Int, year: Int): Boolean {
@@ -66,6 +86,34 @@ class AddEditTaskDialogViewModel @Inject constructor(
           duration = value.duration.toInt(),
           important = value.important,
           repeatable = value.repeatable
+        )
+      ).collect {
+        _dataState.value = it
+        if (it is DataState.Error) {
+          _errorMessage.value = it.message
+        }
+        if (it is DataState.Success) {
+          _eventFLow.emit(true)
+        }
+      }
+    }
+  }
+
+  private fun updateTask() {
+    viewModelScope.launch {
+      val value = addEditTaskDialogState.value
+      val dueDate: Calendar = GregorianCalendar(
+        value.year, value.month, value.day, 23, 59, 59
+      )
+      Log.d("check123", "hahaa")
+      taskUseCases.updateTask(
+        task = currentPlantTask.value!!.copy(
+          plantId = value.plantId,
+          title = value.title,
+          dueDay = Timestamp(dueDate.time),
+          duration = value.duration.toInt(),
+          important = value.important,
+          repeatable = value.repeatable,
         )
       ).collect {
         _dataState.value = it
@@ -114,6 +162,9 @@ class AddEditTaskDialogViewModel @Inject constructor(
       }
       is AddEditTaskDialogEvent.AddTask -> {
         addTask()
+      }
+      is AddEditTaskDialogEvent.UpdateTask -> {
+        updateTask()
       }
     }
   }

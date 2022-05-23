@@ -1,6 +1,10 @@
 package com.example.plantcare.presentation.plant_task_card.components
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.DismissState
+import androidx.compose.material.DismissValue
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -18,14 +22,16 @@ import com.example.plantcare.presentation.plant_task_card.PlantTaskCardViewModel
 import com.example.plantcare.ui.theme.fire
 import com.example.plantcare.ui.theme.gold
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun PlantTaskCard(
+  dismissState: DismissState,
   task: PlantTask,
   showPlantName: Boolean = true,
   expanded: Boolean = false,
   viewModel: PlantTaskCardViewModel = hiltViewModel(),
   onPlantNameClick: () -> Unit,
+  onEditClick: () -> Unit,
   onDone: () -> Unit,
   onClick: () -> Unit
 ) {
@@ -53,87 +59,100 @@ fun PlantTaskCard(
 
   val dayLeft = calculateDifferenceInDays(task.dueDay!!.toDate())
 
-  Card(
+  Column(
     modifier = Modifier
-      .padding(horizontal = 16.dp),
-//      .animateContentSize(
-//        spring(
-//          dampingRatio = Spring.DampingRatioLowBouncy,
-//          stiffness = Spring.StiffnessHigh
-//        )
-//      ),
-    elevation = CardDefaults.elevatedCardElevation(),
-    onClick = onClick
+      .padding(horizontal = 16.dp)
   ) {
-    Column {
-      Row(
-        modifier = Modifier
-          .padding(8.dp)
-          .fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+    Card(
+      elevation = CardDefaults.elevatedCardElevation(),
+      onClick = onClick
+    ) {
+      Column(
+        modifier = Modifier.padding(8.dp)
       ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-          Checkbox(checked = task.done, onCheckedChange = { onDone() })
-          Column {
-            Text(
-              text = task.title!!,
-              style = MaterialTheme.typography.titleMedium.copy(textDecoration = if (task.done) TextDecoration.LineThrough else null),
-              overflow = TextOverflow.Ellipsis
-            )
-            if (task.overDue) {
+        Row(
+          modifier = Modifier
+            .fillMaxWidth(),
+          horizontalArrangement = Arrangement.SpaceBetween,
+          verticalAlignment = Alignment.CenterVertically
+        ) {
+          Row(verticalAlignment = Alignment.CenterVertically) {
+            Checkbox(checked = task.done, onCheckedChange = { onDone() })
+            Column {
               Text(
-                text = "overdue $dayLeft day${if (dayLeft == 1L) "" else "s"}",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.error
+                text = task.title!!,
+                style = MaterialTheme.typography.titleMedium.copy(textDecoration = if (task.done) TextDecoration.LineThrough else null),
+                overflow = TextOverflow.Ellipsis
               )
-            } else {
-              Text(
-                text = if (dayLeft == 0L) "Today" else "$dayLeft day${if (dayLeft == 1L) "" else "s"} left",
-                style = MaterialTheme.typography.bodySmall
-              )
+              if (task.overDue) {
+                Text(
+                  text = "overdue $dayLeft day${if (dayLeft == 1L) "" else "s"}",
+                  style = MaterialTheme.typography.bodySmall,
+                  color = MaterialTheme.colorScheme.error
+                )
+              } else {
+                Text(
+                  text = if (dayLeft == 0L) "Today" else "$dayLeft day${if (dayLeft == 1L) "" else "s"} left",
+                  style = MaterialTheme.typography.bodySmall
+                )
+              }
             }
           }
-        }
 
-        Column(
-//          modifier = Modifier.padding(16.dp),
-          horizontalAlignment = Alignment.End
-        ) {
           Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
               text = importantText,
               style = MaterialTheme.typography.labelSmall,
               color = textColor
             )
-            Spacer(modifier = Modifier.width(8.dp))
+
             Icon(
-              modifier = Modifier
-                .size(24.dp)
-                .padding(end = 8.dp),
               painter = painterResource(id = iconId),
               contentDescription = null,
-              tint = textColor
-            )
-          }
-          if (expanded && showPlantName && plantName != null) {
-            Box(
+              tint = textColor,
               modifier = Modifier
-                .fillMaxWidth(),
-              contentAlignment = Alignment.CenterEnd
-            ) {
-              TextButton(onClick = onPlantNameClick) {
-                Text(
-                  text = plantName,
-                  color = MaterialTheme.colorScheme.tertiary,
-                  maxLines = 1
-                )
-              }
-            }
+                .padding(horizontal = 8.dp)
+                .size(24.dp)
+            )
           }
         }
       }
     }
+
+    AnimatedVisibility(visible = expanded && dismissState.targetValue == DismissValue.Default && plantName != null) {
+      Column(
+        modifier = Modifier
+          .fillMaxWidth()
+      ) {
+        Row(
+          horizontalArrangement = Arrangement.SpaceBetween,
+          verticalAlignment = Alignment.CenterVertically,
+          modifier = Modifier
+            .fillMaxWidth()
+        ) {
+          TextButton(onClick = onPlantNameClick) {
+            Text(
+              text = plantName ?: "",
+              color = MaterialTheme.colorScheme.tertiary,
+              maxLines = 1
+            )
+          }
+          IconButton(onClick = onEditClick) {
+            Icon(
+              painter = painterResource(id = R.drawable.ic_edit_outline),
+              contentDescription = null,
+              modifier = Modifier
+                .padding(horizontal = 8.dp)
+                .size(24.dp)
+            )
+          }
+        }
+        Divider()
+      }
+    }
+//    if (expanded && showPlantName && plantName != null) {
+//
+//    }
   }
 }
 //            navController.navigate(Screens.AddPlantScreen.route + "?plantId=${task.plantId}") {

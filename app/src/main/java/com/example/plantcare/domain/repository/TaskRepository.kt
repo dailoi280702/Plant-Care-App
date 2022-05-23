@@ -16,5 +16,5 @@ interface TaskRepository {
 
   suspend fun deleteTask(id: String): Flow<DataState<Void?>>
 
-  suspend fun updateTask(task: PlantTask): Flow<DataState<Void?>>
+  suspend fun updateTask(task: PlantTask): Flow<DataState<PlantTask?>>
 }

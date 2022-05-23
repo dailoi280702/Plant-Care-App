@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.plantcare.data.utils.DataState
 import com.example.plantcare.domain.model.Plant
+import com.example.plantcare.domain.model.PlantTask
 import com.example.plantcare.domain.use_case.plant.PlantUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -27,9 +28,11 @@ class AddEditPlantViewModel @Inject constructor(
   private val _dataState = mutableStateOf<DataState<Plant?>>(DataState.Success(null))
   val dataState: State<DataState<Plant?>> = _dataState
 
-
   private val _eventFLow = MutableSharedFlow<AddEditPlantUiEvent>()
   val eventFlow = _eventFLow.asSharedFlow()
+
+  private val _currentPlantTask = mutableStateOf<PlantTask?>(null)
+  val currentPlantTask: State<PlantTask?> = _currentPlantTask
 
   init {
     viewModelScope.launch {
@@ -112,6 +115,9 @@ class AddEditPlantViewModel @Inject constructor(
         if (dataState.value != DataState.Loading) {
           deletePlant()
         }
+      }
+      is AddEditPlantEvent.UpdateCurrentPlantTask -> {
+        _currentPlantTask.value = event.value
       }
     }
   }

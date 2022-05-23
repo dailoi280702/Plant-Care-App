@@ -142,41 +142,17 @@ fun AddEditPlantScreen(
         color = MaterialTheme.colorScheme.onSurface
       )
       TextButton(onClick = {
+        viewModel.onEvent(AddEditPlantEvent.UpdateCurrentPlantTask(null))
         viewModel.onEvent(AddEditPlantEvent.ToggleTaskDialog)
       }) {
         Text(text = "add todo")
       }
     }
-    
-    PlantTaskList(navController = navController, plantId = addEditPlantState.plant.id!!)
 
-//    if (addEditPlantState.plant.id != "") {
-//      Divider()
-//      ExpandableSurface(
-//        title = "Todo",
-//        expanded = addEditPlantState.expandedTasks,
-//        onClick = { viewModel.onEvent(AddEditPlantEvent.ToggleTasksSection) }
-//      ) {
-//        Column(modifier = Modifier.fillMaxWidth()) {
-//          PlantTaskList(navController = navController, plantId = addEditPlantState.plant.id!!)
-//          Row(
-//            modifier = Modifier
-//              .fillMaxWidth()
-//              .padding(vertical = 8.dp, horizontal = 16.dp),
-//            verticalAlignment = Alignment.CenterVertically,
-//            horizontalArrangement = Arrangement.End
-//          ) {
-//            textbutton(onclick = {
-//              viewmodel.onevent(addeditplantevent.toggletaskdialog)
-//            }) {
-//              text(text = "add todo")
-//            }
-//          }
-//        }
-//      }
-//    }
-//
-//    Spacer(modifier = Modifier.height(160.dp))
+    PlantTaskList(navController = navController, plantId = addEditPlantState.plant.id!!) {
+      viewModel.onEvent(AddEditPlantEvent.UpdateCurrentPlantTask(it))
+      viewModel.onEvent(AddEditPlantEvent.ToggleTaskDialog)
+    }
   }
 
   AnimatedVisibility(
@@ -243,8 +219,10 @@ fun AddEditPlantScreen(
 
   AddEditTaskDialog(
     openDiaLog = addEditPlantState.taskDialogVisibility,
-    plantId = addEditPlantState.plant.id
+    plantId = addEditPlantState.plant.id,
+    plantTask = viewModel.currentPlantTask.value
   ) {
+//    viewModel.onEvent(AddEditPlantEvent.UpdateCurrentPlantTask(null))
     viewModel.onEvent(AddEditPlantEvent.ToggleTaskDialog)
   }
 }

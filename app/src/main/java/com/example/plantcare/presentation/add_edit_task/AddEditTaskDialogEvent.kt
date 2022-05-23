@@ -7,4 +7,5 @@ sealed class AddEditTaskDialogEvent {
   object UpdateRepeatable: AddEditTaskDialogEvent()
   object UpdateTaskImportant: AddEditTaskDialogEvent()
   object AddTask: AddEditTaskDialogEvent()
+  object UpdateTask: AddEditTaskDialogEvent()
 }

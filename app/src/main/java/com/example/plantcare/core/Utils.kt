@@ -7,6 +7,7 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.math.abs
 
+
 class Utils {
   companion object {
 
@@ -32,5 +33,6 @@ class Utils {
     fun compareTwoDates(d1: Date, d2: Date): Long {
       return TimeUnit.MILLISECONDS.toDays(d1.time) - TimeUnit.MILLISECONDS.toDays(d2.time)
     }
+
   }
 }

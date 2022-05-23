@@ -21,16 +21,10 @@ import androidx.compose.ui.unit.dp
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun SwipeablePlantTaskContainer(
-  onDelete: () -> Unit,
+  dismissState: DismissState,
   card: @Composable () -> Unit
 ) {
 
-  val dismissState = rememberDismissState(initialValue = DismissValue.Default) {
-    if (it == DismissValue.DismissedToEnd) {
-      onDelete()
-    }
-    true
-  }
   val color by animateColorAsState(
     targetValue = if (dismissState.targetValue == DismissValue.Default) MaterialTheme.colorScheme.background else when (dismissState.dismissDirection) {
       DismissDirection.StartToEnd -> MaterialTheme.colorScheme.errorContainer
@@ -38,15 +32,13 @@ fun SwipeablePlantTaskContainer(
     }
   )
   val direction = dismissState.dismissDirection
-  val scale by animateFloatAsState(targetValue = if (dismissState.targetValue == DismissValue.Default) 1f else 1.2f)
+  val scale by animateFloatAsState(targetValue = if (dismissState.targetValue == DismissValue.Default) 0.8f else 1.2f)
 
   SwipeToDismiss(
     modifier = Modifier
       .padding(vertical = 4.dp),
     dismissThresholds = { FractionalThreshold(0.3f) },
     state = dismissState,
-    /***  create dismiss alert Background */
-    /***  create dismiss alert Background */
     background = {
       Box(
         modifier = Modifier
@@ -60,6 +52,7 @@ fun SwipeablePlantTaskContainer(
             horizontalArrangement = Arrangement.Start,
             modifier = Modifier.fillMaxWidth(),
           ) {
+            Spacer(modifier = Modifier.width(8.dp))
             Icon(
               imageVector = Icons.Default.Delete,
               contentDescription = null,

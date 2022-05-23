@@ -1,11 +1,13 @@
-package com.example.plantcare.presentation.add_edit_task;
+package com.example.plantcare.presentation.add_edit_task
 
 import android.app.DatePickerDialog
 import android.widget.DatePicker
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -20,7 +22,7 @@ import com.example.plantcare.ui.theme.fire
 import com.example.plantcare.ui.theme.gold
 import kotlinx.coroutines.flow.collectLatest
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun AddEditTaskDialog(
   openDiaLog: Boolean,
@@ -31,12 +33,13 @@ fun AddEditTaskDialog(
 ) {
 
   LaunchedEffect(Unit) {
-//    plantTask?.let {
-//      viewModel.initTask(it)
-//    }
     plantId?.let {
-      viewModel.init(plantId)
+      viewModel.init(plantId, plantTask)
     }
+  }
+
+  LaunchedEffect(plantTask) {
+    viewModel.init(plantId, plantTask)
   }
 
   LaunchedEffect(key1 = true) {
@@ -44,7 +47,7 @@ fun AddEditTaskDialog(
       if (it) {
         onDismiss()
         plantId?.let {
-          viewModel.init(plantId)
+          viewModel.init(plantId, null)
         }
       }
     }
@@ -93,7 +96,9 @@ fun AddEditTaskDialog(
     else -> MaterialTheme.colorScheme.onSurface
   }
 
-  if (openDiaLog) {
+  AnimatedVisibility(visible = openDiaLog) {
+//  }
+//  if (openDiaLog) {
     AlertDialog(
       onDismissRequest = onDismiss,
       text = {
@@ -219,10 +224,7 @@ fun AddEditTaskDialog(
               }
             }
           }
-          Row(
-            verticalAlignment = Alignment.CenterVertically
-          ) {
-          }
+
           Row(
             modifier = Modifier
               .fillMaxWidth(),
@@ -238,10 +240,14 @@ fun AddEditTaskDialog(
       confirmButton = {
         Button(
           onClick = {
-            viewModel.onEvent(AddEditTaskDialogEvent.AddTask)
+            if (viewModel.currentPlantTask.value == null) {
+              viewModel.onEvent(AddEditTaskDialogEvent.AddTask)
+            } else {
+              viewModel.onEvent(AddEditTaskDialogEvent.UpdateTask)
+            }
           }
         ) {
-          Text("Add")
+          Text(if (viewModel.currentPlantTask.value == null) "Add" else "Update")
         }
       },
       dismissButton = {
@@ -250,7 +256,7 @@ fun AddEditTaskDialog(
         ) {
           Text("Cancel")
         }
-      },
+      }
     )
   }
 }

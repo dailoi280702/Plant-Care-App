@@ -1,16 +1,16 @@
 package com.example.plantcare.data.repository;
 
-import android.util.Log
 import com.example.plantcare.data.utils.DataState.*
 import com.example.plantcare.domain.model.PlantTask
 import com.example.plantcare.domain.repository.TaskRepository
+import com.example.plantcare.domain.utils.PlantTaskStatus
 import com.example.plantcare.domain.utils.TaskOrder
 import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.SetOptions
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
-import java.util.*
 import javax.inject.Singleton
 
 @Singleton
@@ -19,10 +19,32 @@ class TaskRepositoryImpl(
 ) : TaskRepository {
 
   override fun getTasks(taskOrder: TaskOrder?) = callbackFlow {
-    val snapshotListener = documentRef.collection("tasks").addSnapshotListener { snapshot, e ->
-      val data = if (snapshot != null) {
+
+    val taskCollection = documentRef.collection("tasks")
+    val snapshotListener = taskCollection.addSnapshotListener { snapshot, e ->
+      if (e != null) {
+        trySend(Error(e.message.toString()))
+      }
+
+      val data = if (snapshot != null && e == null) {
         try {
-          val tasks = snapshot.toObjects(PlantTask::class.java)
+          val tasks = mutableListOf<PlantTask>()
+          snapshot.onEach {
+            val task = it.toObject(PlantTask::class.java)
+            when (task.updateTask()) {
+              is PlantTaskStatus.MustBeDeleted -> {
+                documentRef.collection("tasks").document(task.taskId!!).delete()
+              }
+              is PlantTaskStatus.Updated -> {
+                documentRef.collection("tasks").document(task.taskId!!)
+                  .set(task, SetOptions.merge())
+                tasks.add(task)
+              }
+              is PlantTaskStatus.UpToDate -> {
+                tasks.add(task)
+              }
+            }
+          }
           Success(tasks)
         } catch (e: Exception) {
           Error(e.message.toString())
@@ -35,14 +57,12 @@ class TaskRepositoryImpl(
 
     awaitClose {
       snapshotListener.remove()
-      channel.close()
     }
   }
 
   override fun getTasksByPlantID(plantId: String) = callbackFlow {
 
-    val taskCollection = documentRef.collection("tasks").orderBy("done")
-//    val taskCollection = documentRef.collection("tasks").whereEqualTo("plantId", plantId)
+    val taskCollection = documentRef.collection("tasks").whereEqualTo("plantId", plantId)
     val snapshotListener = taskCollection.addSnapshotListener { snapshot, e ->
       if (e != null) {
         trySend(Error(e.message.toString()))
@@ -50,27 +70,23 @@ class TaskRepositoryImpl(
 
       val data = if (snapshot != null && e == null) {
         try {
-          val now = Calendar.getInstance().time
           val tasks = mutableListOf<PlantTask>()
           snapshot.onEach {
             val task = it.toObject(PlantTask::class.java)
-            if (task.plantId == plantId) {
-              val dueDate = task.dueDay!!.toDate()
-              if (com.example.plantcare.core.Utils.compareTwoDates(dueDate, now) < 0) {
-                task.overDue = true
-                if (!task.repeatable && task.done) {
-                  documentRef.collection("tasks").document(task.taskId!!).delete()
-                }
-                else {
-                  tasks.add(task)
-                }
-              } else {
-                task.overDue = false
+            when (task.updateTask()) {
+              is PlantTaskStatus.MustBeDeleted -> {
+                documentRef.collection("tasks").document(task.taskId!!).delete()
+              }
+              is PlantTaskStatus.Updated -> {
+                documentRef.collection("tasks").document(task.taskId!!)
+                  .set(task, SetOptions.merge())
+                tasks.add(task)
+              }
+              is PlantTaskStatus.UpToDate -> {
                 tasks.add(task)
               }
             }
           }
-//          val plants = snapshot.toObjects(PlantTask::class.java)
           Success(tasks)
         } catch (e: Exception) {
           Error(e.message.toString())
@@ -101,7 +117,6 @@ class TaskRepositoryImpl(
   override suspend fun addTask(task: PlantTask) = flow {
 
     if (task.title.isNullOrEmpty() || task.title.isNullOrBlank()) {
-      Log.d("asd123xxx", "???")
       emit(Error("Please enter title"))
       return@flow
     }
@@ -112,9 +127,7 @@ class TaskRepositoryImpl(
       val newTask = task.copy(
         taskId = id
       )
-      documentRef.collection("tasks").document(id).set(
-        newTask
-      ).await()
+      documentRef.collection("tasks").document(id).update("taskId", id).await()
       emit(Success(newTask))
     } catch (e: Exception) {
       emit(Error(e.message ?: e.toString()))
@@ -133,7 +146,6 @@ class TaskRepositoryImpl(
   }
 
   override suspend fun updateTask(task: PlantTask) = flow {
-
     if (task.title.isNullOrEmpty() || task.title.isNullOrBlank()) {
       emit(Error("title cannot be empty"))
       return@flow
@@ -141,10 +153,9 @@ class TaskRepositoryImpl(
 
     try {
       emit(Loading)
-      documentRef.collection("tasks").document(task.taskId!!).set(
-        task
-      )
-      emit(Success(null))
+      val id = task.taskId!!
+      documentRef.collection("tasks").document(id).set(task, SetOptions.merge()).await()
+      emit(Success(task))
     } catch (e: Exception) {
       emit(Error(e.message ?: e.toString()))
     }
