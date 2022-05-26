@@ -17,7 +17,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.PopupProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.chargemap.compose.numberpicker.ListItemPicker
 import com.chargemap.compose.numberpicker.NumberPicker
@@ -39,17 +41,17 @@ fun AddEditTaskDialog(
   viewModel: AddEditTaskDialogViewModel = hiltViewModel(),
   onDismiss: () -> Unit
 ) {
-
+  
   LaunchedEffect(Unit) {
     plantId?.let {
       viewModel.init(plantId, plantTask)
     }
   }
-
+  
   LaunchedEffect(plantTask) {
     viewModel.init(plantId, plantTask)
   }
-
+  
   LaunchedEffect(key1 = true) {
     viewModel.eventFlow.collectLatest {
       if (it) {
@@ -60,9 +62,9 @@ fun AddEditTaskDialog(
       }
     }
   }
-
+  
   val stateValue = viewModel.addEditTaskDialogState.value
-
+  
   var showNumberPicker by remember { mutableStateOf(false) }
   val possibleValues = listOf(Duration.DAY, Duration.WEEK, Duration.MONTH)
   var state by remember { mutableStateOf(possibleValues[0]) }
@@ -81,8 +83,8 @@ fun AddEditTaskDialog(
     stateValue.month,
     stateValue.day
   )
-
-
+  
+  
   val importantText = when (stateValue.important) {
     1 -> "important"
     2 -> "very important"
@@ -103,12 +105,56 @@ fun AddEditTaskDialog(
     2 -> fire
     else -> MaterialTheme.colorScheme.onSurface
   }
-
+  
+  val numberPickerDialog: @Composable () -> Unit = {
+    DropdownMenu(
+      expanded = showNumberPicker && stateValue.repeatable,
+      onDismissRequest = { showNumberPicker = !showNumberPicker },
+      modifier = Modifier.padding(horizontal = 24.dp)
+    ) {
+      Row {
+        NumberPicker(
+          value = stateValue.duration.time,
+          range = 1..100,
+          onValueChange = {
+            viewModel.onEvent(
+              AddEditTaskDialogEvent.UpdateDuration(
+                stateValue.duration.copy(
+                  it
+                )
+              )
+            )
+          },
+          dividersColor = Color.Transparent,
+          textStyle = MaterialTheme.typography.labelLarge.copy(color = MaterialTheme.colorScheme.onSurface),
+        )
+        ListItemPicker(
+          label = { it },
+          value = state,
+          onValueChange = {
+            state = it
+            viewModel.onEvent(
+              AddEditTaskDialogEvent.UpdateDuration(
+                stateValue.duration.copy(
+                  it
+                )
+              )
+            )
+          },
+          list = possibleValues,
+          dividersColor = Color.Transparent,
+          textStyle = MaterialTheme.typography.labelLarge.copy(color = MaterialTheme.colorScheme.onSurface),
+        )
+      }
+    }
+  }
+  
   AnimatedVisibility(visible = openDiaLog) {
-//  }
-//  if (openDiaLog) {
     AlertDialog(
       onDismissRequest = onDismiss,
+      title = {
+              Text(text = if (viewModel.currentPlantTask.value != null) "Todo" else "New Todo")
+      },
       text = {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
           AnimatedContent(targetState = plantTask) {
@@ -117,41 +163,17 @@ fun AddEditTaskDialog(
               onValueChange = {
                 viewModel.onEvent(AddEditTaskDialogEvent.UpdateTitle(it))
               },
-//              colors = TextFieldDefaults.outlinedTextFieldColors(
-//                unfocusedBorderColor = Color.Transparent,
-//                focusedBorderColor = Color.Transparent
-//              ),
               placeholder = {
-                Text(text = "Enter title")
+                Text(text = "Enter title *")
               },
               textStyle = MaterialTheme.typography.titleMedium
             )
           }
-
-//          Divider()
-//
-//          ContentContainer(icon = {
-//            Icon(
-//              painter = painterResource(id = iconId),
-//              contentDescription = null,
-//              tint = iconColor,
-//              modifier = Modifier.size(24.dp)
-//            )
-//          }) {
-//            TextButton(onClick = {
-//              viewModel.onEvent(AddEditTaskDialogEvent.UpdateTaskImportant)
-//            }) {
-//              Text(
-//                text = importantText,
-//                color = textColor,
-//              )
-//            }
-//          }
           OutlinedTextField(
             value = importantText,
             onValueChange = {},
             readOnly = true,
-            leadingIcon = {
+            trailingIcon = {
               IconButton(onClick = {
                 viewModel.onEvent(AddEditTaskDialogEvent.UpdateTaskImportant)
               }) {
@@ -162,41 +184,14 @@ fun AddEditTaskDialog(
                   modifier = Modifier.size(24.dp)
                 )
               }
-            },
-            trailingIcon = {
-              IconButton(onClick = {
-                viewModel.onEvent(AddEditTaskDialogEvent.UpdateTaskImportant)
-              }) {
-                Box() {
-                  Icon(
-                    imageVector = Icons.Default.ArrowDropDown,
-                    contentDescription = null,
-                    modifier = Modifier.size(24.dp)
-                  )
-                }
-              }
-            },
-            textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center)
+            }
           )
-
-//          ContentContainer(icon = {
-//            Icon(
-//              painter = painterResource(id = R.drawable.ic_event_today),
-//              contentDescription = null,
-//              modifier = Modifier.size(24.dp)
-//            )
-//          }) {
-//            TextButton(onClick = {
-//              datePickerDialog.show()
-//            }) {
-//              Text(text = "Due at: ${stateValue.day}/${stateValue.month + 1}/${stateValue.year}")
-//            }
-//          }
+          
           OutlinedTextField(
             value = "Due at: ${stateValue.day}/${stateValue.month + 1}/${stateValue.year}",
             onValueChange = {},
             readOnly = true,
-            leadingIcon = {
+            trailingIcon = {
               IconButton(onClick = {
                 datePickerDialog.show()
               }) {
@@ -206,106 +201,20 @@ fun AddEditTaskDialog(
                   modifier = Modifier.size(24.dp)
                 )
               }
-            },
-            trailingIcon = {
-              IconButton(onClick = {
-                datePickerDialog.show()
-              }) {
-                Box() {
-                  Icon(
-                    imageVector = Icons.Default.ArrowDropDown,
-                    contentDescription = null,
-                    modifier = Modifier.size(24.dp)
-                  )
-                }
-              }
-            },
-            textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center)
+            }
           )
-
-//          ContentContainer(
-//            icon = {
-//              Icon(
-//                painter = painterResource(id = R.drawable.ic_repeat),
-//                contentDescription = null,
-//                modifier = Modifier.size(24.dp)
-//              )
-//            }, showBottomLine = false
-//          ) {
-//            Box {
-//              Row(
-//                modifier = Modifier.fillMaxWidth(),
-//                horizontalArrangement = Arrangement.SpaceBetween
-//              ) {
-//                TextButton(
-//                  onClick = {
-//                    showNumberPicker = !showNumberPicker
-//                  },
-//                  enabled = stateValue.repeatable,
-//                  colors = ButtonDefaults.buttonColors(
-//                    containerColor = Color.Transparent,
-//                    disabledContainerColor = Color.Transparent,
-//                    contentColor = MaterialTheme.colorScheme.primary
-//                  )
-//                ) {
-//                  Text(text = "repeat after: ${stateValue.duration.time} ${stateValue.duration.type}")
-//                }
-//                Checkbox(
-//                  checked = stateValue.repeatable,
-//                  onCheckedChange = { viewModel.onEvent(AddEditTaskDialogEvent.UpdateRepeatable) }
-//                )
-//              }
-//              DropdownMenu(
-//                expanded = showNumberPicker && stateValue.repeatable,
-//                onDismissRequest = { showNumberPicker = !showNumberPicker }) {
-//                Row {
-//                  NumberPicker(
-//                    value = stateValue.duration.time,
-//                    range = 1..100,
-//                    onValueChange = {
-//                      viewModel.onEvent(
-//                        AddEditTaskDialogEvent.UpdateDuration(
-//                          stateValue.duration.copy(
-//                            it
-//                          )
-//                        )
-//                      )
-//                    },
-//                    dividersColor = Color.Transparent,
-//                    textStyle = MaterialTheme.typography.labelLarge.copy(color = MaterialTheme.colorScheme.onSurface),
-//                  )
-//                  ListItemPicker(
-//                    label = { it },
-//                    value = state,
-//                    onValueChange = {
-//                      state = it
-//                      viewModel.onEvent(
-//                        AddEditTaskDialogEvent.UpdateDuration(
-//                          stateValue.duration.copy(
-//                            it
-//                          )
-//                        )
-//                      )
-//                    },
-//                    list = possibleValues,
-//                    dividersColor = Color.Transparent,
-//                    textStyle = MaterialTheme.typography.labelLarge.copy(color = MaterialTheme.colorScheme.onSurface),
-//                  )
-//                }
-//              }
-//            }
-//          }
+          
           OutlinedTextField(
             value = "repeat after: ${stateValue.duration.time} ${stateValue.duration.type}",
             onValueChange = {},
             readOnly = true,
-            trailingIcon = {
+            leadingIcon = {
               Checkbox(
                 checked = stateValue.repeatable,
                 onCheckedChange = { viewModel.onEvent(AddEditTaskDialogEvent.UpdateRepeatable) }
               )
             },
-            leadingIcon = {
+            trailingIcon = {
               Box {
                 IconButton(onClick = {
                   showNumberPicker = !showNumberPicker
@@ -316,49 +225,12 @@ fun AddEditTaskDialog(
                     modifier = Modifier.size(24.dp)
                   )
                 }
-                DropdownMenu(
-                  expanded = showNumberPicker && stateValue.repeatable,
-                  onDismissRequest = { showNumberPicker = !showNumberPicker }) {
-                  Row {
-                    NumberPicker(
-                      value = stateValue.duration.time,
-                      range = 1..100,
-                      onValueChange = {
-                        viewModel.onEvent(
-                          AddEditTaskDialogEvent.UpdateDuration(
-                            stateValue.duration.copy(
-                              it
-                            )
-                          )
-                        )
-                      },
-                      dividersColor = Color.Transparent,
-                      textStyle = MaterialTheme.typography.labelLarge.copy(color = MaterialTheme.colorScheme.onSurface),
-                    )
-                    ListItemPicker(
-                      label = { it },
-                      value = state,
-                      onValueChange = {
-                        state = it
-                        viewModel.onEvent(
-                          AddEditTaskDialogEvent.UpdateDuration(
-                            stateValue.duration.copy(
-                              it
-                            )
-                          )
-                        )
-                      },
-                      list = possibleValues,
-                      dividersColor = Color.Transparent,
-                      textStyle = MaterialTheme.typography.labelLarge.copy(color = MaterialTheme.colorScheme.onSurface),
-                    )
-                  }
-                }
+                numberPickerDialog()
               }
             },
             enabled = stateValue.repeatable
           )
-
+          
           Row(
             modifier = Modifier
               .fillMaxWidth(),
@@ -366,7 +238,8 @@ fun AddEditTaskDialog(
           ) {
             Text(
               text = viewModel.errorMessage.value ?: "",
-              color = MaterialTheme.colorScheme.error
+              color = MaterialTheme.colorScheme.error,
+              maxLines = 1
             )
           }
         }
@@ -394,31 +267,5 @@ fun AddEditTaskDialog(
         }
       }
     )
-  }
-}
-
-@Composable
-fun ContentContainer(
-  showBottomLine: Boolean = true,
-  icon: @Composable () -> Unit,
-  content: @Composable () -> Unit,
-) {
-  Row(
-    modifier = Modifier
-      .fillMaxWidth(),
-    verticalAlignment = Alignment.CenterVertically
-  ) {
-    Box(modifier = Modifier.size(40.dp), contentAlignment = Alignment.Center) {
-      icon()
-    }
-    content()
-  }
-  if (showBottomLine) {
-    Row(
-      modifier = Modifier.fillMaxWidth()
-    ) {
-      Spacer(modifier = Modifier.width(40.dp))
-      Divider()
-    }
   }
 }

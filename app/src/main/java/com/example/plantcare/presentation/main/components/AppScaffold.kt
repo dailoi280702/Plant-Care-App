@@ -1,5 +1,6 @@
 package com.example.plantcare.presentation
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material3.*
@@ -20,6 +21,7 @@ import com.example.plantcare.presentation.main.components.BottomNav
 import com.example.plantcare.presentation.main.components.NavGraph
 import com.example.plantcare.presentation.main.utils.Screens
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppScaffold(

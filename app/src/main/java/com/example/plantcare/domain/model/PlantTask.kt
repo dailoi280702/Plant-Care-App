@@ -28,6 +28,7 @@ data class PlantTask(
           while (compareTwoDates(dueDate.time, now.time) < 0) {
             dueDate.add(Calendar.DATE, duration!!)
           }
+          dueDay = Timestamp(dueDate.time)
           overDue = false
           done = false
           PlantTaskStatus.Updated

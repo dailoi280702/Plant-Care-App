@@ -6,6 +6,7 @@ import com.example.plantcare.domain.repository.TaskRepository
 import com.example.plantcare.domain.utils.PlantTaskStatus
 import com.example.plantcare.domain.utils.TaskOrder
 import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
@@ -151,10 +152,20 @@ class TaskRepositoryImpl(
       return@flow
     }
 
+//    try {
+//      emit(Loading)
+//      val id = task.taskId!!
+//      documentRef.collection("tasks").document(id).set(task, SetOptions.merge()).await()
+//      emit(Success(task))
+//    } catch (e: Exception) {
+//      emit(Error(e.message ?: e.toString()))
+//    }
+    
     try {
-      emit(Loading)
-      val id = task.taskId!!
-      documentRef.collection("tasks").document(id).set(task, SetOptions.merge()).await()
+      FirebaseFirestore.getInstance().runBatch { batch ->
+        val id = task.taskId!!
+        batch.set(documentRef.collection("tasks").document(id), task)
+      }.await()
       emit(Success(task))
     } catch (e: Exception) {
       emit(Error(e.message ?: e.toString()))
