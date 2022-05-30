@@ -40,8 +40,8 @@ sealed class Duration(val time: Int, val type: String) {
   }
 
   companion object {
-    const val DAY: String = "day"
-    const val WEEK: String = "week"
+    const val DAY: String = "Day"
+    const val WEEK: String = "Week"
     const val MONTH: String = "Month"
   }
 }

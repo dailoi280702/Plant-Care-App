@@ -2,72 +2,44 @@ package com.example.plantcare.presentation.add_edit_task
 
 import android.app.DatePickerDialog
 import android.widget.DatePicker
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.PopupProperties
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.chargemap.compose.numberpicker.ListItemPicker
 import com.chargemap.compose.numberpicker.NumberPicker
 import com.example.plantcare.R
-import com.example.plantcare.domain.model.PlantTask
 import com.example.plantcare.ui.theme.fire
 import com.example.plantcare.ui.theme.gold
 import kotlinx.coroutines.flow.collectLatest
 
-@OptIn(
-  ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class,
-  ExperimentalAnimationApi::class
-)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditTaskDialog(
-  openDiaLog: Boolean,
-  plantTask: PlantTask? = null,
-  plantId: String?,
-  viewModel: AddEditTaskDialogViewModel = hiltViewModel(),
-  onDismiss: () -> Unit
+  viewModel: AddEditTaskDialogViewModel,
 ) {
   
-  LaunchedEffect(Unit) {
-    plantId?.let {
-      viewModel.init(plantId, plantTask)
-    }
-  }
-  
-  LaunchedEffect(plantTask) {
-    viewModel.init(plantId, plantTask)
-  }
+  val onDismiss: () -> Unit =
+    { viewModel.onEvent(AddEditTaskDialogEvent.UpdateDialogVisibility(false)) }
   
   LaunchedEffect(key1 = true) {
     viewModel.eventFlow.collectLatest {
       if (it) {
         onDismiss()
-        plantId?.let {
-          viewModel.init(plantId, null)
-        }
       }
     }
   }
   
-  val stateValue = viewModel.addEditTaskDialogState.value
-  
+  val state = viewModel.addEditTaskDialogState.value
+  val isNewTodo = state.todo.todoId == "" || state.todo.todoId == null
   var showNumberPicker by remember { mutableStateOf(false) }
-  val possibleValues = listOf(Duration.DAY, Duration.WEEK, Duration.MONTH)
-  var state by remember { mutableStateOf(possibleValues[0]) }
+  val durations = listOf(Duration.DAY, Duration.WEEK, Duration.MONTH)
+  var durationState by remember { mutableStateOf(durations[0]) }
   val datePickerDialog = DatePickerDialog(
     LocalContext.current,
     { _: DatePicker, year: Int, month: Int, dayOfMonth: Int ->
@@ -79,28 +51,27 @@ fun AddEditTaskDialog(
         )
       )
     },
-    stateValue.year,
-    stateValue.month,
-    stateValue.day
+    state.year,
+    state.month,
+    state.day
   )
   
-  
-  val importantText = when (stateValue.important) {
-    1 -> "important"
-    2 -> "very important"
-    else -> "not important"
+  val importantText = when (state.todo.important) {
+    1 -> "Important"
+    2 -> "Very important"
+    else -> "Not important"
   }
-  val iconId = when (stateValue.important) {
+  val iconId = when (state.todo.important) {
     1 -> R.drawable.ic_star_half
     2 -> R.drawable.ic_star
     else -> R.drawable.ic_star_outline
   }
-  val textColor = when (stateValue.important) {
+  val textColor = when (state.todo.important) {
     1 -> gold
     2 -> fire
     else -> MaterialTheme.colorScheme.onSurface
   }
-  val iconColor = when (stateValue.important) {
+  val iconColor = when (state.todo.important) {
     1 -> gold
     2 -> fire
     else -> MaterialTheme.colorScheme.onSurface
@@ -108,18 +79,18 @@ fun AddEditTaskDialog(
   
   val numberPickerDialog: @Composable () -> Unit = {
     DropdownMenu(
-      expanded = showNumberPicker && stateValue.repeatable,
+      expanded = showNumberPicker && state.todo.repeatable,
       onDismissRequest = { showNumberPicker = !showNumberPicker },
       modifier = Modifier.padding(horizontal = 24.dp)
     ) {
       Row {
         NumberPicker(
-          value = stateValue.duration.time,
+          value = state.duration.time,
           range = 1..100,
           onValueChange = {
             viewModel.onEvent(
               AddEditTaskDialogEvent.UpdateDuration(
-                stateValue.duration.copy(
+                state.duration.copy(
                   it
                 )
               )
@@ -130,18 +101,18 @@ fun AddEditTaskDialog(
         )
         ListItemPicker(
           label = { it },
-          value = state,
+          value = durationState,
           onValueChange = {
-            state = it
+            durationState = it
             viewModel.onEvent(
               AddEditTaskDialogEvent.UpdateDuration(
-                stateValue.duration.copy(
+                state.duration.copy(
                   it
                 )
               )
             )
           },
-          list = possibleValues,
+          list = durations,
           dividersColor = Color.Transparent,
           textStyle = MaterialTheme.typography.labelLarge.copy(color = MaterialTheme.colorScheme.onSurface),
         )
@@ -149,26 +120,25 @@ fun AddEditTaskDialog(
     }
   }
   
-  AnimatedVisibility(visible = openDiaLog) {
+  if (state.visible) {
     AlertDialog(
       onDismissRequest = onDismiss,
       title = {
-              Text(text = if (viewModel.currentPlantTask.value != null) "Todo" else "New Todo")
+        Text(text = if (isNewTodo) "New Todo" else "Todo")
       },
       text = {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-          AnimatedContent(targetState = plantTask) {
-            OutlinedTextField(
-              value = stateValue.title,
-              onValueChange = {
-                viewModel.onEvent(AddEditTaskDialogEvent.UpdateTitle(it))
-              },
-              placeholder = {
-                Text(text = "Enter title *")
-              },
-              textStyle = MaterialTheme.typography.titleMedium
-            )
-          }
+          OutlinedTextField(
+            value = state.todo.title ?: "",
+            onValueChange = {
+              viewModel.onEvent(AddEditTaskDialogEvent.UpdateTitle(it))
+            },
+            placeholder = {
+              Text(text = "Enter title *")
+            },
+            textStyle = MaterialTheme.typography.titleMedium,
+            singleLine = true
+          )
           OutlinedTextField(
             value = importantText,
             onValueChange = {},
@@ -188,7 +158,7 @@ fun AddEditTaskDialog(
           )
           
           OutlinedTextField(
-            value = "Due at: ${stateValue.day}/${stateValue.month + 1}/${stateValue.year}",
+            value = "Due at: ${state.day}/${state.month + 1}/${state.year}",
             onValueChange = {},
             readOnly = true,
             trailingIcon = {
@@ -205,12 +175,12 @@ fun AddEditTaskDialog(
           )
           
           OutlinedTextField(
-            value = "repeat after: ${stateValue.duration.time} ${stateValue.duration.type}",
+            value = "Repeat after: ${state.duration.time} ${state.duration.type}${if (state.duration.time == 1) "s" else ""}",
             onValueChange = {},
             readOnly = true,
             leadingIcon = {
               Checkbox(
-                checked = stateValue.repeatable,
+                checked = state.todo.repeatable,
                 onCheckedChange = { viewModel.onEvent(AddEditTaskDialogEvent.UpdateRepeatable) }
               )
             },
@@ -228,7 +198,7 @@ fun AddEditTaskDialog(
                 numberPickerDialog()
               }
             },
-            enabled = stateValue.repeatable
+            enabled = state.todo.repeatable
           )
           
           Row(
@@ -247,7 +217,7 @@ fun AddEditTaskDialog(
       confirmButton = {
         TextButton(
           onClick = {
-            if (viewModel.currentPlantTask.value == null) {
+            if (isNewTodo) {
               viewModel.onEvent(AddEditTaskDialogEvent.AddTask)
             } else {
               viewModel.onEvent(AddEditTaskDialogEvent.UpdateTask)
@@ -255,7 +225,7 @@ fun AddEditTaskDialog(
           }
         ) {
           Text(
-            if (viewModel.currentPlantTask.value == null) "Add" else "Update"
+            if (isNewTodo) "Add" else "Update"
           )
         }
       },

@@ -4,6 +4,7 @@ buildscript {
         nav_version = '2.4.2'
         fragment_version = "1.4.1"
         activity_version = "1.4.0"
+        accompanist_version = "0.24.9-beta"
     }
     dependencies {
         classpath('com.google.dagger:hilt-android-gradle-plugin:2.40.1')

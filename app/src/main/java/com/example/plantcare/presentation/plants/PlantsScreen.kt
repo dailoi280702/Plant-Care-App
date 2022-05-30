@@ -1,5 +1,6 @@
 package com.example.plantcare.presentation.plants
 
+import android.annotation.SuppressLint
 import android.content.res.Configuration
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -25,35 +26,28 @@ import androidx.navigation.NavController
 import com.example.plantcare.R
 import com.example.plantcare.domain.utils.OrderType
 import com.example.plantcare.domain.utils.PlantOrder
-import com.example.plantcare.presentation.main.MainViewModel
 import com.example.plantcare.presentation.main.utils.Screens
 import com.example.plantcare.presentation.plants.components.PlantCard
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun PlantsScreen(
   navController: NavController,
   scaffoldState: ScaffoldState,
-  mainViewModel: MainViewModel,
-  viewModel: PlantsListViewModel = hiltViewModel()
+  viewModel: PlantsListViewModel = hiltViewModel(),
+  bottomBar: @Composable () -> Unit
 ) {
-
+  
   val state = viewModel.state.value
   val configuration = LocalConfiguration.current
   val gridCellsColumn =
     if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) 2 else 4
   val scrollState = rememberLazyGridState()
   val position by animateDpAsState(if (viewModel.scrollUp.value) (-64).dp else 0.dp)
-
-  mainViewModel.setFloatingActionButton(
-    icon = R.drawable.ic_edit_outline,
-    contentDescription = "add icon"
-  ) {
-    navController.navigate(Screens.AddPlantScreen.route)
-  }
-
+  
   viewModel.updateScrollPosition(scrollState.firstVisibleItemIndex)
-
+  
   Scaffold(
     topBar = {
       SmallTopAppBar(
@@ -64,7 +58,6 @@ fun PlantsScreen(
           .graphicsLayer { translationY = position.toPx() },
         title = {
           Text(
-            modifier = Modifier.padding(horizontal = 16.dp),
             text = "Your plants",
             style = MaterialTheme.typography.titleLarge,
             fontSize = MaterialTheme.typography.titleLarge.fontSize,
@@ -72,10 +65,7 @@ fun PlantsScreen(
           )
         },
         actions = {
-          Box(
-            modifier = Modifier
-              .padding(horizontal = 16.dp)
-          ) {
+          Box {
             IconButton(
               onClick = {
                 viewModel.onEvent(PlantsScreenEvent.ToggleOrderSection)
@@ -97,14 +87,8 @@ fun PlantsScreen(
               modifier = Modifier.defaultMinSize(minWidth = 122.dp)
             ) {
               DropdownMenuItem(
-                text = {
-                  Text(
-                    text = "Name A-Z",
-                  )
-                },
-                onClick = {
-                  viewModel.onEvent(PlantsScreenEvent.Order(PlantOrder.Name(OrderType.Ascending)))
-                },
+                text = { Text(text = "Name A-Z") },
+                onClick = { viewModel.onEvent(PlantsScreenEvent.Order(PlantOrder.Name(OrderType.Ascending))) },
                 trailingIcon = {
                   val selected =
                     state.plantsOrder is PlantOrder.Name && state.plantsOrder.orderType is OrderType.Ascending
@@ -117,11 +101,7 @@ fun PlantsScreen(
                 onClick = {
                   viewModel.onEvent(PlantsScreenEvent.Order(PlantOrder.Name(OrderType.Descending)))
                 },
-                text = {
-                  Text(
-                    text = "Name Z-A"
-                  )
-                },
+                text = { Text(text = "Name Z-A") },
                 trailingIcon = {
                   val selected =
                     state.plantsOrder is PlantOrder.Name && state.plantsOrder.orderType is OrderType.Descending
@@ -130,14 +110,17 @@ fun PlantsScreen(
                   }
                 }
               )
-              DropdownMenuItem(onClick = {
-                viewModel.onEvent(PlantsScreenEvent.Order(PlantOrder.DateAdded(OrderType.Descending)))
-              },
-                text = {
-                  Text(
-                    text = "Date latest"
+              DropdownMenuItem(
+                onClick = {
+                  viewModel.onEvent(
+                    PlantsScreenEvent.Order(
+                      PlantOrder.DateAdded(
+                        OrderType.Descending
+                      )
+                    )
                   )
                 },
+                text = { Text(text = "Date latest") },
                 trailingIcon = {
                   val selected =
                     state.plantsOrder is PlantOrder.DateAdded && state.plantsOrder.orderType is OrderType.Descending
@@ -147,12 +130,15 @@ fun PlantsScreen(
                 }
               )
               DropdownMenuItem(onClick = {
-                viewModel.onEvent(PlantsScreenEvent.Order(PlantOrder.DateAdded(OrderType.Ascending)))
-              }, text = {
-                Text(
-                  text = "Date oldest"
+                viewModel.onEvent(
+                  PlantsScreenEvent.Order(
+                    PlantOrder.DateAdded(
+                      OrderType.Ascending
+                    )
+                  )
                 )
               },
+                text = { Text(text = "Date oldest") },
                 trailingIcon = {
                   val selected =
                     state.plantsOrder is PlantOrder.DateAdded && state.plantsOrder.orderType is OrderType.Ascending
@@ -165,6 +151,20 @@ fun PlantsScreen(
           }
         }
       )
+    },
+    bottomBar = bottomBar,
+    floatingActionButton = {
+      FloatingActionButton(
+        onClick = { navController.navigate(Screens.AddPlantScreen.route) },
+        elevation = FloatingActionButtonDefaults.elevation()
+      ) {
+        Icon(
+          painter = painterResource(id = R.drawable.ic_edit_outline),
+          contentDescription = "Icon edit",
+          modifier = Modifier
+            .size(24.dp)
+        )
+      }
     }
   ) {
     LazyVerticalGrid(

@@ -30,6 +30,7 @@ object PlantTaskModule {
     getTasks = GetTasks(repository = repository),
     getTasksByPlantId = GetTasksByPlantId(repository = repository),
     updateTask = UpdateTask(repository = repository),
-    deleteTask = DeleteTask(repository = repository)
+    deleteTask = DeleteTask(repository = repository),
+    markTodoAsDone = MarkTodoAsDone(repository = repository)
   )
 }

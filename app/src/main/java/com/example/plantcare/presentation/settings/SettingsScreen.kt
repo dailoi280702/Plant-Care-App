@@ -1,10 +1,13 @@
 package com.example.plantcare.presentation.settings
 
+import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Button
 import androidx.compose.material.Text
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -15,17 +18,18 @@ import androidx.navigation.NavController
 import com.example.plantcare.presentation.login.AuthenticationViewModel
 import com.example.plantcare.presentation.login.LoginSignupEvent
 import com.example.plantcare.presentation.login.LoginSignupUIEvent
-import com.example.plantcare.presentation.main.MainViewModel
 import com.example.plantcare.presentation.main.utils.Screens
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.flow.collectLatest
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
   navController: NavController,
-  mainViewModel: MainViewModel,
-  authenticationViewModel: AuthenticationViewModel = hiltViewModel()
+  authenticationViewModel: AuthenticationViewModel = hiltViewModel(),
+  bottomBar: @Composable () -> Unit
 ) {
   val context = LocalContext.current
 
@@ -40,20 +44,21 @@ fun SettingsScreen(
             popUpTo(Screens.MainScreens.Settings.route) {
               inclusive = true
             }
-            mainViewModel.setCurrentScreen(event.screen)
           }
         }
       }
     }
   }
 
-  Column(
-    modifier = Modifier.fillMaxSize(), 
-    horizontalAlignment = Alignment.CenterHorizontally
-  ) {
-    Button(onClick = {authenticationViewModel.onEvent(LoginSignupEvent.SignOut)}) {
-      Text(text = "log out")
+  Scaffold(bottomBar = bottomBar) {
+    Column(
+      modifier = Modifier.fillMaxSize(),
+      horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+      Button(onClick = {authenticationViewModel.onEvent(LoginSignupEvent.SignOut)}) {
+        Text(text = "log out")
+      }
+      Text(text = Firebase.auth.currentUser?.uid.toString())
     }
-    Text(text = Firebase.auth.currentUser?.uid.toString())
   }
 }

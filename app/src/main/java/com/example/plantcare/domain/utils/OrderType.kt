@@ -1,6 +1,6 @@
 package com.example.plantcare.domain.utils
 
-sealed class OrderType {
-  object Ascending: OrderType()
-  object Descending: OrderType()
+sealed class OrderType (val text: String) {
+  object Ascending: OrderType("Ascending")
+  object Descending: OrderType("Descending")
 }

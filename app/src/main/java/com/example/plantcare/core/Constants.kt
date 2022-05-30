@@ -7,4 +7,10 @@ object Constants {
   const val IMPORTANT = 1
 
   const val VERY_IMPORTANT = 2
+  
+  const val TODO_ID = "todoId"
+  
+  const val TODOS = "todos"
+  
+  const val PLANTS = "plants"
 }

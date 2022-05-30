@@ -7,12 +7,11 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.example.plantcare.presentation.Tasks.TasksScreen
-import com.example.plantcare.presentation.add_edit_plant.AddEditPlantScreen
+import com.example.plantcare.presentation.todos.TasksScreen
+import com.example.plantcare.presentation.plant_detail.AddEditPlantScreen
 import com.example.plantcare.presentation.home.HomeScreen
 import com.example.plantcare.presentation.login.AuthenticationViewModel
 import com.example.plantcare.presentation.login.LoginSignupScreen
-import com.example.plantcare.presentation.main.MainViewModel
 import com.example.plantcare.presentation.main.utils.Screens
 import com.example.plantcare.presentation.plants.PlantsScreen
 import com.example.plantcare.presentation.settings.SettingsScreen
@@ -21,42 +20,42 @@ import com.example.plantcare.presentation.settings.SettingsScreen
 fun NavGraph(
   navController: NavHostController,
   scaffoldState: ScaffoldState,
-  mainViewModel: MainViewModel,
-  authenticationViewModel: AuthenticationViewModel
+  authenticationViewModel: AuthenticationViewModel,
 ) {
+  
+  val bottomBar: @Composable () -> Unit = { BottomNav(navController = navController) }
   val startDest =
     if (authenticationViewModel.isUserLogedin()) Screens.MainScreens.Home else Screens.LoginSignupScreen
-  mainViewModel.setCurrentScreen(startDest)
+  
   NavHost(navController = navController, startDestination = startDest.route) {
     composable(Screens.MainScreens.Home.route) {
       HomeScreen(
         navController = navController,
-        mainViewModel = mainViewModel
+        bottomBar = bottomBar
       )
     }
     composable(Screens.MainScreens.Plants.route) {
       PlantsScreen(
         navController = navController,
         scaffoldState = scaffoldState,
-        mainViewModel = mainViewModel
+        bottomBar = bottomBar
       )
     }
     composable(Screens.MainScreens.Tasks.route) {
       TasksScreen(
         navController = navController,
-        mainViewModel = mainViewModel
+        bottomBar = bottomBar
       )
     }
     composable(Screens.MainScreens.Settings.route) {
       SettingsScreen(
         navController = navController,
-        mainViewModel = mainViewModel
+        bottomBar = bottomBar
       )
     }
     composable(Screens.LoginSignupScreen.route) {
       LoginSignupScreen(
         navController = navController,
-        mainViewModel = mainViewModel
       )
     }
     composable(
@@ -71,8 +70,7 @@ fun NavGraph(
       )
     ) {
       AddEditPlantScreen(
-        navController = navController,
-        mainViewModel = mainViewModel
+        navController = navController
       )
     }
   }

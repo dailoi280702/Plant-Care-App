@@ -31,7 +31,6 @@ import com.example.plantcare.presentation.login.components.LoginTab
 import com.example.plantcare.presentation.login.components.SignupTab
 import com.example.plantcare.presentation.login.utils.LoginIconButton
 import com.example.plantcare.presentation.login.utils.LoginSignupTabItem
-import com.example.plantcare.presentation.main.MainViewModel
 import com.example.plantcare.presentation.main.utils.Screens
 import com.example.plantcare.ui.theme.Facebook_color
 import com.example.plantcare.ui.theme.Google_color
@@ -46,7 +45,6 @@ import kotlinx.coroutines.launch
 @Composable
 fun LoginSignupScreen(
   navController: NavController,
-  mainViewModel: MainViewModel,
   viewModel: AuthenticationViewModel = hiltViewModel()
 ) {
 
@@ -66,7 +64,6 @@ fun LoginSignupScreen(
             popUpTo(Screens.LoginSignupScreen.route) {
               inclusive = true
             }
-            mainViewModel.setCurrentScreen(event.screen)
           }
         }
       }

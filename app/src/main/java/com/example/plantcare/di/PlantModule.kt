@@ -15,24 +15,30 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object PlantModule {
-
+  
   @Provides
   @Singleton
   fun providePlantsRef(
     db: FirebaseFirestore,
     userID: String?
   ): DocumentReference = db.collection("test_plants").document(userID ?: "no_one")
-
+  
   @Provides
   @Singleton
   fun providePlantRepository(
     plantRef: DocumentReference,
     storageRef: StorageReference,
+    db: FirebaseFirestore,
     userId: String?
   ): PlantRepository {
-    return PlantRepositoryImpl(plantRef = plantRef, storageRef = storageRef, userId = userId)
+    return PlantRepositoryImpl(
+      plantRef = plantRef,
+      storageRef = storageRef,
+      db = db,
+      userId = userId
+    )
   }
-
+  
   @Provides
   @Singleton
   fun providePlantUseCases(repository: PlantRepository): PlantUseCases {
