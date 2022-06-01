@@ -51,9 +51,9 @@ fun PlantsScreen(
   Scaffold(
     topBar = {
       SmallTopAppBar(
-        colors = TopAppBarDefaults.smallTopAppBarColors(
-          containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.96f)
-        ),
+//        colors = TopAppBarDefaults.smallTopAppBarColors(
+//          containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.96f)
+//        ),
         modifier = Modifier
           .graphicsLayer { translationY = position.toPx() },
         title = {

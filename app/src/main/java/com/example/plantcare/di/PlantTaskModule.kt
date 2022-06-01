@@ -24,13 +24,13 @@ object PlantTaskModule {
   @Provides
   fun provideTaskUseCases(
     repository: TaskRepository
-  ) = TaskUseCases(
-    addTask = AddTask(repository = repository),
-    getTask = GetTask(repository = repository),
-    getTasks = GetTasks(repository = repository),
-    getTasksByPlantId = GetTasksByPlantId(repository = repository),
-    updateTask = UpdateTask(repository = repository),
-    deleteTask = DeleteTask(repository = repository),
+  ) = TodoUseCases(
+    addTodo = AddTodo(repository = repository),
+    getTodo = GetTodo(repository = repository),
+    getTodos = GetTodos(repository = repository),
+    getTodosByPlantId = GetTodosByPlantId(repository = repository),
+    updateTodo = UpdateTodo(repository = repository),
+    deleteTodo = DeleteTodo(repository = repository),
     markTodoAsDone = MarkTodoAsDone(repository = repository)
   )
 }

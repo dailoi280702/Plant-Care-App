@@ -4,11 +4,17 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -19,12 +25,9 @@ fun InfoSection(
   onNameChange: (String) -> Unit,
   onDescriptionChange: (String) -> Unit
 ) {
-//  Card(
-//    modifier = Modifier
-//      .padding(16.dp)
-//      .fillMaxWidth(),
-//    elevation = CardDefaults.elevatedCardElevation()
-//  ) {
+  
+  val focusManager = LocalFocusManager.current
+  
   Column(
     Modifier
       .fillMaxWidth()
@@ -38,10 +41,10 @@ fun InfoSection(
       onValueChange = {
         onNameChange(it)
       },
-      singleLine = false,
+      singleLine = true,
       placeholder = {
         Text(
-          text = "Name",
+          text = "Name*",
           color = MaterialTheme.colorScheme.onSurface,
           style = MaterialTheme.typography.titleMedium
         )
@@ -55,10 +58,16 @@ fun InfoSection(
         unfocusedIndicatorColor = Color.Transparent,
         containerColor = MaterialTheme.colorScheme.background
       ),
+      keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words, imeAction = ImeAction.Done),
+      keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() })
     )
-    Divider(thickness = 1.dp, modifier = Modifier
-      .offset(y = (-24).dp)
-      .padding(horizontal = 16.dp))
+    Divider(
+      color = MaterialTheme.colorScheme.surfaceVariant,
+      thickness = 1.dp,
+      modifier = Modifier
+        .offset(y = (-24).dp)
+        .padding(horizontal = 16.dp)
+    )
     TextField(
       modifier = Modifier
         .offset(y = (-24).dp)
@@ -83,8 +92,9 @@ fun InfoSection(
         focusedIndicatorColor = Color.Transparent,
         unfocusedIndicatorColor = Color.Transparent,
         containerColor = MaterialTheme.colorScheme.background
-      )
+      ),
+      keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
+      keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() })
     )
   }
-//  }
 }

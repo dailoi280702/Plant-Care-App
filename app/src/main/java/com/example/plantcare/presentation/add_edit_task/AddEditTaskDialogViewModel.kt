@@ -8,7 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.plantcare.data.utils.DataState
 import com.example.plantcare.domain.model.Plant
 import com.example.plantcare.domain.model.Todo
-import com.example.plantcare.domain.use_case.plantTask.TaskUseCases
+import com.example.plantcare.domain.use_case.plantTask.TodoUseCases
 import com.google.firebase.Timestamp
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -19,7 +19,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddEditTaskDialogViewModel @Inject constructor(
-  private val taskUseCases: TaskUseCases
+  private val taskUseCases: TodoUseCases
 ) : ViewModel() {
   
   private val _addEditTaskDialogState = mutableStateOf(AddEditTaskDialogState())
@@ -62,7 +62,7 @@ class AddEditTaskDialogViewModel @Inject constructor(
       )
       val duration = addEditTaskDialogState.value.duration.toInt()
       
-      taskUseCases.addTask(
+      taskUseCases.addTodo(
         task = addEditTaskDialogState.value.todo.copy(
           dueDay = Timestamp(dueDate.time),
           duration = duration
@@ -89,7 +89,7 @@ class AddEditTaskDialogViewModel @Inject constructor(
       )
       val duration = addEditTaskDialogState.value.duration.toInt()
       
-      taskUseCases.updateTask(
+      taskUseCases.updateTodo(
         task = addEditTaskDialogState.value.todo.copy(
           dueDay = Timestamp(dueDate.time),
           duration = duration

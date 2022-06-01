@@ -8,6 +8,7 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -20,21 +21,25 @@ import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.rememberDismissState
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.example.plantcare.data.utils.DataState.*
+import com.example.plantcare.R
+import com.example.plantcare.data.utils.DataState.Loading
 import com.example.plantcare.domain.utils.OrderType
 import com.example.plantcare.domain.utils.TodoOrder
 import com.example.plantcare.domain.utils.TodoTime
 import com.example.plantcare.presentation.main.utils.Screens
-import com.example.plantcare.presentation.todo_card.components.PlantTaskCard
-import com.example.plantcare.presentation.todo_card.components.SwipeablePlantTaskContainer
 import com.example.plantcare.presentation.todo.TodoEvent
 import com.example.plantcare.presentation.todo.TodoViewModel
+import com.example.plantcare.presentation.todo_card.components.PlantTaskCard
+import com.example.plantcare.presentation.todo_card.components.SwipeablePlantTaskContainer
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -44,7 +49,7 @@ import kotlinx.coroutines.launch
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(
   ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class,
-  ExperimentalMaterialApi::class, ExperimentalAnimationApi::class
+  ExperimentalMaterialApi::class
 )
 @Composable
 fun TasksScreen(
@@ -65,7 +70,9 @@ fun TasksScreen(
   val orderType = listOf(OrderType.Ascending, OrderType.Descending)
   val filterSectionVisibility = state.filterSectionVisibility
   val rotation by animateFloatAsState(targetValue = if (filterSectionVisibility) 180f else 0f)
-  val filterSectionHeight by animateDpAsState(targetValue = if (filterSectionVisibility) 96.dp else 0.dp)
+  val filterSectionHeight by animateDpAsState(targetValue = if (filterSectionVisibility) 216.dp else 0.dp) {
+  
+  }
   var showTodoOrder by remember { mutableStateOf(false) }
   var showOrderType by remember { mutableStateOf(false) }
   val isNotDefaultFilter = state.todoOrder::class.java != TodoOrder.Default::class.java
@@ -110,19 +117,51 @@ fun TasksScreen(
                 modifier = Modifier.rotate(rotation)
               )
             }
-          }
+          },
+          colors = TopAppBarDefaults.smallTopAppBarColors(
+            containerColor = MaterialTheme.colorScheme.surface.copy(
+              alpha = 0.96f
+            )
+          )
         )
         AnimatedVisibility(
           visible = filterSectionVisibility,
           enter = fadeIn() + slideInVertically(),
-          exit = fadeOut() + slideOutVertically() + scaleOut()
+          exit = fadeOut() + slideOutVertically()
         ) {
-          Column {
+          Column(
+            modifier = Modifier
+              .background(
+                Brush.verticalGradient(
+                  colors = listOf(
+                    MaterialTheme.colorScheme.surface.copy(alpha = 0.96f),
+                    MaterialTheme.colorScheme.surface.copy(alpha = 0.95f)
+                  )
+                )
+              )
+              .padding(horizontal = 16.dp)
+          ) {
+            Divider(
+              color = MaterialTheme.colorScheme.surfaceVariant,
+              modifier = Modifier.padding(vertical = 8.dp)
+            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+              Icon(
+                painter = painterResource(id = R.drawable.ic_sort),
+                contentDescription = null,
+                modifier = Modifier.size(24.dp),
+                tint = MaterialTheme.colorScheme.surfaceTint
+              )
+              Text(
+                text = "Filter by",
+                modifier = Modifier.padding(8.dp),
+                style = MaterialTheme.typography.titleMedium
+              )
+            }
             LazyRow(
               horizontalArrangement = Arrangement.spacedBy(8.dp),
               modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp)
             ) {
               items(todoTimes) {
                 FilterChip(
@@ -137,16 +176,32 @@ fun TasksScreen(
                       contentDescription = "Localized Description",
                       modifier = Modifier.size(FilterChipDefaults.IconSize)
                     )
-                  }
+                  },
                 )
               }
             }
             
+            Divider(
+              color = MaterialTheme.colorScheme.surfaceVariant,
+              modifier = Modifier.padding(vertical = 8.dp)
+            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+              Icon(
+                painter = painterResource(id = R.drawable.ic_filter_alt_black_48dp),
+                contentDescription = null,
+                modifier = Modifier.size(24.dp),
+                tint = MaterialTheme.colorScheme.surfaceTint
+              )
+              Text(
+                text = "Order by",
+                modifier = Modifier.padding(8.dp),
+                style = androidx.compose.material.LocalTextStyle.current.copy(fontWeight = FontWeight.Bold)
+              )
+            }
             LazyRow(
               horizontalArrangement = Arrangement.spacedBy(8.dp),
               modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp)
             ) {
               item {
                 Box {
@@ -160,7 +215,7 @@ fun TasksScreen(
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                       )
-                    }
+                    },
                   )
                   DropdownMenu(
                     expanded = showTodoOrder,
@@ -193,7 +248,8 @@ fun TasksScreen(
                         )
                       }
                     },
-                    enabled = isNotDefaultFilter
+                    enabled = isNotDefaultFilter,
+//                    colors = FilterChipDefaults.filterChipColors(containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.96f))
                   )
                   DropdownMenu(
                     expanded = showOrderType,
@@ -218,6 +274,10 @@ fun TasksScreen(
                 }
               }
             }
+            Divider(
+              color = MaterialTheme.colorScheme.surfaceVariant,
+              modifier = Modifier.padding(top = 8.dp)
+            )
           }
         }
       }
@@ -236,14 +296,15 @@ fun TasksScreen(
     bottomBar = bottomBar
   ) {
     SwipeRefresh(
-      state = rememberSwipeRefreshState(isRefreshing = true),
+      state = rememberSwipeRefreshState(isRefreshing = viewModel.dataState.value is Loading),
       onRefresh = { viewModel.onEvent(TodosEvent.RefreshTodos) },
       indicator = { state, refreshTrigger ->
         SwipeRefreshIndicator(
           state = state,
           refreshTriggerDistance = refreshTrigger,
           scale = true,
-          backgroundColor = MaterialTheme.colorScheme.primary
+          backgroundColor = MaterialTheme.colorScheme.primary,
+          modifier = Modifier.padding(top = 72.dp + filterSectionHeight)
         )
       }
     ) {

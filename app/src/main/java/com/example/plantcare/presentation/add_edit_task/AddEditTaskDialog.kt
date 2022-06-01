@@ -6,8 +6,10 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -62,9 +64,9 @@ fun AddEditTaskDialog(
     else -> "Not important"
   }
   val iconId = when (state.todo.important) {
-    1 -> R.drawable.ic_star_half
-    2 -> R.drawable.ic_star
-    else -> R.drawable.ic_star_outline
+    1 -> R.drawable.ic_star_half_black_48dp
+    2 -> R.drawable.ic_star_black_48dp
+    else -> R.drawable.star_outline_black_48dp
   }
   val textColor = when (state.todo.important) {
     1 -> gold
@@ -123,8 +125,21 @@ fun AddEditTaskDialog(
   if (state.visible) {
     AlertDialog(
       onDismissRequest = onDismiss,
+      icon = {
+        Icon(
+          painter = painterResource(id = if (isNewTodo) R.drawable.auto_awesome_black_48dp else R.drawable.ic_edit_outline),
+          contentDescription = "Dialog Icon",
+          tint = MaterialTheme.colorScheme.surfaceTint,
+          modifier = Modifier.size(24.dp)
+        )
+      },
       title = {
-        Text(text = if (isNewTodo) "New Todo" else "Todo")
+        Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth()) {
+          Text(
+            text = if (isNewTodo) "New Todo" else "Edit Todo",
+            fontStyle = MaterialTheme.typography.labelLarge.fontStyle
+          )
+        }
       },
       text = {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -134,7 +149,7 @@ fun AddEditTaskDialog(
               viewModel.onEvent(AddEditTaskDialogEvent.UpdateTitle(it))
             },
             placeholder = {
-              Text(text = "Enter title *")
+              Text(text = "Enter title*")
             },
             textStyle = MaterialTheme.typography.titleMedium,
             singleLine = true

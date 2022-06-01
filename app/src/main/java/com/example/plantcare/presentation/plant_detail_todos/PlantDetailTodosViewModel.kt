@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.plantcare.data.utils.DataState
 import com.example.plantcare.domain.model.Todo
-import com.example.plantcare.domain.use_case.plantTask.TaskUseCases
+import com.example.plantcare.domain.use_case.plantTask.TodoUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PlantDetailTodosViewModel @Inject constructor(
-  private val taskUseCases: TaskUseCases
+  private val taskUseCases: TodoUseCases
 ) : ViewModel() {
 
   private val _plantDetailTodosState = mutableStateOf(PlantDetailTodosState())
@@ -26,7 +26,7 @@ class PlantDetailTodosViewModel @Inject constructor(
   fun init(plantId: String) {
     viewModelScope.launch {
       _plantDetailTodosState.value = plantDetailTodosState.value.copy(plantId = plantId)
-      taskUseCases.getTasksByPlantId(plantId).collectLatest {
+      taskUseCases.getTodosByPlantId(plantId).collectLatest {
         _dataState.value = it
         if (it is DataState.Success) {
           _plantDetailTodosState.value = plantDetailTodosState.value.copy(taskList = it.data)

@@ -6,8 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.plantcare.data.utils.DataState
 import com.example.plantcare.data.utils.DataState.*
-import com.example.plantcare.domain.model.Todo
-import com.example.plantcare.domain.use_case.plantTask.TaskUseCases
+import com.example.plantcare.domain.use_case.plantTask.TodoUseCases
 import com.example.plantcare.domain.utils.TodoOrder
 import com.example.plantcare.domain.utils.TodoTime
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,7 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TodosViewModel @Inject constructor(
-  private val taskUseCases: TaskUseCases
+  private val taskUseCases: TodoUseCases
 ) : ViewModel() {
   
   private val _todosState = mutableStateOf(TodosState())
@@ -32,7 +31,7 @@ class TodosViewModel @Inject constructor(
   
   private fun getTodos(todoTimes: List<TodoTime>? = null, todoOrder: TodoOrder? = null) {
     viewModelScope.launch {
-      taskUseCases.getTasks(
+      taskUseCases.getTodos(
         todoTimes ?: todosState.value.todoTimes,
         todoOrder ?: todosState.value.todoOrder
       ).collectLatest {
@@ -75,6 +74,8 @@ class TodosViewModel @Inject constructor(
         getTodos(todoOrder = event.value)
       }
       is TodosEvent.RefreshTodos -> {
+        _todosState.value =
+          TodosState(filterSectionVisibility = todosState.value.filterSectionVisibility)
         getTodos()
       }
     }

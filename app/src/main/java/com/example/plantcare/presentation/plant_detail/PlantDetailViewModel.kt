@@ -143,10 +143,14 @@ class PlantDetailViewModel @Inject constructor(
         if (it is DataState.Success) {
           _plantDetailState.value = plantDetailState.value.copy(
             plant = it.data!!,
+            subFabVisibility = false
           )
         }
         if (it is DataState.Error) {
           _eventFLow.emit(PlantDetailUiEvent.ShowError(it.message))
+          _plantDetailState.value = plantDetailState.value.copy(
+            subFabVisibility = false
+          )
         }
       }
     }

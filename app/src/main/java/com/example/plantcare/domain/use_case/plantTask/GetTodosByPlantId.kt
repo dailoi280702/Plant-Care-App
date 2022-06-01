@@ -4,7 +4,7 @@ import com.example.plantcare.data.utils.DataState.Success
 import com.example.plantcare.domain.repository.TaskRepository
 import kotlinx.coroutines.flow.map
 
-class GetTasksByPlantId(
+class GetTodosByPlantId(
   private val repository: TaskRepository
 ) {
   operator fun invoke(plantId: String) =

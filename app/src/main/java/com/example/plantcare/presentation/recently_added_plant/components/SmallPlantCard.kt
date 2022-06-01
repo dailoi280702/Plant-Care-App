@@ -56,9 +56,11 @@ fun SmallPlantCard(
         )
       }
     }
-    Box(modifier = Modifier
-      .height(56.dp)
-      .padding(8.dp)) {
+    Box(
+      modifier = Modifier
+      .height(58.dp)
+      .padding(8.dp)
+    ) {
       Text(
         text = plant.name!!,
         maxLines = 2,

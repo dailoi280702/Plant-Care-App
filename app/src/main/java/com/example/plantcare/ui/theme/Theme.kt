@@ -1,5 +1,8 @@
 package com.example.plantcare.ui.theme
 
+import android.annotation.SuppressLint
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
@@ -7,12 +10,14 @@ import androidx.compose.material.lightColors
 import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.*
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.plantcare.domain.utils.AppTheme
+import com.example.plantcare.presentation.data_store.DataStoreViewModel
 import com.example.plantcare.ui.theme.utils.LocalCustomColors
 import com.example.plantcare.ui.theme.utils.darkCustomColors
 import com.example.plantcare.ui.theme.utils.lightCustomColors
@@ -31,7 +36,7 @@ private val DarkColorPalette = darkColors(
 )
 
 private val LightColorPalette = lightColors(
-
+  
   primary = md_theme_light_primary,
   onPrimary = md_theme_light_onPrimary,
   secondary = md_theme_light_secondary,
@@ -156,7 +161,7 @@ val AppTypography = Typography(
 
 
 private val LightThemeColors = lightColorScheme(
-
+  
   primary = md_theme_light_primary,
   onPrimary = md_theme_light_onPrimary,
   primaryContainer = md_theme_light_primaryContainer,
@@ -186,7 +191,7 @@ private val LightThemeColors = lightColorScheme(
   surfaceTint = md_theme_light_primary
 )
 private val DarkThemeColors = darkColorScheme(
-
+  
   primary = md_theme_dark_primary,
   onPrimary = md_theme_dark_onPrimary,
   primaryContainer = md_theme_dark_primaryContainer,
@@ -220,24 +225,36 @@ private val LightColorPaletteCustom = lightCustomColors()
 
 private val DarkColorPaletteCustom = darkCustomColors()
 
+@SuppressLint("RememberReturnType")
 @Composable
 fun PlantCareTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
-  val colors = if (darkTheme) {
+  val viewModel: DataStoreViewModel = hiltViewModel()
+  val appTheme = viewModel.themeState.value
+  
+  LaunchedEffect(viewModel.themeState) { viewModel.request() }
+  
+  val useDarkTheme = when (appTheme) {
+    AppTheme.Auto -> darkTheme
+    AppTheme.Light -> false
+    AppTheme.Dark -> true
+  }
+  
+  val colors = if (useDarkTheme) {
     DarkColorPalette
   } else {
     LightColorPalette
   }
-  val customColors = if (darkTheme) {
+  val customColors = if (useDarkTheme) {
     DarkColorPaletteCustom
   } else {
     LightColorPaletteCustom
   }
-  val colorScheme = if (darkTheme) {
+  val colorScheme = if (useDarkTheme) {
     DarkThemeColors
   } else {
     LightThemeColors
   }
-
+  
   CompositionLocalProvider(
     LocalCustomColors provides customColors
   ) {

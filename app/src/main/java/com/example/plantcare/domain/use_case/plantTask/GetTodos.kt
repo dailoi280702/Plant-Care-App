@@ -7,7 +7,7 @@ import com.example.plantcare.domain.utils.TodoOrder
 import com.example.plantcare.domain.utils.TodoTime
 import kotlinx.coroutines.flow.map
 
-class GetTasks(
+class GetTodos(
   private val repository: TaskRepository
 ) {
   operator fun invoke(todoTimes: List<TodoTime>, todoOrder: TodoOrder) = repository.getTasks().map { dataState ->

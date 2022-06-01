@@ -65,10 +65,10 @@ fun PlantCard(
       Text(
         text = plant.name!!,
         modifier = Modifier.padding(horizontal = 16.dp),
-        fontSize = MaterialTheme.typography.titleLarge.fontSize,
+        fontSize = MaterialTheme.typography.titleMedium.fontSize,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
-        color = MaterialTheme.colorScheme.onSurface,
+//        color = MaterialTheme.colorScheme.onSurface,
       )
       Text(
         text = millisToDateString(plant.dateAdded ?: System.currentTimeMillis()),

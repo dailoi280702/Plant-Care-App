@@ -4,20 +4,25 @@ import android.annotation.SuppressLint
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
@@ -55,6 +60,8 @@ fun AddEditPlantScreen(
   val rotationState by animateFloatAsState(
     targetValue = if (plantDetailState.subFabVisibility) 45f else 0f
   )
+  val dividerPadding =
+    animateDpAsState(targetValue = if (viewModel.plantDetailState.value.expandedInfo) 16.dp else 0.dp)
   val launcher = rememberLauncherForActivityResult(
     contract = ActivityResultContracts.GetContent()
   ) {
@@ -62,7 +69,7 @@ fun AddEditPlantScreen(
       PlantDetailEvent.ChangeImageUri(it)
     )
   }
-
+  
   LaunchedEffect(key1 = true) {
     todoViewModel.eventFlow.collectLatest { event ->
       if (event) {
@@ -172,7 +179,7 @@ fun AddEditPlantScreen(
         }
       }
       
-      Divider()
+      Divider(modifier = Modifier.padding(horizontal = dividerPadding.value))
       Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -249,19 +256,11 @@ fun AddEditPlantScreen(
   }
   
   if (viewModel.dataState.value is DataState.Loading) {
-    Surface(
-      modifier = Modifier
-        .fillMaxSize(),
-      color = Color.Transparent
-    ) {
-      Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-      ) {
-        CircularProgressIndicator()
-      }
+    Dialog(onDismissRequest = {}) {
+      CircularProgressIndicator()
     }
   }
+  
   
   ErrorSnackbarHost(snackbarHostState = errorSnackbarHostState)
   

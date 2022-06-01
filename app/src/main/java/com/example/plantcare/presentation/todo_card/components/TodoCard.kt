@@ -14,6 +14,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.plantcare.R
+import com.example.plantcare.core.Utils
 import com.example.plantcare.core.Utils.Companion.calculateDifferenceInDays
 import com.example.plantcare.domain.model.Todo
 import com.example.plantcare.ui.theme.fire
@@ -25,14 +26,12 @@ fun PlantTaskCard(
   dismissState: DismissState,
   task: Todo,
   expanded: Boolean = false,
-//  viewModel: TodoCardViewModel = hiltViewModel(),
   onPlantNameClick: () -> Unit,
   onEditClick: () -> Unit,
   onDone: () -> Unit,
   onClick: () -> Unit
 ) {
   
-//  val plantName = viewModel.plantName.value
   val importantText = when (task.important) {
     1 -> "important"
     2 -> "very important"
@@ -44,9 +43,9 @@ fun PlantTaskCard(
     else -> MaterialTheme.colorScheme.onSurface
   }
   val iconId = when (task.important) {
-    1 -> R.drawable.ic_star_half
-    2 -> R.drawable.ic_star
-    else -> R.drawable.ic_star_outline
+    1 -> R.drawable.ic_star_half_black_48dp
+    2 -> R.drawable.ic_star_black_48dp
+    else -> R.drawable.star_outline_black_48dp
   }
   
   val dayLeft = calculateDifferenceInDays(task.dueDay!!.toDate())
@@ -76,18 +75,11 @@ fun PlantTaskCard(
                 style = MaterialTheme.typography.titleMedium.copy(textDecoration = if (task.done) TextDecoration.LineThrough else null),
                 overflow = TextOverflow.Ellipsis
               )
-              if (task.overDue) {
-                Text(
-                  text = "overdue $dayLeft day${if (dayLeft == 1L) "" else "s"}",
-                  style = MaterialTheme.typography.bodySmall,
-                  color = MaterialTheme.colorScheme.error
-                )
-              } else {
-                Text(
-                  text = if (dayLeft == 0L) "Today" else "$dayLeft day${if (dayLeft == 1L) "" else "s"} left",
-                  style = MaterialTheme.typography.bodySmall
-                )
-              }
+              Text(
+                text = Utils.timeStampToString(task.dueDay!!),
+                color = Utils.timeStampToColor(task.dueDay!!),
+                style = MaterialTheme.typography.bodySmall
+              )
             }
           }
           
@@ -115,6 +107,7 @@ fun PlantTaskCard(
       Column(
         modifier = Modifier
           .fillMaxWidth()
+          .padding(horizontal = 12.dp)
       ) {
         Row(
           horizontalArrangement = Arrangement.SpaceBetween,
@@ -134,12 +127,11 @@ fun PlantTaskCard(
               painter = painterResource(id = R.drawable.ic_edit_outline),
               contentDescription = null,
               modifier = Modifier
-                .padding(horizontal = 8.dp)
                 .size(24.dp)
             )
           }
         }
-        Divider()
+        Divider(color = MaterialTheme.colorScheme.surfaceVariant)
       }
     }
   }

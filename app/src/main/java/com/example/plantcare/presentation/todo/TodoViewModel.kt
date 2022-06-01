@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.plantcare.data.utils.DataState
 import com.example.plantcare.domain.model.Todo
-import com.example.plantcare.domain.use_case.plantTask.TaskUseCases
+import com.example.plantcare.domain.use_case.plantTask.TodoUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -16,7 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TodoViewModel @Inject constructor(
-  private val todoUseCases: TaskUseCases
+  private val todoUseCases: TodoUseCases
 ): ViewModel() {
   
   private val _todoState = mutableStateOf(TodoState())
@@ -27,7 +27,7 @@ class TodoViewModel @Inject constructor(
   
   private fun deleteTodo(todo: Todo) {
     viewModelScope.launch {
-      todoUseCases.deleteTask(todo.todoId!!).collectLatest {
+      todoUseCases.deleteTodo(todo.todoId!!).collectLatest {
         if (it is DataState.Success) {
           _todoState.value = todoState.value.copy(
             deletedTodo = todo
@@ -41,7 +41,7 @@ class TodoViewModel @Inject constructor(
   private  fun restoreTodo() {
     todoState.value.deletedTodo?.let { todo ->
       viewModelScope.launch {
-        todoUseCases.addTask(todo).collectLatest {
+        todoUseCases.addTodo(todo).collectLatest {
           if (it is DataState.Success) {
             _todoState.value = todoState.value.copy(
               deletedTodo = null

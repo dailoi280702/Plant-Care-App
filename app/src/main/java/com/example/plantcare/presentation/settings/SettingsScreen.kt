@@ -1,64 +1,107 @@
 package com.example.plantcare.presentation.settings
 
 import android.annotation.SuppressLint
-import android.widget.Toast
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.Button
-import androidx.compose.material.Text
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.plantcare.presentation.login.AuthenticationViewModel
-import com.example.plantcare.presentation.login.LoginSignupEvent
-import com.example.plantcare.presentation.login.LoginSignupUIEvent
+import com.example.plantcare.R
+import com.example.plantcare.domain.utils.AppTheme
+import com.example.plantcare.presentation.data_store.DataStoreViewModel
 import com.example.plantcare.presentation.main.utils.Screens
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.flow.collectLatest
+import com.google.firebase.auth.FirebaseAuth
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 @Composable
 fun SettingsScreen(
   navController: NavController,
-  authenticationViewModel: AuthenticationViewModel = hiltViewModel(),
+  dataStoreViewModel: DataStoreViewModel = hiltViewModel(),
   bottomBar: @Composable () -> Unit
 ) {
+  
   val context = LocalContext.current
-
-  LaunchedEffect(key1 = true) {
-    authenticationViewModel.eventFlow.collectLatest { event ->
-      when (event) {
-        is LoginSignupUIEvent.ShowText -> {
-          Toast.makeText(context, event.message, Toast.LENGTH_LONG).show()
-        }
-        is LoginSignupUIEvent.Navigate -> {
-          navController.navigate(event.screen.route) {
-            popUpTo(Screens.MainScreens.Settings.route) {
-              inclusive = true
+  val theme = dataStoreViewModel.themeState.value
+  
+  Scaffold(bottomBar = bottomBar) {
+    Column(
+      horizontalAlignment = Alignment.CenterHorizontally,
+      modifier = Modifier
+        .fillMaxSize()
+    ) {
+      Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 8.dp)
+      ) {
+        Text(
+          text = "Theme",
+          color = MaterialTheme.colorScheme.onSurface,
+          style = MaterialTheme.typography.titleMedium
+        )
+        AnimatedContent(targetState = dataStoreViewModel.themeState) {
+          Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(text = theme.text, color = MaterialTheme.colorScheme.onSurface)
+            IconButton(onClick = { dataStoreViewModel.switchMode() }) {
+              Icon(
+                painter = painterResource(
+                  id = when (theme) {
+                    is AppTheme.Auto -> R.drawable.ic_night_sight_auto_fill0_wght400_grad0_opsz48
+                    is AppTheme.Light -> R.drawable.ic_light_mode_fill0_wght400_grad0_opsz48
+                    is AppTheme.Dark -> R.drawable.ic_dark_mode_fill0_wght400_grad0_opsz48
+                  }
+                ),
+                contentDescription = null,
+                modifier = Modifier.size(24.dp)
+              )
             }
           }
         }
       }
-    }
-  }
-
-  Scaffold(bottomBar = bottomBar) {
-    Column(
-      modifier = Modifier.fillMaxSize(),
-      horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-      Button(onClick = {authenticationViewModel.onEvent(LoginSignupEvent.SignOut)}) {
-        Text(text = "log out")
+      Divider()
+      Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 8.dp)
+      ) {
+        Text(
+          text = "User",
+          color = MaterialTheme.colorScheme.onSurface,
+          style = MaterialTheme.typography.titleMedium
+        )
+        AnimatedContent(targetState = dataStoreViewModel.themeState) {
+          Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(text = "Logout", color = MaterialTheme.colorScheme.onSurface)
+            IconButton(onClick = {
+              FirebaseAuth.getInstance().signOut()
+              navController.navigate(Screens.LoginSignupScreen.route) {
+                popUpTo(Screens.MainScreens.Settings.route) {
+                  inclusive = true
+                }
+              }
+            }) {
+              Icon(
+                painter = painterResource(id = R.drawable.ic_logout),
+                contentDescription = null,
+                modifier = Modifier.size(24.dp)
+              )
+            }
+          }
+        }
       }
-      Text(text = Firebase.auth.currentUser?.uid.toString())
+      Divider()
     }
   }
 }

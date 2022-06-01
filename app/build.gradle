@@ -110,6 +110,10 @@ dependencies {
 
     //number picker
     implementation "com.chargemap.compose:numberpicker:1.0.3"
+
+    //datastore references
+    implementation "androidx.datastore:datastore-preferences:1.0.0"
+    implementation("androidx.datastore:datastore-preferences-core:1.0.0")
 }
 
 kapt {
