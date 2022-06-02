@@ -21,6 +21,7 @@ import com.example.plantcare.presentation.data_store.DataStoreViewModel
 import com.example.plantcare.ui.theme.utils.LocalCustomColors
 import com.example.plantcare.ui.theme.utils.darkCustomColors
 import com.example.plantcare.ui.theme.utils.lightCustomColors
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 private val DarkColorPalette = darkColors(
   primary = md_theme_dark_primary,
@@ -230,6 +231,7 @@ private val DarkColorPaletteCustom = darkCustomColors()
 fun PlantCareTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
   val viewModel: DataStoreViewModel = hiltViewModel()
   val appTheme = viewModel.themeState.value
+  val systemUiController = rememberSystemUiController()
   
   LaunchedEffect(viewModel.themeState) { viewModel.request() }
   
@@ -237,6 +239,13 @@ fun PlantCareTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composa
     AppTheme.Auto -> darkTheme
     AppTheme.Light -> false
     AppTheme.Dark -> true
+  }
+  
+  SideEffect {
+    systemUiController.setSystemBarsColor(
+      color = if (useDarkTheme) DarkThemeColors.background else LightThemeColors.background,
+      darkIcons = !useDarkTheme
+    )
   }
   
   val colors = if (useDarkTheme) {

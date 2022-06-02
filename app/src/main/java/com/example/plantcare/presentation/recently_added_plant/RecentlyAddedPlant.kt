@@ -36,7 +36,7 @@ fun RecentlyAddedPlant(
       horizontalArrangement = Arrangement.SpaceBetween
     ) {
       Text(
-        text = "Recently added plant",
+        text = "Recently added plants",
         fontSize = MaterialTheme.typography.titleLarge.fontSize
       )
       ClickableText(
@@ -57,7 +57,8 @@ fun RecentlyAddedPlant(
     }
     LazyRow(
       modifier = Modifier
-        .fillMaxHeight()
+        .fillMaxHeight(),
+      contentPadding = PaddingValues(horizontal = 12.dp)
     ) {
       items(plants) { plant ->
         SmallPlantCard(plant = plant) {

@@ -1,11 +1,12 @@
 package com.example.plantcare.presentation.main.components
 
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.*
 import androidx.compose.material.ScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.plantcare.presentation.todos.TasksScreen
 import com.example.plantcare.presentation.plant_detail.AddEditPlantScreen
@@ -15,10 +16,14 @@ import com.example.plantcare.presentation.login.LoginSignupScreen
 import com.example.plantcare.presentation.main.utils.Screens
 import com.example.plantcare.presentation.plants.PlantsScreen
 import com.example.plantcare.presentation.settings.SettingsScreen
+import com.google.accompanist.navigation.animation.AnimatedNavHost
+import com.google.accompanist.navigation.animation.composable
+import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun NavGraph(
-  navController: NavHostController,
+  navController: NavHostController = rememberAnimatedNavController(),
   scaffoldState: ScaffoldState,
   authenticationViewModel: AuthenticationViewModel,
 ) {
@@ -27,7 +32,7 @@ fun NavGraph(
   val startDest =
     if (authenticationViewModel.isUserLogedin()) Screens.MainScreens.Home else Screens.LoginSignupScreen
   
-  NavHost(navController = navController, startDestination = startDest.route) {
+  AnimatedNavHost(navController = navController, startDestination = startDest.route) {
     composable(Screens.MainScreens.Home.route) {
       HomeScreen(
         navController = navController,
@@ -67,7 +72,31 @@ fun NavGraph(
           type = NavType.StringType
           defaultValue = ""
         }
-      )
+      ),
+      enterTransition = {
+        slideIntoContainer(
+          AnimatedContentScope.SlideDirection.Left,
+          animationSpec = tween(500)
+        )
+      },
+      exitTransition = {
+        slideOutOfContainer(
+          AnimatedContentScope.SlideDirection.Left,
+          animationSpec = tween(500)
+        )
+      },
+      popEnterTransition = {
+        slideIntoContainer(
+          AnimatedContentScope.SlideDirection.Right,
+          animationSpec = tween(500)
+        )
+      },
+      popExitTransition = {
+        slideOutOfContainer(
+          AnimatedContentScope.SlideDirection.Right,
+          animationSpec = tween(500)
+        )
+      },
     ) {
       AddEditPlantScreen(
         navController = navController

@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.plantcare.presentation.recently_added_plant.RecentlyAddedPlant
+import com.example.plantcare.presentation.todo_dashboard.components.TodoDashBoard
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -32,6 +33,7 @@ fun HomeScreen(
         .verticalScroll(rememberScrollState())
     ) {
       RecentlyAddedPlant(navController = navController)
+      TodoDashBoard(navController = navController)
       Spacer(modifier = Modifier.height(80.dp))
     }
   }

@@ -169,7 +169,7 @@ fun PlantsScreen(
   ) {
     LazyVerticalGrid(
       columns = GridCells.Fixed(gridCellsColumn),
-      modifier = Modifier.padding(horizontal = 8.dp),
+      modifier = Modifier.padding(horizontal = 12.dp),
       state = scrollState,
       contentPadding = PaddingValues(top = 72.dp, bottom = 160.dp)
     ) {
