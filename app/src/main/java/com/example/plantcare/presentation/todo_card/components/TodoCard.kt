@@ -17,8 +17,7 @@ import com.example.plantcare.R
 import com.example.plantcare.core.Utils
 import com.example.plantcare.core.Utils.Companion.calculateDifferenceInDays
 import com.example.plantcare.domain.model.Todo
-import com.example.plantcare.ui.theme.fire
-import com.example.plantcare.ui.theme.gold
+import com.example.plantcare.ui.theme.utils.customColors
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
@@ -38,8 +37,8 @@ fun PlantTaskCard(
     else -> "not important"
   }
   val textColor = when (task.important) {
-    1 -> gold
-    2 -> fire
+    1 -> customColors.yellow
+    2 -> customColors.orange
     else -> MaterialTheme.colorScheme.onSurface
   }
   val iconId = when (task.important) {

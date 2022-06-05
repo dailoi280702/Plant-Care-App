@@ -5,7 +5,5 @@ import com.example.plantcare.domain.repository.AuthenticationRepository
 class LoginWithFacebook(
   private val repository: AuthenticationRepository
 ) {
-  suspend operator fun invoke() {
-    repository.loginWithFacebook()
-  }
+  suspend operator fun invoke() = repository.loginWithFacebook()
 }

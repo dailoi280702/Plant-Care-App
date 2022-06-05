@@ -18,6 +18,7 @@ import com.chargemap.compose.numberpicker.NumberPicker
 import com.example.plantcare.R
 import com.example.plantcare.ui.theme.fire
 import com.example.plantcare.ui.theme.gold
+import com.example.plantcare.ui.theme.utils.customColors
 import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -68,14 +69,9 @@ fun AddEditTaskDialog(
     2 -> R.drawable.ic_star_black_48dp
     else -> R.drawable.star_outline_black_48dp
   }
-  val textColor = when (state.todo.important) {
-    1 -> gold
-    2 -> fire
-    else -> MaterialTheme.colorScheme.onSurface
-  }
   val iconColor = when (state.todo.important) {
-    1 -> gold
-    2 -> fire
+    1 -> customColors.yellow
+    2 -> customColors.orange
     else -> MaterialTheme.colorScheme.onSurface
   }
   

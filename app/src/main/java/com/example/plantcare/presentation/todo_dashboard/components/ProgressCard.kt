@@ -24,5 +24,51 @@ fun ProgressCard(
   modifier: Modifier = Modifier,
   content: @Composable ColumnScope.() -> Unit
 ) {
-
+  
+  val percentage: Float = if (total == 0) 0f else (1 - left.toFloat() / total.toFloat())
+  val circularProgressbar: @Composable () -> Unit = {
+    CircularProgressbar(
+      backgroundIndicatorColor = backgroundIndicatorColor,
+      foregroundIndicatorColor = foregroundIndicatorColor,
+      textColor = MaterialTheme.colorScheme.onSurfaceVariant,
+      percentage = percentage
+    )
+  }
+  
+  Card(
+    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+    elevation = CardDefaults.cardElevation(),
+    shape = RoundedCornerShape(28.dp),
+    modifier = modifier
+      .fillMaxWidth()
+      .padding(8.dp)
+  ) {
+    if (isVerticalCard) {
+      Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.padding(16.dp)
+      ) {
+        circularProgressbar()
+        Spacer(modifier = Modifier.height(8.dp))
+        content()
+      }
+    } else {
+      Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.padding(16.dp)
+      ) {
+        Box(
+          modifier = Modifier
+            .height(160.dp)
+            .aspectRatio(1f)
+        ) {
+          circularProgressbar()
+        }
+        Spacer(modifier = Modifier.width(8.dp))
+        Column {
+          content()
+        }
+      }
+    }
+  }
 }

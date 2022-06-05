@@ -23,46 +23,48 @@ fun RecentlyAddedPlant(
 ) {
   val plants = viewModel.plants.value
 
-  Column(
-    modifier = Modifier
-      .fillMaxWidth()
-  ) {
-    Row(
+  if (plants.isNotEmpty()) {
+    Column(
       modifier = Modifier
         .fillMaxWidth()
-        .padding(horizontal = 16.dp)
-        .height(40.dp),
-      verticalAlignment = Alignment.CenterVertically,
-      horizontalArrangement = Arrangement.SpaceBetween
     ) {
-      Text(
-        text = "Recently added plants",
-        fontSize = MaterialTheme.typography.titleLarge.fontSize
-      )
-      ClickableText(
-        text = AnnotatedString("More"),
-        onClick = {
-          navController.navigate(Screens.MainScreens.Plants.route) {
-            navController.graph.startDestinationRoute?.let { route ->
-              popUpTo(route) {
-                saveState = true
+      Row(
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp)
+          .height(40.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+      ) {
+        Text(
+          text = "Recently added plants",
+          fontSize = MaterialTheme.typography.titleLarge.fontSize
+        )
+        ClickableText(
+          text = AnnotatedString("More"),
+          onClick = {
+            navController.navigate(Screens.MainScreens.Plants.route) {
+              navController.graph.startDestinationRoute?.let { route ->
+                popUpTo(route) {
+                  saveState = true
+                }
               }
+              launchSingleTop = true
+              restoreState = true
             }
-            launchSingleTop = true
-            restoreState = true
+          },
+          style = MaterialTheme.typography.labelLarge.copy(color = MaterialTheme.colorScheme.tertiary),
+        )
+      }
+      LazyRow(
+        modifier = Modifier
+          .fillMaxHeight(),
+        contentPadding = PaddingValues(horizontal = 12.dp)
+      ) {
+        items(plants) { plant ->
+          SmallPlantCard(plant = plant) {
+            navController.navigate(Screens.AddPlantScreen.route + "?plantId=${plant.id}")
           }
-        },
-        style = MaterialTheme.typography.labelLarge.copy(color = MaterialTheme.colorScheme.tertiary),
-      )
-    }
-    LazyRow(
-      modifier = Modifier
-        .fillMaxHeight(),
-      contentPadding = PaddingValues(horizontal = 12.dp)
-    ) {
-      items(plants) { plant ->
-        SmallPlantCard(plant = plant) {
-          navController.navigate(Screens.AddPlantScreen.route + "?plantId=${plant.id}")
         }
       }
     }

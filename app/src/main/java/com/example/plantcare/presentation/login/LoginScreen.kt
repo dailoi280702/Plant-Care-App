@@ -1,10 +1,14 @@
 package com.example.plantcare.presentation.login
 
+import android.util.Log
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -24,9 +28,11 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.plantcare.R
+import com.example.plantcare.data.utils.DataState
 import com.example.plantcare.presentation.login.components.LoginTab
 import com.example.plantcare.presentation.login.components.SignupTab
 import com.example.plantcare.presentation.login.utils.LoginIconButton
@@ -38,6 +44,12 @@ import com.example.plantcare.ui.theme.Twitter_color
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
+import com.google.android.gms.auth.api.identity.BeginSignInRequest
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import com.google.firebase.auth.FacebookAuthProvider
+import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -47,12 +59,13 @@ fun LoginSignupScreen(
   navController: NavController,
   viewModel: AuthenticationViewModel = hiltViewModel()
 ) {
-
+  
   val loginTextState = viewModel.loginEmailPassword.value
   val signupTextState = viewModel.signupEmailPassword.value
   val focusManager = LocalFocusManager.current
   val context = LocalContext.current
-
+  val token = stringResource(id = R.string.client_id)
+  
   LaunchedEffect(key1 = true) {
     viewModel.eventFlow.collectLatest { event ->
       when (event) {
@@ -69,13 +82,47 @@ fun LoginSignupScreen(
       }
     }
   }
-
+  
+  val launcher =
+    rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) {
+      val task = GoogleSignIn.getSignedInAccountFromIntent(it.data)
+      try {
+        
+        val account = task.getResult(ApiException::class.java)
+        account?.let { gsa ->
+          gsa.idToken?.let { idToken ->
+            val credential = GoogleAuthProvider.getCredential(idToken, null)
+            viewModel.onEvent(LoginSignupEvent.LoginWithGoogle(credential))
+          }
+        }
+      } catch (e: ApiException) {
+        Toast.makeText(context, "Google sign in failed!", Toast.LENGTH_SHORT).show()
+      }
+    }
+  
+  val faceBookLoginLauncer =
+    rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) {
+      val task = GoogleSignIn.getSignedInAccountFromIntent(it.data)
+      try {
+      
+        val account = task.getResult(ApiException::class.java)
+        account?.let { gsa ->
+          gsa.idToken?.let { idToken ->
+            val credential = GoogleAuthProvider.getCredential(idToken, null)
+            viewModel.onEvent(LoginSignupEvent.LoginWithGoogle(credential))
+          }
+        }
+      } catch (e: ApiException) {
+        Toast.makeText(context, "Google sign in failed!", Toast.LENGTH_SHORT).show()
+      }
+    }
+  
   val tabList = listOf(
     LoginSignupTabItem.Login {
       LoginTab(
         title = stringResource(id = R.string.login_title),
         description = stringResource(id = R.string.login_description),
-        buttonText = "log in",
+        buttonText = "Log In",
         email = loginTextState.email,
         password = loginTextState.password,
         focusManager = focusManager,
@@ -89,7 +136,7 @@ fun LoginSignupScreen(
       SignupTab(
         title = stringResource(id = R.string.signup_title),
         description = stringResource(id = R.string.signup_description),
-        buttonText = "sign up",
+        buttonText = "Sign Up",
         email = signupTextState.email,
         password = signupTextState.password,
         confirmPassword = signupTextState.confirmPassword,
@@ -104,7 +151,7 @@ fun LoginSignupScreen(
   )
   val pagerState = rememberPagerState()
   val scope = rememberCoroutineScope()
-
+  
   Box(
     modifier = Modifier.fillMaxSize(),
   ) {
@@ -159,16 +206,15 @@ fun LoginSignupScreen(
         fontFamily = FontFamily.Cursive
       )
       Card(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(28.dp)
       ) {
         Column(modifier = Modifier.fillMaxWidth()) {
           TabRow(
             selectedTabIndex = pagerState.currentPage,
             modifier = Modifier
               .padding(8.dp)
-              .clip(
-                MaterialTheme.shapes.medium
-              ),
+              .clip(RoundedCornerShape(12.dp)),
             indicator = {
 //              Modifier.pagerTabIndicatorOffset(pagerState = pagerState, tabPositions = it)
             },
@@ -228,7 +274,14 @@ fun LoginSignupScreen(
                 contentDescription = "Google Icon",
                 backgroundColor = Google_color
               ) {
-                viewModel.onEvent(LoginSignupEvent.LoginWithGoogle)
+                val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                  .requestIdToken(token)
+                  .requestEmail()
+                  .build()
+                
+                val googleSignInClient = GoogleSignIn.getClient(context, gso)
+                googleSignInClient.revokeAccess()
+                launcher.launch(googleSignInClient.signInIntent)
               }
               LoginIconButton(
                 icon = painterResource(id = R.drawable.ic_logo_facebook),
@@ -249,6 +302,12 @@ fun LoginSignupScreen(
           }
         }
       }
+    }
+  }
+  
+  if (viewModel.dataState.value is DataState.Loading) {
+    Dialog(onDismissRequest = {}) {
+      CircularProgressIndicator()
     }
   }
 }

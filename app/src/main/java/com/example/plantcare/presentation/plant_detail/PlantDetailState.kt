@@ -7,7 +7,8 @@ data class PlantDetailState(
   val plant: Plant = Plant(),
   val expandedImage: Boolean = false,
   val expandedInfo: Boolean = true,
-  val expandedTasks: Boolean = true,
+  val expandedTasks: Boolean = false,
   val imageUri: Uri? = null,
-  val subFabVisibility: Boolean = false
+  val subFabVisibility: Boolean = false,
+  val confirmDeletionDialogVisibility: Boolean = false
 )

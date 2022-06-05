@@ -47,7 +47,7 @@ fun SignupTab(
   val showPassword = remember {
     mutableStateOf(false)
   }
-
+  
   Column(
     Modifier
       .fillMaxWidth()
@@ -185,11 +185,11 @@ fun SignupTab(
         },
         Modifier
           .padding(top = 8.dp)
-          .fillMaxWidth()
+          .fillMaxWidth(),
+        colors = ButtonDefaults.buttonColors(contentColor = MaterialTheme.colorScheme.onPrimary)
       ) {
         Text(
           text = buttonText,
-          fontSize = MaterialTheme.typography.labelLarge.fontSize,
           modifier = Modifier.padding(8.dp),
           color = MaterialTheme.colorScheme.onPrimary
         )

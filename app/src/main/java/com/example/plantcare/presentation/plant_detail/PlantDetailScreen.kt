@@ -8,15 +8,11 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -28,10 +24,10 @@ import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.plantcare.R
 import com.example.plantcare.data.utils.DataState
-import com.example.plantcare.presentation.plant_detail.components.*
 import com.example.plantcare.presentation.add_edit_task.AddEditTaskDialog
 import com.example.plantcare.presentation.add_edit_task.AddEditTaskDialogEvent
 import com.example.plantcare.presentation.add_edit_task.AddEditTaskDialogViewModel
+import com.example.plantcare.presentation.plant_detail.components.*
 import com.example.plantcare.presentation.plant_detail_todos.components.PlantTaskList
 import com.example.plantcare.presentation.todo.TodoEvent
 import com.example.plantcare.presentation.todo.TodoViewModel
@@ -39,7 +35,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditPlantScreen(
   navController: NavController,
@@ -179,36 +175,38 @@ fun AddEditPlantScreen(
         }
       }
       
-      Divider(modifier = Modifier.padding(horizontal = dividerPadding.value))
-      Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier
-          .padding(horizontal = 16.dp)
-          .fillMaxWidth()
-      ) {
-        Text(
-          text = "Todo",
-          maxLines = 1,
-          fontStyle = MaterialTheme.typography.headlineMedium.fontStyle,
-          overflow = TextOverflow.Ellipsis,
-          color = MaterialTheme.colorScheme.onSurface
-        )
-        TextButton(onClick = {
-          todoDialogViewModel.init(plant = plantDetailState.plant)
-          todoDialogViewModel.onEvent(AddEditTaskDialogEvent.UpdateDialogVisibility(true))
-        }) {
-          Text(text = "add todo")
+      if (plantDetailState.expandedTasks) {
+        Divider(modifier = Modifier.padding(horizontal = dividerPadding.value))
+        Row(
+          verticalAlignment = Alignment.CenterVertically,
+          horizontalArrangement = Arrangement.SpaceBetween,
+          modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .fillMaxWidth()
+        ) {
+          Text(
+            text = "Todo",
+            maxLines = 1,
+            fontStyle = MaterialTheme.typography.headlineMedium.fontStyle,
+            overflow = TextOverflow.Ellipsis,
+            color = MaterialTheme.colorScheme.onSurface
+          )
+          TextButton(onClick = {
+            todoDialogViewModel.init(plant = plantDetailState.plant)
+            todoDialogViewModel.onEvent(AddEditTaskDialogEvent.UpdateDialogVisibility(true))
+          }) {
+            Text(text = "add todo")
+          }
         }
-      }
-      
-      PlantTaskList(
-        navController = navController,
-        plantId = plantDetailState.plant.id!!,
-        todoViewModel = todoViewModel
-      ) {
-        todoDialogViewModel.init(plant = plantDetailState.plant, todo = it)
-        todoDialogViewModel.onEvent(AddEditTaskDialogEvent.UpdateDialogVisibility(true))
+        
+        PlantTaskList(
+          navController = navController,
+          plantId = plantDetailState.plant.id!!,
+          todoViewModel = todoViewModel
+        ) {
+          todoDialogViewModel.init(plant = plantDetailState.plant, todo = it)
+          todoDialogViewModel.onEvent(AddEditTaskDialogEvent.UpdateDialogVisibility(true))
+        }
       }
     }
   }
@@ -238,7 +236,8 @@ fun AddEditPlantScreen(
           onContainerColor = MaterialTheme.colorScheme.onErrorContainer,
           painter = painterResource(id = R.drawable.ic_delete)
         ) {
-          viewModel.onEvent(PlantDetailEvent.DeletePlant)
+          viewModel.onEvent(PlantDetailEvent.ToggleSubFab)
+          viewModel.onEvent(PlantDetailEvent.ToggleConfirmDetetionDialog)
         }
         Spacer(modifier = Modifier.height(4.dp))
         HiddenFloatingActionButton(
@@ -255,15 +254,54 @@ fun AddEditPlantScreen(
     }
   }
   
+  if (plantDetailState.confirmDeletionDialogVisibility) {
+    AlertDialog(
+      onDismissRequest = {
+        viewModel.onEvent(PlantDetailEvent.ToggleConfirmDetetionDialog)
+      },
+      title = {
+        Text(text = "Confirm deletetion")
+      },
+      dismissButton = {
+        TextButton(onClick = {
+          viewModel.onEvent(PlantDetailEvent.ToggleConfirmDetetionDialog)
+        }) {
+          Text(text = "Cancel")
+        }
+      },
+      confirmButton = {
+        TextButton(
+          onClick = {
+            viewModel.onEvent(PlantDetailEvent.ToggleSubFab)
+            viewModel.onEvent(PlantDetailEvent.DeletePlant)
+          }
+        ) {
+          Text(text = "Delete anyway", color = MaterialTheme.colorScheme.error)
+        }
+      },
+      text = {
+        Text(text = "Warning! this action can not be undo, todos and images related to this plant will also be deleted!")
+      },
+      icon = {
+        Icon(
+          painter = painterResource(id = R.drawable.ic_delete),
+          contentDescription = null,
+          tint = MaterialTheme.colorScheme.error,
+          modifier = Modifier.size(24.dp)
+        )
+      }
+    )
+  }
+  
   if (viewModel.dataState.value is DataState.Loading) {
     Dialog(onDismissRequest = {}) {
       CircularProgressIndicator()
     }
   }
   
-  
   ErrorSnackbarHost(snackbarHostState = errorSnackbarHostState)
   
   AddEditTaskDialog(viewModel = todoDialogViewModel)
+  
 }
 

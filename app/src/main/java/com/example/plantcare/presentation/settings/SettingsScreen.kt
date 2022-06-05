@@ -18,6 +18,9 @@ import com.example.plantcare.domain.utils.AppTheme
 import com.example.plantcare.presentation.data_store.DataStoreViewModel
 import com.example.plantcare.presentation.main.utils.Screens
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthSettings
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
@@ -25,6 +28,7 @@ import com.google.firebase.auth.FirebaseAuth
 fun SettingsScreen(
   navController: NavController,
   dataStoreViewModel: DataStoreViewModel = hiltViewModel(),
+  viewModel: SettingsViewmodel = hiltViewModel(),
   bottomBar: @Composable () -> Unit
 ) {
   
@@ -85,11 +89,12 @@ fun SettingsScreen(
           Row(verticalAlignment = Alignment.CenterVertically) {
             Text(text = "Logout", color = MaterialTheme.colorScheme.onSurface)
             IconButton(onClick = {
-              FirebaseAuth.getInstance().signOut()
+              viewModel.signOut()
               navController.navigate(Screens.LoginSignupScreen.route) {
-                popUpTo(Screens.MainScreens.Settings.route) {
-                  inclusive = true
-                }
+//                popUpTo(Screens.MainScreens.Settings.route) {
+//                  inclusive = true
+//                }
+                popUpTo(0)
               }
             }) {
               Icon(

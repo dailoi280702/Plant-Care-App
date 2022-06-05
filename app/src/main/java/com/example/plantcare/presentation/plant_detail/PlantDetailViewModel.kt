@@ -21,19 +21,16 @@ class PlantDetailViewModel @Inject constructor(
   private val plantUseCases: PlantUseCases,
   private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
-
+  
   private val _plantDetailState = mutableStateOf(PlantDetailState())
   val plantDetailState: State<PlantDetailState> = _plantDetailState
-
+  
   private val _dataState = mutableStateOf<DataState<Plant?>>(DataState.Success(null))
   val dataState: State<DataState<Plant?>> = _dataState
-
+  
   private val _eventFLow = MutableSharedFlow<PlantDetailUiEvent>()
   val eventFlow = _eventFLow.asSharedFlow()
-
-  private val _currentPlantTask = mutableStateOf<Todo?>(null)
-  val currentPlantTask: State<Todo?> = _currentPlantTask
-
+  
   init {
     viewModelScope.launch {
       _plantDetailState.value = plantDetailState.value.copy(
@@ -47,7 +44,8 @@ class PlantDetailViewModel @Inject constructor(
           if (it is DataState.Success) {
             _plantDetailState.value = it.data?.let { plant ->
               plantDetailState.value.copy(
-                plant = plant
+                plant = plant,
+                expandedTasks = true
               )
             }!!
           }
@@ -55,7 +53,7 @@ class PlantDetailViewModel @Inject constructor(
       }
     }
   }
-
+  
   fun onEvent(event: PlantDetailEvent) {
     when (event) {
       is PlantDetailEvent.ToggleImageSection -> {
@@ -71,6 +69,11 @@ class PlantDetailViewModel @Inject constructor(
       is PlantDetailEvent.ToggleTasksSection -> {
         _plantDetailState.value = plantDetailState.value.copy(
           expandedTasks = !plantDetailState.value.expandedTasks
+        )
+      }
+      is PlantDetailEvent.ToggleConfirmDetetionDialog -> {
+        _plantDetailState.value = plantDetailState.value.copy(
+          confirmDeletionDialogVisibility = !plantDetailState.value.confirmDeletionDialogVisibility
         )
       }
       is PlantDetailEvent.ToggleSubFab -> {
@@ -113,7 +116,7 @@ class PlantDetailViewModel @Inject constructor(
       }
     }
   }
-
+  
   private fun addPlant() {
     viewModelScope.launch {
       plantUseCases.addPlant(
@@ -132,7 +135,7 @@ class PlantDetailViewModel @Inject constructor(
       }
     }
   }
-
+  
   private fun updatePlant() {
     viewModelScope.launch {
       plantUseCases.updatePlant(
@@ -155,18 +158,23 @@ class PlantDetailViewModel @Inject constructor(
       }
     }
   }
-
+  
   private fun deletePlant() {
     val id = plantDetailState.value.plant.id
     if (!id.isNullOrEmpty() || !id.isNullOrBlank()) {
       viewModelScope.launch {
         plantUseCases.deletePlant(id = id)
           .collectLatest {
-            if (it is DataState.Success) {
-              _eventFLow.emit(PlantDetailUiEvent.NavigateBack)
-            }
-            if (it is DataState.Error) {
-              _eventFLow.emit(PlantDetailUiEvent.ShowError(it.message))
+            when (it) {
+              is DataState.Loading -> {
+                _dataState.value = it
+              }
+              is DataState.Success -> {
+                _eventFLow.emit(PlantDetailUiEvent.NavigateBack)
+              }
+              is DataState.Error -> {
+                _eventFLow.emit(PlantDetailUiEvent.ShowError(it.message))
+              }
             }
           }
       }

@@ -194,3 +194,7 @@ val error = Color(0xFFba1b1b)
 
 val fire = Color(0xFFE25822)
 val gold = Color(0xFFFFD700)
+val yellow_dark = Color(0xFFffe15e)
+val yellow_light = Color(0xFFeac400)
+val oragne_dark = Color(0xFFe86d27)
+val oragne_light = Color(0xFFac3400)

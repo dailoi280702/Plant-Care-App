@@ -43,7 +43,7 @@ fun LoginTab(
   val showPassword = remember {
     mutableStateOf(false)
   }
-
+  
   Column(
     Modifier
       .fillMaxWidth()
@@ -143,11 +143,12 @@ fun LoginTab(
         Modifier
           .padding(top = 8.dp)
           .fillMaxWidth(),
+        colors = ButtonDefaults.buttonColors(contentColor = MaterialTheme.colorScheme.onPrimary)
       ) {
         Text(
           text = buttonText,
-          fontSize = MaterialTheme.typography.labelLarge.fontSize,
-          modifier = Modifier.padding(8.dp)
+          modifier = Modifier.padding(8.dp),
+          color = MaterialTheme.colorScheme.onPrimary
         )
       }
     }
