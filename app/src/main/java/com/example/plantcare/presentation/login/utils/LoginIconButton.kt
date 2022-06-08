@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -22,15 +24,19 @@ fun LoginIconButton(
   tint: Color = Color.White,
   onClick: () -> Unit
 ) {
-  IconButton(
+  Button(
     onClick = onClick,
+    colors = ButtonDefaults.buttonColors(
+      contentColor = tint,
+      containerColor =  backgroundColor
+    ),
     modifier = Modifier
       .width(72.dp)
-      .clip(shape = RoundedCornerShape(50))
-      .background(backgroundColor),
   ) {
     Icon(
-      modifier = Modifier.size(24.dp).fillMaxWidth(),
+      modifier = Modifier
+        .size(24.dp)
+        .fillMaxWidth(),
       painter = icon,
       contentDescription = contentDescription,
       tint = tint

@@ -1,6 +1,7 @@
 package com.example.plantcare.presentation.login
 
 import com.example.plantcare.presentation.main.utils.Screens
+import com.google.firebase.auth.AuthCredential
 
 sealed class LoginSignupEvent {
   data class EnterLoginEmail(val value: String): LoginSignupEvent()
@@ -8,12 +9,14 @@ sealed class LoginSignupEvent {
   data class EnterSignupEmail(val value: String): LoginSignupEvent()
   data class EnterSignupPassword(val value: String): LoginSignupEvent()
   data class EnterSignupConfirmPassword(val value: String): LoginSignupEvent()
+  data class EnterRecoveryEmail(val value: String): LoginSignupEvent()
+  data class LoginWithGoogle(val value: AuthCredential): LoginSignupEvent()
   object LoginWithEmailAndPassword: LoginSignupEvent()
   object SignupWithEmailAndPassword: LoginSignupEvent()
   object LoginWithFaceBook: LoginSignupEvent()
-  object LoginWithGoogle: LoginSignupEvent()
   object LoginWithTwitter: LoginSignupEvent()
   object SignOut: LoginSignupEvent()
+  object SendRecoveryEmail: LoginSignupEvent()
 }
 
 sealed class LoginSignupUIEvent {

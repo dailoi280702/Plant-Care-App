@@ -3,6 +3,8 @@ package com.example.plantcare.presentation.main.components
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.*
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.material.ScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
@@ -33,32 +35,48 @@ fun NavGraph(
     if (authenticationViewModel.isUserLogedin()) Screens.MainScreens.Home else Screens.LoginSignupScreen
   
   AnimatedNavHost(navController = navController, startDestination = startDest.route) {
-    composable(Screens.MainScreens.Home.route) {
+    composable(
+      Screens.MainScreens.Home.route,
+      enterTransition = { fadeIn() },
+      exitTransition = { fadeOut() }
+    ) {
       HomeScreen(
         navController = navController,
         bottomBar = bottomBar
       )
     }
-    composable(Screens.MainScreens.Plants.route) {
+    composable(Screens.MainScreens.Plants.route,
+      enterTransition = { fadeIn() },
+      exitTransition = { fadeOut() }
+    ) {
       PlantsScreen(
         navController = navController,
         scaffoldState = scaffoldState,
         bottomBar = bottomBar
       )
     }
-    composable(Screens.MainScreens.Tasks.route) {
+    composable(Screens.MainScreens.Tasks.route,
+      enterTransition = { fadeIn() },
+      exitTransition = { fadeOut() }
+    ) {
       TasksScreen(
         navController = navController,
         bottomBar = bottomBar
       )
     }
-    composable(Screens.MainScreens.Settings.route) {
+    composable(Screens.MainScreens.Settings.route,
+      enterTransition = { fadeIn() },
+      exitTransition = { fadeOut() }
+    ) {
       SettingsScreen(
         navController = navController,
         bottomBar = bottomBar
       )
     }
-    composable(Screens.LoginSignupScreen.route) {
+    composable(Screens.LoginSignupScreen.route,
+      enterTransition = { fadeIn() },
+      exitTransition = { fadeOut() }
+    ) {
       LoginSignupScreen(
         navController = navController,
       )

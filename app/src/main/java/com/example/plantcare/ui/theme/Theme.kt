@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.plantcare.domain.utils.AppTheme
 import com.example.plantcare.presentation.data_store.DataStoreViewModel
+import com.example.plantcare.ui.theme.utils.CustomColors
 import com.example.plantcare.ui.theme.utils.LocalCustomColors
 import com.example.plantcare.ui.theme.utils.darkCustomColors
 import com.example.plantcare.ui.theme.utils.lightCustomColors
@@ -271,7 +272,7 @@ fun PlantCareTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composa
       colors = colors,
       typography = Typography,
       shapes = Shapes,
-      content = content,
+      content = content
     )
     androidx.compose.material3.MaterialTheme(
       colorScheme = colorScheme,

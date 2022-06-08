@@ -8,6 +8,7 @@ sealed class PlantDetailEvent {
   object ToggleInfoSection: PlantDetailEvent()
   object ToggleTasksSection: PlantDetailEvent()
   object ToggleSubFab: PlantDetailEvent()
+  object ToggleConfirmDetetionDialog: PlantDetailEvent()
   object SavePlant: PlantDetailEvent()
   object DeletePlant: PlantDetailEvent()
   data class EnterName(val value: String): PlantDetailEvent()

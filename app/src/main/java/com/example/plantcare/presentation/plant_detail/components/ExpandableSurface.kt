@@ -27,6 +27,7 @@ fun ExpandableSurface(
   modifier: Modifier = Modifier,
   expanded: Boolean,
   onClick: () -> Unit,
+  iconButton: @Composable () -> Unit,
   content: @Composable () -> Unit
 ) {
 
@@ -51,13 +52,16 @@ fun ExpandableSurface(
         .padding(horizontal = 16.dp)
         .fillMaxWidth()
     ) {
-      Text(
-        text = title,
-        maxLines = 1,
-        fontStyle = MaterialTheme.typography.headlineMedium.fontStyle,
-        overflow = TextOverflow.Ellipsis,
-        color = MaterialTheme.colorScheme.onSurface
-      )
+      Row(verticalAlignment = Alignment.CenterVertically) {
+        iconButton()
+        Text(
+          text = title,
+          maxLines = 1,
+          fontStyle = MaterialTheme.typography.headlineMedium.fontStyle,
+          overflow = TextOverflow.Ellipsis,
+          color = MaterialTheme.colorScheme.onSurface
+        )
+      }
       IconButton(
         modifier = Modifier
           .alpha(ContentAlpha.medium)

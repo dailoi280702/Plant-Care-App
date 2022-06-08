@@ -11,10 +11,5 @@ class LoginWithEmailAndPassword(
   suspend operator fun invoke(
     email: String,
     password: String
-  ) {
-    if (email.isBlank() || password.isBlank()) {
-      throw LoginSignupArgumentException("please enter both email and password")
-    }
-    repository.loginWithEmailAndPassword(email = email, password = password)
-  }
+  ) = repository.loginWithEmailAndPassword(email = email, password = password)
 }

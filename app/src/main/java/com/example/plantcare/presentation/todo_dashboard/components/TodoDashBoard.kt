@@ -24,5 +24,103 @@ fun TodoDashBoard(
   navController: NavController,
   viewModel: TodoDashBoardViewModel = hiltViewModel()
 ) {
-
+  
+  val configuration = LocalConfiguration.current
+  val isVertical = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+  val state = viewModel.todoDashboardState.value
+  
+  Column(
+    modifier = Modifier
+      .fillMaxWidth()
+      .padding(8.dp)
+  ) {
+    Row(
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 8.dp)
+        .height(40.dp),
+      verticalAlignment = Alignment.CenterVertically,
+      horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+      Text(
+        text = "Your todos",
+        fontSize = MaterialTheme.typography.titleLarge.fontSize
+      )
+      ClickableText(
+        text = AnnotatedString("More"),
+        onClick = {
+          navController.navigate(Screens.MainScreens.Tasks.route) {
+            navController.graph.startDestinationRoute?.let { route ->
+              popUpTo(route) {
+                saveState = true
+              }
+            }
+            launchSingleTop = true
+            restoreState = true
+          }
+        },
+        style = MaterialTheme.typography.labelLarge.copy(color = MaterialTheme.colorScheme.tertiary),
+      )
+    }
+    Row {
+      Box(
+        modifier = Modifier
+          .fillMaxWidth()
+          .weight(1f)
+      ) {
+        ProgressCard(
+          total = state.today,
+          left = state.today - state.todayDone,
+          isVerticalCard = isVertical
+        ) {
+          ProgressCardShortContent(
+            text = "Today",
+            total = state.today,
+            left = state.today - state.todayDone
+          )
+        }
+      }
+      Box(
+        modifier = Modifier
+          .fillMaxWidth()
+          .weight(1f)
+      ) {
+        ProgressCard(
+          total = state.upComing,
+          left = state.upComing - state.upComingDone,
+          isVerticalCard = isVertical
+        ) {
+          ProgressCardShortContent(
+            text = "UpComing",
+            total = state.upComing,
+            left = state.upComing - state.upComingDone
+          )
+        }
+      }
+    }
+    Row() {
+      Box(
+        modifier = Modifier
+          .fillMaxWidth()
+          .weight(1f)
+      ) {
+        ProgressCard(total = state.total, left = state.total - state.done, isVerticalCard = false) {
+          ProgressCardLongContent(
+            total = state.total,
+            done = state.done,
+            important = state.important,
+            veryImportant = state.veryImportant,
+            overdue = state.overdue
+          )
+        }
+      }
+      if (!isVertical) {
+        Spacer(
+          modifier = Modifier
+            .fillMaxWidth()
+            .weight(1f)
+        )
+      }
+    }
+  }
 }

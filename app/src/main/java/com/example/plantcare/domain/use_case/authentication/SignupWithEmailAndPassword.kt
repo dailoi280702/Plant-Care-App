@@ -11,16 +11,5 @@ class SignupWithEmailAndPassword(
     email: String,
     password: String,
     confirmPassword: String
-  ) {
-    if (email.isBlank() || password.isBlank()) {
-      throw LoginSignupArgumentException("please enter both email and password")
-    }
-    if (confirmPassword.isBlank()) {
-      throw LoginSignupArgumentException("please confirm your password")
-    }
-    if (password != confirmPassword) {
-      throw  LoginSignupArgumentException("those password doesn't match")
-    }
-    repository.signupWithEmailAndPassword(email = email, password = password)
-  }
+  ) = repository.signupWithEmailAndPassword(email = email, password = password, confirmPassword = confirmPassword)
 }

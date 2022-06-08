@@ -35,6 +35,9 @@ import com.example.plantcare.data.utils.DataState.Loading
 import com.example.plantcare.domain.utils.OrderType
 import com.example.plantcare.domain.utils.TodoOrder
 import com.example.plantcare.domain.utils.TodoTime
+import com.example.plantcare.presentation.add_edit_task.AddEditTaskDialog
+import com.example.plantcare.presentation.add_edit_task.AddEditTaskDialogEvent
+import com.example.plantcare.presentation.add_edit_task.AddEditTaskDialogViewModel
 import com.example.plantcare.presentation.main.utils.Screens
 import com.example.plantcare.presentation.todo.TodoEvent
 import com.example.plantcare.presentation.todo.TodoViewModel
@@ -56,6 +59,7 @@ fun TasksScreen(
   navController: NavController,
   todoViewModel: TodoViewModel = hiltViewModel(),
   viewModel: TodosViewModel = hiltViewModel(),
+  todoDialogViewModel: AddEditTaskDialogViewModel = hiltViewModel(),
   bottomBar: @Composable () -> Unit
 ) {
   
@@ -147,7 +151,7 @@ fun TasksScreen(
             )
             Row(verticalAlignment = Alignment.CenterVertically) {
               Icon(
-                painter = painterResource(id = R.drawable.ic_sort),
+                painter = painterResource(id = R.drawable.ic_filter_alt_black_48dp),
                 contentDescription = null,
                 modifier = Modifier.size(24.dp),
                 tint = MaterialTheme.colorScheme.surfaceTint
@@ -187,7 +191,7 @@ fun TasksScreen(
             )
             Row(verticalAlignment = Alignment.CenterVertically) {
               Icon(
-                painter = painterResource(id = R.drawable.ic_filter_alt_black_48dp),
+                painter = painterResource(id = R.drawable.ic_sort),
                 contentDescription = null,
                 modifier = Modifier.size(24.dp),
                 tint = MaterialTheme.colorScheme.surfaceTint
@@ -348,6 +352,8 @@ fun TasksScreen(
                   }
                 },
                 onEditClick = {
+                  todoDialogViewModel.init(todo = todo)
+                  todoDialogViewModel.onEvent(AddEditTaskDialogEvent.UpdateDialogVisibility(true))
                 },
                 onDone = { todoViewModel.onEvent(TodoEvent.MarkTodoAsDone(todo)) },
                 expanded = todo == todoViewModel.todoState.value.expandedCard
@@ -360,4 +366,6 @@ fun TasksScreen(
       }
     }
   }
+  
+  AddEditTaskDialog(viewModel = todoDialogViewModel)
 }

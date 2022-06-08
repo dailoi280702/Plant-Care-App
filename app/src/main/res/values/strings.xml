@@ -1,8 +1,13 @@
 <resources>
     <string name="app_name">Plant Care</string>
-    <string name="login_title">Login And Enjoy Your Journey!</string>
+    <string name="login_title">Login For More Cool Features!</string>
     <string name="signup_title">Create Your Account!</string>
-    <string name="login_description">login with your email and password, or go to next tab to create one</string>
+    <string name="login_description">login with your email and password, or swipe to next tab to create one</string>
     <string name="signup_description">create new account with email and your email\'s password</string>
     <string name="login_another">or log in with Google, Facebook or Twitter</string>
+    <string name="client_id">142489780821-o4cb73tvl4cnu11hod6im5cjgb64u50o.apps.googleusercontent.com</string>
+    <string name="facebook_app_id">3257568201229442</string>
+    <string name="fb_login_protocol_scheme">fb3257568201229442</string>
+    <string name="facebook_client_token">06d1f484c1873ba3f0ded397441f2bec</string>
+    <string name="github_page">https://github.com/dailoi280702/Plant-Care-App</string>
 </resources>

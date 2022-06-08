@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -19,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -38,12 +40,13 @@ fun LoginTab(
   focusManager: FocusManager,
   onEmailChange: (String) -> Unit,
   onPasswordChange: (String) -> Unit,
+  onForgotPasswordClick: () -> Unit,
   onButtonClick: () -> Unit,
 ) {
   val showPassword = remember {
     mutableStateOf(false)
   }
-
+  
   Column(
     Modifier
       .fillMaxWidth()
@@ -143,13 +146,19 @@ fun LoginTab(
         Modifier
           .padding(top = 8.dp)
           .fillMaxWidth(),
+        colors = ButtonDefaults.buttonColors(contentColor = MaterialTheme.colorScheme.onPrimary)
       ) {
         Text(
           text = buttonText,
-          fontSize = MaterialTheme.typography.labelLarge.fontSize,
-          modifier = Modifier.padding(8.dp)
+          modifier = Modifier.padding(8.dp),
+          color = MaterialTheme.colorScheme.onPrimary
         )
       }
+      ClickableText(
+        text = AnnotatedString("Forgot your password?"),
+        onClick = { onForgotPasswordClick() },
+        style = MaterialTheme.typography.labelMedium.copy(color = MaterialTheme.colorScheme.tertiary)
+      )
     }
   }
 }

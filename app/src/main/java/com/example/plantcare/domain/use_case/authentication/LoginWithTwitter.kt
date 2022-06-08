@@ -5,7 +5,5 @@ import com.example.plantcare.domain.repository.AuthenticationRepository
 class LoginWithTwitter(
   private val repository: AuthenticationRepository
 ) {
-  suspend operator fun invoke() {
-    repository.loginWithTwitter()
-  }
+  suspend operator fun invoke() = repository.loginWithTwitter()
 }

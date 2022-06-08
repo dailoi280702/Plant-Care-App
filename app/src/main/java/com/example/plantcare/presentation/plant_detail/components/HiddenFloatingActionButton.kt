@@ -1,10 +1,8 @@
 package com.example.plantcare.presentation.plant_detail.components
 
-import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.*
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
@@ -19,7 +17,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class,
+  ExperimentalAnimationApi::class
+)
 @Composable
 fun HiddenFloatingActionButton(
   visible: Boolean,
@@ -31,12 +31,7 @@ fun HiddenFloatingActionButton(
 ) {
   AnimatedVisibility(
     visible = visible,
-    exit = fadeOut() + slideOutVertically(
-      targetOffsetY = { it },
-      animationSpec = tween(
-        easing = LinearEasing
-      )
-    )
+    exit = scaleOut() + slideOutHorizontally(targetOffsetX = {it}) + fadeOut()
   ) {
     Row(
       modifier = Modifier.fillMaxWidth(),

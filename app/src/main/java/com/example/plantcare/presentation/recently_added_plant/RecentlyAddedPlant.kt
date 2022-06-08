@@ -3,6 +3,7 @@ package com.example.plantcare.presentation.recently_added_plant
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -15,54 +16,64 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.plantcare.presentation.main.utils.Screens
 import com.example.plantcare.presentation.recently_added_plant.components.SmallPlantCard
+import dev.chrisbanes.snapper.ExperimentalSnapperApi
+import dev.chrisbanes.snapper.rememberSnapperFlingBehavior
 
+@OptIn(ExperimentalSnapperApi::class)
 @Composable
 fun RecentlyAddedPlant(
   navController: NavController,
   viewModel: RecentlyAddedPlantViewModel = hiltViewModel()
 ) {
+  
   val plants = viewModel.plants.value
-
-  Column(
-    modifier = Modifier
-      .fillMaxWidth()
-  ) {
-    Row(
+  val lazyListState = rememberLazyListState()
+  
+  if (plants.isNotEmpty()) {
+    Column(
       modifier = Modifier
         .fillMaxWidth()
-        .padding(horizontal = 16.dp)
-        .height(40.dp),
-      verticalAlignment = Alignment.CenterVertically,
-      horizontalArrangement = Arrangement.SpaceBetween
     ) {
-      Text(
-        text = "Recently added plants",
-        fontSize = MaterialTheme.typography.titleLarge.fontSize
-      )
-      ClickableText(
-        text = AnnotatedString("More"),
-        onClick = {
-          navController.navigate(Screens.MainScreens.Plants.route) {
-            navController.graph.startDestinationRoute?.let { route ->
-              popUpTo(route) {
-                saveState = true
+      Row(
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp)
+          .height(40.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+      ) {
+        Text(
+          text = "Recently added plants",
+          fontSize = MaterialTheme.typography.titleLarge.fontSize
+        )
+        ClickableText(
+          text = AnnotatedString("More"),
+          onClick = {
+            navController.navigate(Screens.MainScreens.Plants.route) {
+              navController.graph.startDestinationRoute?.let { route ->
+                popUpTo(route) {
+                  saveState = true
+                }
               }
+              launchSingleTop = true
+              restoreState = true
             }
-            launchSingleTop = true
-            restoreState = true
+          },
+          style = MaterialTheme.typography.labelLarge.copy(color = MaterialTheme.colorScheme.tertiary),
+        )
+      }
+      LazyRow(
+        modifier = Modifier
+          .fillMaxHeight()
+          .padding(top = 8.dp),
+        contentPadding = PaddingValues(horizontal = 12.dp),
+        state = lazyListState,
+        flingBehavior = rememberSnapperFlingBehavior(lazyListState)
+      ) {
+        items(plants) { plant ->
+          SmallPlantCard(plant = plant) {
+            navController.navigate(Screens.AddPlantScreen.route + "?plantId=${plant.id}")
           }
-        },
-        style = MaterialTheme.typography.labelLarge.copy(color = MaterialTheme.colorScheme.tertiary),
-      )
-    }
-    LazyRow(
-      modifier = Modifier
-        .fillMaxHeight(),
-      contentPadding = PaddingValues(horizontal = 12.dp)
-    ) {
-      items(plants) { plant ->
-        SmallPlantCard(plant = plant) {
-          navController.navigate(Screens.AddPlantScreen.route + "?plantId=${plant.id}")
         }
       }
     }

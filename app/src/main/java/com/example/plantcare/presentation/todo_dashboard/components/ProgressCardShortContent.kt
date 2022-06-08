@@ -14,5 +14,13 @@ fun ProgressCardShortContent(
   total: Int,
   left: Int
 ){
-
+  Text(
+    text = text,
+    style = MaterialTheme.typography.titleLarge.copy(color = MaterialTheme.colorScheme.onSurfaceVariant)
+  )
+  Spacer(modifier = Modifier.height(8.dp))
+  Text(
+    text = "$total todo${if (total > 1) "s" else ""}, $left left",
+    style = MaterialTheme.typography.titleMedium.copy(color = MaterialTheme.colorScheme.onSurfaceVariant)
+  )
 }

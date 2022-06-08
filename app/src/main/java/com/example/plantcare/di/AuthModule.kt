@@ -29,7 +29,8 @@ object AuthModule {
       loginWithTwitter = LoginWithTwitter(repository = repository),
       logout = Logout(repository = repository),
       signupWithEmailAndPassword = SignupWithEmailAndPassword(repository = repository),
-      isUserLogedin = IsUserLogedin(repository = repository)
+      isUserLogedin = IsUserLogedin(repository = repository),
+      sendRecoveryEmail = SendRecoveryEmail(repository = repository)
     )
   }
 

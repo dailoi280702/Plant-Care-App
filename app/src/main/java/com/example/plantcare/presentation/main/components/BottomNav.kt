@@ -20,22 +20,22 @@ fun BottomNav(navController: NavController) {
     Screens.MainScreens.Tasks,
     Screens.MainScreens.Settings
   )
-
+  
   NavigationBar(
   ) {
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
-
+    
     items.forEach { item ->
       val selected = currentRoute == item.route
       NavigationBarItem(
         icon = {
-            Icon(
-              painter = painterResource(id = if (selected) item.icon else item.outline_icon),
-              contentDescription = item.title,
-              modifier = Modifier.size(24.dp),
-              tint = if (selected) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
-            )
+          Icon(
+            painter = painterResource(id = if (selected) item.icon else item.outline_icon),
+            contentDescription = item.title,
+            modifier = Modifier.size(24.dp),
+            tint = if (selected) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
+          )
         },
         label = {
           Text(
