@@ -11,6 +11,7 @@ interface AuthenticationRepository {
   suspend fun loginWithGoogle(credential: AuthCredential): Flow<DataState<Void?>>
   suspend fun loginWithFacebook(): Flow<DataState<Void?>>
   suspend fun loginWithTwitter(): Flow<DataState<Void?>>
+  suspend fun sendRecoveryEmail(email: String): Flow<DataState<Void?>>
   suspend fun logout()
   fun isUserLogedin(): Boolean
 }

@@ -25,15 +25,14 @@ class AuthenticationViewModel @Inject constructor(
   private val loginSignupUsecases: LoginSignupUsecases
 ) : ViewModel() {
   
-  private val _loginEmailPassword = mutableStateOf(
-    EmailPasswordState()
-  )
+  private val _loginEmailPassword = mutableStateOf(EmailPasswordState())
   val loginEmailPassword: State<EmailPasswordState> = _loginEmailPassword
   
-  private val _signupEmailPassword = mutableStateOf(
-    EmailPasswordState()
-  )
+  private val _signupEmailPassword = mutableStateOf(EmailPasswordState())
   val signupEmailPassword: State<EmailPasswordState> = _signupEmailPassword
+  
+  private val _recoveryEmail = mutableStateOf("")
+  val recoveryEmail: State<String> = _recoveryEmail
   
   private val _dataState = mutableStateOf<DataState<Void?>?>(null)
   val dataState: State<DataState<Void?>?> = _dataState
@@ -206,6 +205,34 @@ class AuthenticationViewModel @Inject constructor(
     }
   }
   
+  private fun sendRecoveryEmail() {
+    viewModelScope.launch {
+      try {
+        loginSignupUsecases.sendRecoveryEmail(recoveryEmail.value.trim()).collectLatest {
+          _dataState.value = it
+          if (it is DataState.Success) {
+            _eventFLow.emit(
+              LoginSignupUIEvent.ShowText("Email sent successfully to reset your password!")
+            )
+          }
+          if (it is DataState.Error) {
+            _eventFLow.emit(
+              LoginSignupUIEvent.ShowText(
+                message = it.message
+              )
+            )
+          }
+        }
+      } catch (e: Exception) {
+        _eventFLow.emit(
+          LoginSignupUIEvent.ShowText(
+            message = e.message ?: "Log in with Twitter failed!"
+          )
+        )
+      }
+    }
+  }
+  
   fun isUserLogedin(): Boolean {
     return loginSignupUsecases.isUserLogedin()
   }
@@ -237,6 +264,9 @@ class AuthenticationViewModel @Inject constructor(
           confirmPassword = event.value
         )
       }
+      is LoginSignupEvent.EnterRecoveryEmail -> {
+        _recoveryEmail.value = event.value
+      }
       is LoginSignupEvent.LoginWithEmailAndPassword -> {
         loginWithEmailAndPassword()
       }
@@ -267,6 +297,9 @@ class AuthenticationViewModel @Inject constructor(
             )
           }
         }
+      }
+      is LoginSignupEvent.SendRecoveryEmail -> {
+        sendRecoveryEmail()
       }
     }
   }

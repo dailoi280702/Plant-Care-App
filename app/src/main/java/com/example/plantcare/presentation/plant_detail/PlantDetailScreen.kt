@@ -9,10 +9,15 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.ContentAlpha
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -132,17 +137,42 @@ fun AddEditPlantScreen(
             .rotate(rotationState)
         )
       }
+    },
+    topBar = {
+      CenterAlignedTopAppBar(
+        title = { Text(text = "Plant Information") },
+        navigationIcon = {
+          IconButton(onClick = { navController.navigateUp() }) {
+            Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Go Back")
+          }
+        },
+        actions = {
+          val rotationState by animateFloatAsState(
+            targetValue = if (plantDetailState.expandedInfo) 180f else 0f
+          )
+          
+          IconButton(
+            modifier = Modifier
+              .alpha(ContentAlpha.medium)
+              .rotate(rotationState),
+            onClick = { viewModel.onEvent(PlantDetailEvent.ToggleInfoSection) }
+          ) {
+            Icon(
+              imageVector = Icons.Default.ArrowDropDown,
+              contentDescription = "Drop-Down Arrow"
+            )
+          }
+        }
+      )
     }
   ) {
     Column(
       modifier = Modifier
         .fillMaxSize()
     ) {
-      ExpandableSurface(
-        title = "Plant information",
-        expanded = plantDetailState.expandedInfo,
-        onClick = { viewModel.onEvent(PlantDetailEvent.ToggleInfoSection) }
-      ) {
+      Spacer(modifier = Modifier.height(64.dp))
+      AnimatedVisibility(visible = plantDetailState.expandedInfo)
+      {
         Row(
           modifier = Modifier
             .fillMaxWidth()
@@ -185,7 +215,7 @@ fun AddEditPlantScreen(
             .fillMaxWidth()
         ) {
           Text(
-            text = "Todo",
+            text = "Todos",
             maxLines = 1,
             fontStyle = MaterialTheme.typography.headlineMedium.fontStyle,
             overflow = TextOverflow.Ellipsis,
@@ -195,7 +225,7 @@ fun AddEditPlantScreen(
             todoDialogViewModel.init(plant = plantDetailState.plant)
             todoDialogViewModel.onEvent(AddEditTaskDialogEvent.UpdateDialogVisibility(true))
           }) {
-            Text(text = "add todo")
+            Text(text = "Add todo")
           }
         }
         

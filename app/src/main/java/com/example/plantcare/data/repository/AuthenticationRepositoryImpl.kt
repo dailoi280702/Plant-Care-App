@@ -6,6 +6,7 @@ import com.example.plantcare.domain.repository.AuthenticationRepository
 import com.example.plantcare.domain.utils.LoginSignupArgumentException
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
 
@@ -75,23 +76,37 @@ class AuthenticationRepositoryImpl(
     
     emit(DataState.Loading)
     try {
-      emit(DataState.Error("Feature not implemented yet!"))
+      emit(DataState.Error("Feature under development!"))
       return@flow
     } catch (e: Exception) {
       emit(DataState.Error(e.message ?: "Log In with Facebook failed!"))
       return@flow
     }
-    emit(DataState.Success(null))
   }
   
   override suspend fun loginWithTwitter() = flow {
     
     emit(DataState.Loading)
     try {
-      emit(DataState.Error("Feature not implemented yet!"))
+      emit(DataState.Error("Feature under development!"))
       return@flow
     } catch (e: Exception) {
       emit(DataState.Error(e.message ?: "Log In with Twitter failed!"))
+      return@flow
+    }
+  }
+  
+  override suspend fun sendRecoveryEmail(email: String) = flow {
+    if (email.isBlank() || email.isEmpty()) {
+      emit(DataState.Error("Please enter recovery email"))
+      return@flow
+    }
+    
+    emit(DataState.Loading)
+    try {
+      auth.sendPasswordResetEmail(email).await()
+    } catch (e: Exception) {
+      emit(DataState.Error(e.message ?: "Failed to send an email to reset your password!"))
       return@flow
     }
     emit(DataState.Success(null))

@@ -30,7 +30,7 @@ import com.example.plantcare.presentation.main.utils.Screens
 import com.example.plantcare.presentation.plants.components.PlantCard
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlantsScreen(
   navController: NavController,
@@ -51,9 +51,9 @@ fun PlantsScreen(
   Scaffold(
     topBar = {
       SmallTopAppBar(
-//        colors = TopAppBarDefaults.smallTopAppBarColors(
-//          containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.96f)
-//        ),
+        colors = TopAppBarDefaults.smallTopAppBarColors(
+          containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.96f)
+        ),
         modifier = Modifier
           .graphicsLayer { translationY = position.toPx() },
         title = {

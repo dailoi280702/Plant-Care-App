@@ -3,6 +3,7 @@ package com.example.plantcare.presentation.recently_added_plant
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -15,14 +16,19 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.plantcare.presentation.main.utils.Screens
 import com.example.plantcare.presentation.recently_added_plant.components.SmallPlantCard
+import dev.chrisbanes.snapper.ExperimentalSnapperApi
+import dev.chrisbanes.snapper.rememberSnapperFlingBehavior
 
+@OptIn(ExperimentalSnapperApi::class)
 @Composable
 fun RecentlyAddedPlant(
   navController: NavController,
   viewModel: RecentlyAddedPlantViewModel = hiltViewModel()
 ) {
+  
   val plants = viewModel.plants.value
-
+  val lazyListState = rememberLazyListState()
+  
   if (plants.isNotEmpty()) {
     Column(
       modifier = Modifier
@@ -58,8 +64,11 @@ fun RecentlyAddedPlant(
       }
       LazyRow(
         modifier = Modifier
-          .fillMaxHeight(),
-        contentPadding = PaddingValues(horizontal = 12.dp)
+          .fillMaxHeight()
+          .padding(top = 8.dp),
+        contentPadding = PaddingValues(horizontal = 12.dp),
+        state = lazyListState,
+        flingBehavior = rememberSnapperFlingBehavior(lazyListState)
       ) {
         items(plants) { plant ->
           SmallPlantCard(plant = plant) {
