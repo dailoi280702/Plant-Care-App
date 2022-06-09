@@ -46,14 +46,9 @@ Features in development:
 ## App screens
   
 
-https://user-images.githubusercontent.com/87962065/172855315-7e313fc3-133e-449b-ba36-c1f517c8bfb4.mp4
+https://user-images.githubusercontent.com/87962065/172869315-ea9be15b-f41e-466d-87fb-a40ed8669e3e.mp4
 
 
 
-https://user-images.githubusercontent.com/87962065/172855405-73a44508-0e83-483a-bac2-b5af3d11e1a2.mp4
+https://user-images.githubusercontent.com/87962065/172869370-211cf07d-0781-400e-8104-ae39bc677c7a.mp4
 
-
-[](git_resource/light_theme.mp4)
-
-
-[](git_resource/dark_theme.mp4)
