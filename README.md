@@ -53,6 +53,7 @@ https://user-images.githubusercontent.com/87962065/172855315-7e313fc3-133e-449b-
 https://user-images.githubusercontent.com/87962065/172855405-73a44508-0e83-483a-bac2-b5af3d11e1a2.mp4
 
 
-Plant             |  Plant list
-:-------------------------:|:-------------------------:
-![](git_resource/light_theme.mp4)  |  ![](git_resource/dark_theme.mp4)
+[](git_resource/light_theme.mp4)
+
+
+[](git_resource/dark_theme.mp4)
