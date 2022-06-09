@@ -22,6 +22,8 @@ Using [MVVM](https://developer.android.com/topic/architecture?gclsrc=ds) with [C
 
 The data flow will look like this:
 
+![](git_resource/data_flow.png)
+
 ## Main features
 Two main features of the application are:
 - Create a collection of plants with name, description (optional) and a picture of that plant.
