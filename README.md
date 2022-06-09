@@ -25,7 +25,16 @@ The data flow will look like this:
 ## Main features
 Two main features of the application are:
 - Create a collection of plants with name, description (optional) and a picture of that plant.
+
+Todo             |  Todo list
+:-------------------------:|:-------------------------:
+![](git_resource/plant_detail.jpg)  |  ![](git_resource/plants.jpg)
+
 - Manage the todos (tasks) related to a plant.
+
+Plant             |  Plant list
+:-------------------------:|:-------------------------:
+![](git_resource/todo_detail.jpg)  |  ![](git_resource/todos.jpg)
 
 Other features are:
 - Sign in (with email & password or with Google account), sign up, sign out, reset password.
