@@ -2,7 +2,6 @@
 **This is a students's project from [UIT - University of Information Technology](https://www.uit.edu.vn/)**.
 
 ## Android development
---- ---
 Plant Care uses many of libraries and tools:
 - Entirely written in [Kotlin](https://kotlinlang.org/).
 - UI completely written in [Jetpack Compose](https://developer.android.com/jetpack/compose).
@@ -15,7 +14,6 @@ Plant Care uses many of libraries and tools:
 - Includes libraries from [Google Accompanist](https://google.github.io/accompanist/): Pager layouts, Swipe Refresh, Navigation Animation ...
 
 ## Application achitechture
---- ---
 Using [MVVM](https://developer.android.com/topic/architecture?gclsrc=ds) with [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html) brings us lots of benefits:
 - The code is further decoupled (the biggest advantage.)
 - The code is even more easily testable than with plain MVVM.
@@ -25,7 +23,6 @@ Using [MVVM](https://developer.android.com/topic/architecture?gclsrc=ds) with [C
 The data flow will look like this:
 
 ## Main features
---- ---
 Two main features of the application are:
 - Create a collection of plants with name, description (optional) and a picture of that plant.
 - Manage the todos (tasks) related to a plant.
@@ -36,3 +33,13 @@ Other features are:
 
 Features in development:
 - Sign in with Facebook and Twitter, change language  (currently support English only) and more ...
+
+## App screens
+  
+
+https://user-images.githubusercontent.com/87962065/172855315-7e313fc3-133e-449b-ba36-c1f517c8bfb4.mp4
+
+
+
+https://user-images.githubusercontent.com/87962065/172855405-73a44508-0e83-483a-bac2-b5af3d11e1a2.mp4
+
