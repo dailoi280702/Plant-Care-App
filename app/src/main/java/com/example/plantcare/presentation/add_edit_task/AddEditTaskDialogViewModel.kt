@@ -37,6 +37,9 @@ class AddEditTaskDialogViewModel @Inject constructor(
   
   fun init(plant: Plant? = null, todo: Todo? = null) {
     val now = Calendar.getInstance()
+    todo?.let {
+      now.time = it.dueDay!!.toDate()
+    }
     _addEditTaskDialogState.value = AddEditTaskDialogState(
       plant = plant,
       todo = todo ?: Todo(plantId = plant!!.id, plantName = plant.name),

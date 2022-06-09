@@ -7,6 +7,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.material.ScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
@@ -27,7 +28,7 @@ import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 fun NavGraph(
   navController: NavHostController = rememberAnimatedNavController(),
   scaffoldState: ScaffoldState,
-  authenticationViewModel: AuthenticationViewModel,
+  authenticationViewModel: AuthenticationViewModel = hiltViewModel(),
 ) {
   
   val bottomBar: @Composable () -> Unit = { BottomNav(navController = navController) }

@@ -15,7 +15,7 @@ import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 @Composable
 fun AppScaffold(
-  authenticationViewModel: AuthenticationViewModel = hiltViewModel()
+//  authenticationViewModel: AuthenticationViewModel = hiltViewModel()
 ) {
   val scaffoldState = rememberScaffoldState()
 //  val navController = rememberAnimatedNavController()
@@ -24,7 +24,7 @@ fun AppScaffold(
     NavGraph(
 //      navController = navController,
       scaffoldState = scaffoldState,
-      authenticationViewModel = authenticationViewModel
+//      authenticationViewModel = authenticationViewModel
     )
   }
 }

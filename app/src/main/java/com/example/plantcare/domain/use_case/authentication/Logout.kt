@@ -7,7 +7,6 @@ class Logout(
   private val repository: AuthenticationRepository
 ) {
   suspend operator fun invoke() {
-    Log.d("check_logout_tag", "USER STILL LOGGING OUT")
     repository.logout()
   }
 }

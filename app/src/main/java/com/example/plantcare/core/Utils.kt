@@ -25,9 +25,9 @@ class Utils {
       val dayLeft = compareTwoDates(timestamp.toDate(), Calendar.getInstance().time)
       
       if (dayLeft > 1L ) return "$dayLeft days left"
-      if (dayLeft < -1L) return  "Overdue $dayLeft days"
+      if (dayLeft < -1L) return  "Overdue ${-dayLeft} days"
       if (dayLeft == 1L) return  "Tomorrow"
-      if (dayLeft == -1L) return  "Overdue $dayLeft day"
+      if (dayLeft == -1L) return  "Overdue ${-dayLeft} day"
       return "Today"
     }
   

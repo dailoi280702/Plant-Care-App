@@ -129,9 +129,12 @@ fun SettingsScreen(
           Row(verticalAlignment = Alignment.CenterVertically) {
             Text(text = "Logout", color = MaterialTheme.colorScheme.onSurface)
             IconButton(onClick = {
-              viewModel.signOut()
+//              viewModel.signOut()
+              Firebase.auth.signOut()
               navController.navigate(Screens.LoginSignupScreen.route) {
-                popUpTo(0)
+                popUpTo(Screens.MainScreens.Settings.route) {
+                  inclusive = true
+                }
               }
             }) {
               Icon(
